@@ -11,7 +11,7 @@ const LoginForm = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    const canRegister = !!email && !!password;
+    const canLogin = !!email && !!password;
 
 
     const handleSubmit = async () => {
@@ -68,7 +68,7 @@ const LoginForm = () => {
                 <button
                     onClick={handleSubmit}
                     className="py-3 text-white bg-blue-500 font-bold w-full md:w-40 self-end text-lg rounded-lg disabled:opacity-[25%] disabled:bg-[rgba(17,17,17,1)]"
-                    disabled={!canRegister || error.error != ""}
+                    disabled={!canLogin || error.error != ""}
                 >
                     Sign up
                 </button>
