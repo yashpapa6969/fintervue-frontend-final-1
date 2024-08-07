@@ -1,9 +1,12 @@
+import { useParams } from "react-router-dom";
 import VideoCall from "../components/common/VideoCall"
 
 const MeetingPage = () => {
+    const {id} = useParams();
+
     return (
         <div className="h-screen w-full">
-            <VideoCall />
+            <VideoCall channelId={id} />
         </div>
     )
 }

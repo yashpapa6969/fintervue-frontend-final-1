@@ -1,11 +1,10 @@
 import { useToast } from "@chakra-ui/react";
-import { CircleX } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const SignupForm = () => {
     const toast = useToast();
 
-    const [error, setError] = useState({ error: "", message: "" });
+    // const [error, setError] = useState({ error: "", message: "" });
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [fullname, setFullname] = useState("");
@@ -68,11 +67,11 @@ const SignupForm = () => {
                 />
             </div>
 
-            {error.error != "" && (
+            {/* {error.error != "" && (
                 <div className="bg-red-200 border text-sm border-red-500 text-red-500 rounded-md p-2 flex items-center gap-2">
                     <CircleX color="#ff6161" /> {error.message}
                 </div>
-            )}
+            )} */}
         </div>
     )
 }

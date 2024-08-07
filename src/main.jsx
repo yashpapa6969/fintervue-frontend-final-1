@@ -11,6 +11,7 @@ import { ChakraProvider } from '@chakra-ui/react'
 
 import SignupPage from './pages/SignupPage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
+import MeetingPage from './pages/MeetingPage.jsx';
 
 const router = createBrowserRouter([
   {
@@ -19,6 +20,12 @@ const router = createBrowserRouter([
       <div >
         <App />
       </div>
+    )
+  }, 
+  {
+    path: "/meeting/:id",
+    element: (
+      <MeetingPage />
     )
   }, 
   {

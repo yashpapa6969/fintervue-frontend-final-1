@@ -1,12 +1,13 @@
 import AgoraUIKit from 'agora-react-uikit';
 import { useState } from 'react';
 
-const VideoCall = () => {
+const VideoCall = ({ channelId }) => {
     const [videoCall, setVideoCall] = useState(true);
+    console.log(channelId);
 
     const rtcProps = {
-        appId: 'appid:1e6a996b863543f0985fc49f4d84b007',
-        channel: 'test',
+        appId: import.meta.env.VITE_AGORA_APPID,
+        channel: channelId,
     };
 
     const callbacks = {
@@ -17,7 +18,14 @@ const VideoCall = () => {
             <AgoraUIKit rtcProps={rtcProps} callbacks={callbacks} />
         </div>
     ) : (
-        <h3 onClick={() => setVideoCall(true)}>Start Call</h3>
+        <div className="flex h-full w-full items-center justify-center">
+            <button
+                className='py-3 text-white bg-blue-500 font-bold w-full md:w-40 text-lg rounded-lg'
+                onClick={() => setVideoCall(true)}
+            >
+                Join back
+            </button>
+        </div>
     );
 }
 
