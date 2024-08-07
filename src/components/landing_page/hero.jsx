@@ -17,8 +17,8 @@ const Hero = () => {
 
   const translateY = useTransform(scrollYProgress, [0, 1], [150, -150]);
 
-  console.log("HeroImage:", HeroImage);
-  console.log("HalfTorus:", HalfTorus);
+  // console.log("HeroImage:", HeroImage);
+  // console.log("HalfTorus:", HalfTorus);
 
   return (
     <section
@@ -43,7 +43,7 @@ const Hero = () => {
         </div>
         <div className="pt-12 md:pt-0 md:h-[648px] md:w-[648px] relative">
           <motion.img
-            src={HeroImage.src || HeroImage} // Fallback to HeroImage in case src doesn't exist
+            src={HeroImage.src || HeroImage} 
             alt="Hero Image"
             className="md:absolute md:h-full md:w-auto md:max-w-none"
             animate={{
@@ -57,7 +57,7 @@ const Hero = () => {
             }}
           />
           <motion.img
-            src={HalfTorus.src || HalfTorus} // Fallback to HalfTorus in case src doesn't exist
+            src={HalfTorus.src || HalfTorus} 
             alt="HalfTorus"
             className="hidden lg:block md:absolute left-[400px] top-[500px]"
             style={{

@@ -2,14 +2,11 @@ import React from "react";
 import  InfoSection from "./infoSection";
 
 
-// import svg1 from "../../assets/avatar-1.png";
-// import svg2 from "../../assets/avatar-2.png";
 import svg1 from "../../assests/profile.png";
 import svg2 from "../../assests/Visual.png";
-// import profile from "../../assests/illus11.jpg";
+
 import profile from "../../assests/svg-1.svg";
-// import profile from "../../assets/avatar-3.png";
-// import svg3 from "../../assets/avatar-4.png";
+
 import svg3 from "../../assests/Visual.png";
 
 const homeObjOne = {
@@ -29,22 +26,7 @@ const homeObjOne = {
   start: "",
 };
 
-const homeObjTwo = {
-  primary: true,
-  lightBg: false,
-  lightTopLine: true,
-  lightText: true,
-  lightTextDesc: true,
-  topLine: "Everything you need",
-  headline: "Extremely quick onboarding process",
-  description:
-    "Where advanced technology meets human touch to create a superior interviewing experience for both interviewers and interviewees",
-  buttonLabel: "Learn More",
-  imgStart: "",
-  img: svg2,
-  alt: "Vault",
-  start: "",
-};
+
 
 const homeObjThree = {
   primary: false,
@@ -63,22 +45,6 @@ const homeObjThree = {
   start: "true",
 };
 
-const homeObjFour = {
-  primary: true,
-  lightBg: false,
-  lightTopLine: true,
-  lightText: true,
-  lightTextDesc: true,
-  topLine: "",
-  headline: "See Fintervue in Action",
-  description:
-    "Request a demo or sign up for a free trial to experience the benefits of AI-driven interviews.",
-  buttonLabel: "Sign Up Now",
-  imgStart: "start",
-  img: svg3,
-  alt: "Vault",
-  start: "true",
-};
 
 const Features = () => {
   return (
@@ -89,16 +55,7 @@ const Features = () => {
       <div className="info-section">
         <InfoSection {...homeObjOne} />
       </div>
-      {/* <div className="info-section">
-        <InfoSection {...homeObjThree} />
-      </div> */}
-      {/* <div className="info-section">
-        <InfoSection {...homeObjTwo} />
-      </div> */}
-      {/* <Pricing /> */}
-      {/* <div className="info-section">
-        <InfoSection {...homeObjFour} />
-      </div> */}
+    
       <style>{`
         * {
           box-sizing: border-box;

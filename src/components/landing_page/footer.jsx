@@ -14,7 +14,7 @@ const Footer = () => {
   return (
     <div className="flex flex-col md:flex-row bg-black text-white p-16 gap-8 justify-between md:px-20 xl:px-44">
       <div className="flex flex-col gap-8 text-gray-300/85 max-w-[300px]">
-        {/* <img src={Logo} alt="Logo" className="cursor-pointer" /> */}
+        
 
         <div className="flex gap-4 text-2xl cursor-pointer">
           <FaXTwitter className="hover:scale-125" />
