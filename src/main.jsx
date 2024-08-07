@@ -5,7 +5,7 @@ import {
   RouterProvider,
 } from "react-router-dom";
 
-import "./assets/index.css";
+import "./styles/index.css";
 import App from './App.jsx'
 import { ChakraProvider } from '@chakra-ui/react'
 
