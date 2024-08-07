@@ -1,13 +1,13 @@
 import AgoraUIKit from 'agora-react-uikit';
 import { useState } from 'react';
 
-const VideoCall = ({ channelId }) => {
+const VideoCall = () => {
     const [videoCall, setVideoCall] = useState(true);
-    console.log(channelId);
 
     const rtcProps = {
         appId: import.meta.env.VITE_AGORA_APPID,
-        channel: channelId,
+        // TODO: get channel id from backend
+        channel: "test",
     };
 
     const callbacks = {
