@@ -143,15 +143,17 @@ const Personalinfo = () => {
     \\resumeItem{{summary}}
   \\resumeItemListEnd
 
+\\section{Education}
+  \\resumeSubHeadingListStart
+    {education}
+  \\resumeSubHeadingListEnd
+
 \\section{Experience}
   \\resumeSubHeadingListStart
     {experience}
   \\resumeSubHeadingListEnd
 
-\\section{Education}
-  \\resumeSubHeadingListStart
-    {education}
-  \\resumeSubHeadingListEnd
+
 
 \\section{Projects}
   \\resumeSubHeadingListStart
@@ -174,18 +176,12 @@ const Personalinfo = () => {
 `;
 
   const populateTemplate = (template, data) => {
+    // Function to replace newline characters with LaTeX line breaks
+    const replaceNewlines = (text) => text.replace(/\n/g, "\\\\");
+
     // Replace \VAR{} placeholders first
-    // "experience": [
-    // {
-    //   "companyName": "Flynava Technology",
-    //   "jobRole": "Product Designer ",
-    //   "startDate": "2024-08-21",
-    //   "endDate": "2024-08-31",
-    //   "description": "",
-    //   "summary": "Worked on an application called DHiwise , such as an AI tool which converts design to code "
-    // },]
-    template = template.replace(/\\VAR\{([^}]+)\}/g, (match, key) => {
-      return data[key] || "";
+    template = template.replace(/\{VAR\{([^}]+)\}\}/g, (match, key) => {
+      return data[key] ? replaceNewlines(data[key]) : "";
     });
 
     // Handle other keys
@@ -194,7 +190,7 @@ const Personalinfo = () => {
         // Handling objects within data
         for (let subKey in data[key]) {
           let re = new RegExp(`\\{${key}\\.${subKey}\\}`, "g");
-          template = template.replace(re, data[key][subKey]);
+          template = template.replace(re, replaceNewlines(data[key][subKey]));
         }
       } else if (Array.isArray(data[key])) {
         // Handling arrays within data
@@ -209,7 +205,7 @@ const Personalinfo = () => {
   {${item.companyName}}{${item.startDate} -- ${item.endDate}}
   {${item.jobRole}}{}
   \\resumeItemListStart
-    \\resumeItem{${item.summary}}
+    \\resumeItem{${replaceNewlines(item.summary)}}
   \\resumeItemListEnd`;
             } else if (key === "education") {
               itemContent = `
@@ -217,23 +213,23 @@ const Personalinfo = () => {
   {${item.institution}}{${item.startDate} -- ${item.endDate}}
   {${item.degree}}{}
   \\resumeItemListStart
-    \\resumeItem{${item.description}}
+    \\resumeItem{${replaceNewlines(item.description)}}
   \\resumeItemListEnd`;
             } else if (key === "projects") {
               itemContent = `
 \\resumeProjectHeading
-  {${item.name}}{${item.summary}}{${item.date}}`;
+  {${item.name}}{${replaceNewlines(item.summary)}}{${item.date}}`;
             }
             arrayContent += itemContent + "\n    ";
           } else {
-            arrayContent += `\\resumeItem{${item}}\n    `;
+            arrayContent += `\\resumeItem{${replaceNewlines(item)}}\n    `;
           }
         });
         template = template.replace(re, arrayContent.trim());
       } else {
         // Handling simple key-value pairs
         let re = new RegExp(`\\{${key}\\}`, "g");
-        template = template.replace(re, data[key]);
+        template = template.replace(re, replaceNewlines(data[key]));
       }
     }
     return template;
