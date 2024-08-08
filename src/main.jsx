@@ -12,35 +12,39 @@ import { ChakraProvider } from '@chakra-ui/react'
 import SignupPage from './pages/SignupPage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import MeetingPage from './pages/MeetingPage.jsx';
+import ProductPage from './pages/ProductPage.jsx';
+import AiIntervuePage from './pages/AiIntervuePage.jsx';
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: (
-      <div >
+      <div>
         <App />
       </div>
-    )
-  }, 
+    ),
+  },
   {
     path: "/meeting",
-    element: (
-      <MeetingPage />
-    )
-  }, 
+    element: <MeetingPage />,
+  },
   {
     path: "/signup",
-    element: (
-      <SignupPage />
-    )
+    element: <SignupPage />,
   },
   {
     path: "/login",
-    element: (
-      <LoginPage />
-    )
+    element: <LoginPage />,
   },
-])
+  {
+    path: "/product",
+    element: <ProductPage />,
+  },
+  {
+    path: "/product/ai_intervue",
+    element: <AiIntervuePage />,
+  },
+]);
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
