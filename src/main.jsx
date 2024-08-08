@@ -27,7 +27,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/meeting/:id",
+    path: "/meeting",
     element: <MeetingPage />,
   },
   {

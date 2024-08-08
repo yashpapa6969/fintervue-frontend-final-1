@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 
 const InfoSection = ({
@@ -46,7 +45,7 @@ const InfoSection = ({
             >
               {description}
             </p>
-            <Link to="/sign-up">
+            <Link to="/signup">
               <button
                 className={`px-8 py-3 rounded-lg text-lg font-medium transition-colors duration-300 ${
                   primary
