@@ -22,7 +22,7 @@ const Products = () => {
           </BoxReveal>
 
           <BoxReveal boxColor={"#5046e6"} duration={0.5}>
-            <h2 className="mt-[.5rem] text-[1.5rem]">
+            <h2 className="mt-[.5rem] text-[1.5rem] text-center">
               Prepare for your upcoming interview in style. Generate a{" "}
               <span className="text-[#5046e6]">
                 mock interview and practise
