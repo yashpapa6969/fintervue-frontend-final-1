@@ -1,13 +1,7 @@
 import React from "react";
-import  InfoSection from "./infoSection";
-
-
+import InfoSection from "./infoSection";
 import svg1 from "../../assests/profile.png";
-import svg2 from "../../assests/Visual.png";
-
 import profile from "../../assests/svg-1.svg";
-
-import svg3 from "../../assests/Visual.png";
 
 const homeObjOne = {
   primary: true,
@@ -16,17 +10,14 @@ const homeObjOne = {
   lightText: true,
   lightTextDesc: true,
   topLine: "AI Interview platform",
-  headline: "Revolutionize Your Hiring Process",
-  description:
-    "With Fintervue, leverage advanced AI to streamline and enhance your recruitment process, ensuring you find the best candidates for your finance-related job roles.",
-  buttonLabel: "Get Started",
+  headline: "Take our mock AI interview to know your preparation level",
+  buttonLabel: "Start for free",
+  description: "",
   imgStart: "",
   img: svg1,
   alt: "Credit Card",
   start: "",
 };
-
-
 
 const homeObjThree = {
   primary: false,
@@ -34,17 +25,16 @@ const homeObjThree = {
   lightTopLine: false,
   lightText: false,
   lightTextDesc: false,
-  topLine: "Leverage technology",
+  topLine: "About us",
   headline: "What is Fintervue?",
   description:
-    "Fintervue is an innovative platform designed to transform the way you conduct interviews for finance sector positions. Our AI-driven solution provides a seamless and efficient interview process, saving you time and resources while ensuring you get the best talent.",
-  buttonLabel: "Learn More",
+    "Fintervue streamlines your hiring process with AI-driven tools, providing efficient candidate assessments and data-driven decision-making. It also offers a fair and flexible interview experience, ensuring objective evaluation and valuable feedback for your career growth.",
+  buttonLabel: "Know More",
   imgStart: "start",
   img: profile,
   alt: "Vault",
   start: "true",
 };
-
 
 const Features = () => {
   return (
@@ -55,7 +45,7 @@ const Features = () => {
       <div className="info-section">
         <InfoSection {...homeObjOne} />
       </div>
-    
+
       <style>{`
         * {
           box-sizing: border-box;
@@ -81,7 +71,6 @@ const Features = () => {
         .container {
           z-index: 1;
           width: 100%;
-          // max-width: 1300px;
           margin-right: auto;
           margin-left: auto;
           padding-right: 50px;
@@ -93,21 +82,25 @@ const Features = () => {
             padding-left: 30px;
           }
         }
+        .info-section p {
+          font-size: 1.125rem;
+          color: #333;
+          line-height: 1.6;
+        }
         .button {
-          border-radius: 4px;
-          background: var(--primary-bg, #4b59f7);
-          white-space: nowrap;
-          padding: var(--button-padding, 10px 20px);
-          color: #fff;
-          font-size: var(--button-font-size, 16px);
-          outline: none;
-          border: none;
+          text-align: center;
+          font-weight: bold;
+          background-color: black;
+          color: white;
+          padding: 0.5rem 0.75rem; /* Corresponds to py-2 px-3 */
+          border-radius: 0.5rem; /* Corresponds to rounded-lg */
           cursor: pointer;
-          transition: all 0.3s ease-out;
+          transition: all 0.3s ease-in-out;
+          box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2); /* Add shadow */
         }
         .button:hover {
-          background: #fff;
-          background-color: var(--primary-hover-bg, #0467fb);
+          background-color: #4a5568; /* Corresponds to hover:bg-gray-800 */
+          transform: scale(1.05);
         }
         @media screen and (max-width: 960px) {
           .button {

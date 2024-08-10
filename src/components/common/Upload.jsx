@@ -7,14 +7,14 @@ function Upload() {
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     setSelectedFile(file);
-    console.log(file); // Logs the file details in the console when selected
+    console.log(file); 
   };
 
   const handleButtonClick = () => {
     if (selectedFile) {
       console.log("File details:", selectedFile);
       console.log("File path:", selectedFile.path || "Path not available");
-      // You can perform additional actions here like opening the file or processing it
+      
     } else {
       console.log("No file selected");
     }
@@ -47,12 +47,11 @@ function Upload() {
             : "Drag & drop or click to upload your resume"}
         </p>
       </div>
-      
 
       <button onClick={handleButtonClick} className="transition duration-300">
         <ShimmerButton className="shadow-2xl">
           <span className="whitespace-pre-wrap text-center text-sm font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-lg">
-            Get My Free Resume Review
+            Resume Review
           </span>
         </ShimmerButton>
       </button>

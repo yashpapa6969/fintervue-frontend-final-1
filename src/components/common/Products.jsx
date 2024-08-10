@@ -48,7 +48,9 @@ const Products = () => {
                   Increase Confidence
                 </span>
               </p>
-              <Button text={"Start Now"} className="" />
+              <a href="/product">
+                <Button text={"Start Now"} className="" />
+              </a>
             </div>
           </BoxReveal>
         </div>
@@ -84,11 +86,9 @@ const Products = () => {
                   ATS Friendly resume builder
                 </span>
               </p>
-              <Button
-                text={"Start Now"}
-                onClick={() => (window.location.href = "/product/ai_intervue")}
-                className="w-[300px]"
-              />
+              <a href="/product/resumeBuilder">
+                <Button text={"Start Now"} className="w-[300px]" />
+              </a>
             </div>
           </BoxReveal>
         </div>
@@ -124,7 +124,9 @@ const Products = () => {
                   Integrated Application Kits
                 </span>
               </p>
-              <Button text={"Start Now"} className="" />
+              <a href="/product/resumeAnalysis">
+                <Button text={"Start Now"} className="" />
+              </a>
             </div>
           </BoxReveal>
         </div>

@@ -14,7 +14,7 @@ const ResumeAnalysis = () => {
           <div className="text-center">
            <FlipText
               className="text-4xl font-bold tracking-[-0.1em] bg-clip-text   md:text-7xl md:leading-[5rem]"
-              word="Resume analyser"
+              word="Resume  Analysis"
             />
             <h3 className="mt-[.5rem] text-[1.5rem] pt-5">
               helps you optimize your resume for any job, highlighting the key
