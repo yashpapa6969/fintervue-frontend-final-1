@@ -1,9 +1,12 @@
 import React from 'react'
+import Navbar from '../components/navbar'
+
 
 const ResumeAnalysis = () => {
   return (
     <div>
-      Resume analysis
+      <Navbar/>
+      
     </div>
   )
 }

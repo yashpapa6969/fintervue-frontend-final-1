@@ -1,15 +1,10 @@
-import React, { useState } from 'react'
-import { StepperContext } from '../context/StepperContext';
-import Navbar from '../components/navbar'
-import Stepper from '../components/forms/Stepper';
-import StepperControl from '../components/forms/StepperControl';
-import Personalinfo from '../components/forms/builder_form/Personalinfo';
-import Academindetails from '../components/forms/builder_form/Academindetails';
-import Completion from "../components/forms/builder_form/Completion";
+import React, { useState } from "react";
+import { StepperContext } from "../context/StepperContext";
+import Navbar from "../components/navbar";
+import Personalinfo from "../components/forms/builder_form/Personalinfo";
+import WordFadeIn from "../components/ui/word-fade-in";
 
 const ResumeBuilder = () => {
-
-  const[currentStep, setCurrentStep] = useState(1);
   const [userData, setUserData] = useState({
     name: "",
     email: "",
@@ -35,49 +30,27 @@ const ResumeBuilder = () => {
         description: "",
       },
     ],
+     projects: [
+    {
+      name: "",
+      summary: "",
+      date: ""
+    },],
   });
-  const[finalData, setFinalData] = useState([]);
-
-
-  const steps = [
-    "Personal information",
-    "Academic Details",
-    "Complete"
-  ];
-
-  const displayStep = (step)=>{
-    switch(step){
-      case 1: 
-        return <Personalinfo/>
-      case 2:
-        return <Academindetails/>
-      case 3:
-        return <Completion/>
-      default:
-
-
-    }
-  }
-
-  const handleClick = (direction)=>{
-    //
-    let newStep = currentStep;
-    direction ==="next"? newStep++ : newStep--;
-    // check if steps are within bounds
-    newStep >0 && newStep <= steps.length && setCurrentStep(newStep);
-  }
-
+  const [finalData, setFinalData] = useState([]);
 
   return (
     <div>
       <Navbar />
-      {/* stepper */}
-      <div className="nd:wd-1/2  shadow-xl rounded-2xl p-2 m-10 px-10  bg-white">
+      {/* Single form view */}
+      <div className="nd:wd-1/2 shadow-xl rounded-2xl p-2 m-10 px-10 bg-white">
+        <div>
+          <WordFadeIn words="Resume Builder" />;
+        </div>
         <div className="container horizontal mt-5">
-          <div className='w-full flex justify-center '>
-            <Stepper steps={steps} currentStep={currentStep} />
+          <div className="w-full flex justify-center ">
+            {/* Optionally add a title or any additional content here */}
           </div>
-          {/* display components */}
 
           <div className="my-10 p-10">
             <StepperContext.Provider
@@ -88,20 +61,13 @@ const ResumeBuilder = () => {
                 setFinalData,
               }}
             >
-              {displayStep(currentStep)}
+              <Personalinfo />
             </StepperContext.Provider>
           </div>
         </div>
-
-        {/* navigationcontrols */}
-        <StepperControl
-          handleClick={handleClick}
-          currentStep={currentStep}
-          steps={steps}
-        />
       </div>
     </div>
   );
-}
+};
 
-export default ResumeBuilder
+export default ResumeBuilder;
