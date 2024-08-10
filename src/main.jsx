@@ -15,7 +15,9 @@ import MeetingPage from './pages/MeetingPage.jsx';
 import ProductPage from './pages/ProductPage.jsx';
 import AiIntervuePage from './pages/AiIntervuePage.jsx';
 import ResumeBuilder from './products/resumeBuilder.jsx';
-import ResumeAnalysis from './products/resumeAnalysis.jsx';
+const ResumeAnalysis = React.lazy(() =>
+  import("./products/resumeAnalysis.jsx")
+);
 
 const router = createBrowserRouter([
   {

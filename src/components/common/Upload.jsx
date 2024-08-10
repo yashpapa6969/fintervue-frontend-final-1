@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import ShimmerButton from "../ui/shimmer-button";
 
-function Upload() {
+function Upload({ onFileChange, onSubmit }) { 
   const [selectedFile, setSelectedFile] = useState(null);
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     setSelectedFile(file);
+    onFileChange(event); 
     console.log(file); 
   };
 
@@ -14,14 +15,14 @@ function Upload() {
     if (selectedFile) {
       console.log("File details:", selectedFile);
       console.log("File path:", selectedFile.path || "Path not available");
-      
+      onSubmit(); 
     } else {
       console.log("No file selected");
     }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-blue-500 rounded-lg  shadow-lg w-full max-w-lg mx-auto">
+    <div className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-blue-500 rounded-lg shadow-lg w-full max-w-lg mx-auto">
       <div className="flex flex-col items-center justify-center h-40 w-full relative mb-6">
         <input
           type="file"
@@ -42,16 +43,14 @@ function Upload() {
         </svg>
 
         <p className="text-black text-lg font-medium pointer-events-none">
-          {selectedFile
-            ? `File added: ${selectedFile.name}`
-            : "Drag & drop or click to upload your resume"}
+          {selectedFile ? `File added: ${selectedFile.name}`: "Drag & drop or click to upload your resume"}
         </p>
       </div>
 
       <button onClick={handleButtonClick} className="transition duration-300">
         <ShimmerButton className="shadow-2xl">
           <span className="whitespace-pre-wrap text-center text-sm font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-lg">
-            Resume Review
+            Get My Free Resume Review
           </span>
         </ShimmerButton>
       </button>
@@ -59,4 +58,4 @@ function Upload() {
   );
 }
 
-export default Upload;
+export default Upload;
