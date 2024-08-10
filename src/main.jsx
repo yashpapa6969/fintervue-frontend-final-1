@@ -14,6 +14,8 @@ import LoginPage from './pages/LoginPage.jsx';
 import MeetingPage from './pages/MeetingPage.jsx';
 import ProductPage from './pages/ProductPage.jsx';
 import AiIntervuePage from './pages/AiIntervuePage.jsx';
+import ResumeBuilder from './products/resumeBuilder.jsx';
+import ResumeAnalysis from './products/resumeAnalysis.jsx';
 
 const router = createBrowserRouter([
   {
@@ -43,6 +45,14 @@ const router = createBrowserRouter([
   {
     path: "/product/ai_intervue",
     element: <AiIntervuePage />,
+  },
+  {
+    path: "/product/resumeBuilder",
+    element: <ResumeBuilder/>,
+  },
+  {
+    path: "/product/resumeAnalysis",
+    element: <ResumeAnalysis />,
   },
 ]);
 
