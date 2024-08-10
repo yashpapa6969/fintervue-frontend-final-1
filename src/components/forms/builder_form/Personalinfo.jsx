@@ -307,11 +307,11 @@ const populateTemplate = (template, data) => {
   };
 
  return (
-   <div className="flex flex-col gap-5 p-6 bg-gray-100 rounded-lg shadow-md">
+   <div className="flex flex-col gap-5 p-6 bg-blue-50 rounded-lg shadow-md">
      {/* Name and Email */}
      <div className="flex flex-row gap-5">
        <div className="w-full">
-         <div className="text-sm font-semibold text-gray-600">Name</div>
+         <div className="text-xl font-semibold text-gray-600">Name</div>
          <div className="mt-1">
            <input
              onChange={handleChange}
@@ -324,7 +324,7 @@ const populateTemplate = (template, data) => {
        </div>
 
        <div className="w-full">
-         <div className="text-sm font-semibold text-gray-600">Email</div>
+         <div className="text-xl font-semibold text-gray-600">Email</div>
          <div className="mt-1">
            <input
              onChange={handleChange}
@@ -341,7 +341,7 @@ const populateTemplate = (template, data) => {
      {/* Phone Number and LinkedIn URL */}
      <div className="flex flex-row gap-5">
        <div className="w-full">
-         <div className="text-sm font-semibold text-gray-600">Phone Number</div>
+         <div className="text-xl font-semibold text-gray-600">Phone Number</div>
          <div className="mt-1">
            <input
              onChange={handleChange}
@@ -355,7 +355,7 @@ const populateTemplate = (template, data) => {
        </div>
 
        <div className="w-full">
-         <div className="text-sm font-semibold text-gray-600">LinkedIn URL</div>
+         <div className="text-xl font-semibold text-gray-600">LinkedIn URL</div>
          <div className="mt-1">
            <input
              onChange={handleChange}
@@ -371,7 +371,7 @@ const populateTemplate = (template, data) => {
 
      {/* Job Role */}
      <div className="w-full">
-       <div className="text-sm font-semibold text-gray-600">Job Role</div>
+       <div className="text-xl font-semibold text-gray-600">Job Role</div>
        <div className="mt-1">
          <select
            onChange={handleChange}
@@ -392,7 +392,7 @@ const populateTemplate = (template, data) => {
 
      {/* Professional Summary */}
      <div className="w-full">
-       <div className="text-sm font-semibold text-gray-600">
+       <div className="text-xl font-semibold text-gray-600">
          Professional Summary
        </div>
        <div className="mt-1">
@@ -411,7 +411,7 @@ const populateTemplate = (template, data) => {
      <div className="flex flex-row gap-5">
        {/* Experience */}
        <div className="w-full mt-4">
-         <div className="text-sm font-semibold text-gray-600">Experience</div>
+         <div className="text-xl font-semibold text-gray-600">Experience</div>
          {(userData.experience || []).map((exp, index) => (
            <div
              key={index}
@@ -463,7 +463,7 @@ const populateTemplate = (template, data) => {
          <div className="flex justify-center mt-3">
            <button onClick={addExperience} className="transition duration-300">
              <ShimmerButton className="shadow-2xl">
-               <span className="whitespace-pre-wrap text-center text-sm font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-lg">
+               <span className="whitespace-pre-wrap text-center text-xl font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-sm">
                  Add experience
                </span>
              </ShimmerButton>
@@ -473,7 +473,7 @@ const populateTemplate = (template, data) => {
 
        {/* Education */}
        <div className="w-full mt-4">
-         <div className="text-sm font-semibold text-gray-600">Education</div>
+         <div className="text-xl font-semibold text-gray-600">Education</div>
          {(userData.education || []).map((edu, index) => (
            <div
              key={index}
@@ -528,87 +528,107 @@ const populateTemplate = (template, data) => {
          <div className="flex justify-center mt-3">
            <button onClick={addEducation} className="transition duration-300">
              <ShimmerButton className="shadow-2xl">
-               <span className="whitespace-pre-wrap text-center text-sm font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-lg">
+               <span className="whitespace-pre-wrap text-center text-xl font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-sm">
                  Add education
                </span>
              </ShimmerButton>
            </button>
          </div>
-        
        </div>
      </div>
 
      {/* Projects */}
-     <div className="w-full mt-4">
-       <div className="text-sm font-semibold text-gray-600">Projects</div>
-       {(userData.projects || []).map((project, index) => (
-         <div
-           key={index}
-           className="mt-3 p-4 border rounded-md bg-white border-gray-300"
-         >
-           <input
-             onChange={(e) => handleChange(e, index, "projects", "name")}
-             value={project.name || ""}
-             placeholder="Project Name"
-             className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-           />
-           <textarea
-             onChange={(e) => handleChange(e, index, "projects", "summary")}
-             value={project.summary || ""}
-             placeholder="Project Summary"
-             className="w-full p-2 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-             rows="3"
-           />
-           <input
-             onChange={(e) => handleChange(e, index, "projects", "date")}
-             value={project.date || ""}
-             type="date"
-             placeholder="Date"
-             className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-           />
-         </div>
-       ))}
-       <button
+     <div className="flex flex-row gap-5">
+       <div className="w-full mt-4">
+         <div className="text-xl font-semibold text-gray-600">Projects</div>
+         {(userData.projects || []).map((project, index) => (
+           <div
+             key={index}
+             className="mt-3 p-4 border rounded-md bg-white border-gray-300"
+           >
+             <input
+               onChange={(e) => handleChange(e, index, "projects", "name")}
+               value={project.name || ""}
+               placeholder="Project Name"
+               className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+             />
+             <textarea
+               onChange={(e) => handleChange(e, index, "projects", "summary")}
+               value={project.summary || ""}
+               placeholder="Project Summary"
+               className="w-full p-2 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+               rows="3"
+             />
+             <input
+               onChange={(e) => handleChange(e, index, "projects", "date")}
+               value={project.date || ""}
+               type="date"
+               placeholder="Date"
+               className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+             />
+           </div>
+         ))}
+         {/* <button
          onClick={addProject}
          className="mt-3 p-3 w-full text-white bg-green-600 rounded-md hover:bg-green-700 transition duration-300"
        >
          Add Project
-       </button>
-     </div>
-
-     {/* Skills */}
-     <div className="w-full mt-4">
-       <div className="text-sm font-semibold text-gray-600">Skills</div>
-       {((userData.skills || "").split(",") || []).map((skill, index) => (
-         <div key={index} className="mt-2">
-           <input
-             onChange={(e) => handleSkillChange(e, index)}
-             value={skill || ""}
-             placeholder="Skill"
-             className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-           />
+       </button> */}
+         <div className="flex justify-center mt-3">
+           <button onClick={addProject} className="transition duration-300">
+             <ShimmerButton className="shadow-2xl">
+               <span className="whitespace-pre-wrap text-center text-xl font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-sm">
+                 Add projects
+               </span>
+             </ShimmerButton>
+           </button>
          </div>
-       ))}
-       <button
-         onClick={addSkill}
-         className="mt-3 p-3 w-full text-white bg-green-600 rounded-md hover:bg-green-700 transition duration-300"
-       >
-         Add Skill
-       </button>
-     </div>
+       </div>
 
-     {/* Achievements */}
-     <div className="w-full mt-4">
-       <div className="text-sm font-semibold text-gray-600">Achievements</div>
-       <div className="mt-1">
-         <textarea
-           onChange={handleChange}
-           value={userData["achievements"] || ""}
-           name="achievements"
-           placeholder="Achievements (comma-separated)"
-           className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-           rows="4"
-         />
+       {/* Skills */}
+       <div className="w-full mt-4">
+         <div className="w-full  ">
+           <div className="text-xl font-semibold text-gray-600">Skills</div>
+           <div className="flex flex-row gap-5">
+             {((userData.skills || "").split(",") || []).map((skill, index) => (
+               <div key={index} className="mt-2">
+                 <input
+                   onChange={(e) => handleSkillChange(e, index)}
+                   value={skill || ""}
+                   placeholder="Skill"
+                   className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+                 />
+               </div>
+             ))}
+
+             <div className="flex justify-center ">
+               <button onClick={addSkill} className="transition duration-300">
+                 <ShimmerButton className="shadow-2xl ">
+                   <span className="whitespace-pre-wrap text-center text-xl font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-sm">
+                     Add Skills
+                   </span>
+                 </ShimmerButton>
+               </button>
+             </div>
+           </div>
+         </div>
+
+         {/* Achievements */}
+         <div className="w-full mt-4">
+           <div className="text-xl font-semibold text-gray-600">
+             Achievements
+           </div>
+           <div className="mt-1">
+             <textarea
+               onChange={handleChange}
+               value={userData["achievements"] || ""}
+               name="achievements"
+               placeholder="Achievements (comma-separated)"
+               className="w-full  p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+               rows="7"
+             />
+           </div>
+         </div>
        </div>
      </div>
 
@@ -622,10 +642,10 @@ const populateTemplate = (template, data) => {
        </button>
      </div> */}
 
-     <div className="z-10 flex min-h-[16rem] items-center justify-center">
+     <div className="z-10 flex min-h-[5rem] items-center justify-center mt-5">
        <button onClick={handlePrintJson}>
          <ShimmerButton className="shadow-2xl">
-           <span className="whitespace-pre-wrap text-center text-sm font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-lg">
+           <span className="whitespace-pre-wrap text-center text-xl font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-xl">
              Get my resume
            </span>
          </ShimmerButton>
