@@ -9,12 +9,13 @@ import "./styles/index.css";
 import App from './App.jsx'
 import { ChakraProvider } from '@chakra-ui/react'
 
-import SignupPage from './pages/SignupPage.jsx';
-import LoginPage from './pages/LoginPage.jsx';
-import MeetingPage from './pages/MeetingPage.jsx';
-import ProductPage from './pages/ProductPage.jsx';
-import AiIntervuePage from './pages/AiIntervuePage.jsx';
-import ResumeBuilder from './products/resumeBuilder.jsx';
+const SignupPage = React.lazy(() => import("./pages/SignupPage.jsx"));
+const LoginPage = React.lazy(() => import("./pages/LoginPage.jsx"));
+const MeetingPage = React.lazy(() => import("./pages/MeetingPage.jsx"));
+const ProductPage = React.lazy(() => import("./pages/ProductPage.jsx"));
+const AiIntervuePage = React.lazy(() => import("./pages/AiIntervuePage.jsx"));
+const ResumeBuilder = React.lazy(() => import("./products/resumeBuilder.jsx"));
+
 const ResumeAnalysis = React.lazy(() =>
   import("./products/resumeAnalysis.jsx")
 );
