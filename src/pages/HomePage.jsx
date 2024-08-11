@@ -5,6 +5,7 @@ import Features from "../components/landing_page/features";
 import Footer from "../components/landing_page/footer";
 import CTA from "../components/landing_page/CTA";
 import Toc from "../components/landing_page/TOC";
+import RefundsAndCancellation from "../components/landing_page/RefundsAndCancellation";
 
 const HomePage = () => {
   return (
@@ -13,6 +14,7 @@ const HomePage = () => {
       <Hero />
       <Features />
       <Toc/>
+      <RefundsAndCancellation />
       <Pricing />
       <CTA />
       <Footer />

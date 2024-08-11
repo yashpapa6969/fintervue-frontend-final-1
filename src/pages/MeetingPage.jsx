@@ -1,9 +1,11 @@
-import { Mic, Video } from "lucide-react";
+import { Mic, MicOff, Video, VideoOff } from "lucide-react";
 import VideoCall from "../components/common/VideoCall";
 import { useEffect, useState } from "react";
 
 const MeetingPage = () => {
     const [joinMeet, setJoinMeet] = useState(false);
+    const [isMicOn, setIsMicOn] = useState(true);
+    const [isVideoOn, setIsVideoOn] = useState(true);
     const [networkStatus, setNetworkStatus] = useState(() => {
         if (navigator.onLine) {
             console.log("Connected to network.");
@@ -43,11 +45,11 @@ const MeetingPage = () => {
                             />
                         </div>
                         <div className="flex justify-center gap-4 mb-4">
-                            <div className="flex items-center justify-center p-4 rounded-full bg-blue-400 cursor-pointer">
-                                <Mic />
+                            <div onClick={() => setIsMicOn(!isMicOn)} className="flex items-center justify-center p-4 rounded-full bg-blue-400 cursor-pointer">
+                                {isMicOn ? <Mic /> : <MicOff /> }
                             </div>
-                            <div className="flex items-center justify-center p-4 rounded-full bg-blue-400 cursor-pointer">
-                                <Video />
+                            <div onClick={() => setIsVideoOn(!isVideoOn)} className="flex items-center justify-center p-4 rounded-full bg-blue-400 cursor-pointer">
+                                {isVideoOn ? <Video /> : <VideoOff />}
                             </div>
                         </div>
                         {!networkStatus && (
@@ -64,7 +66,7 @@ const MeetingPage = () => {
                     </div>
                 </div>
                 :
-                <VideoCall />
+                <VideoCall isMicOn={isMicOn} isVideoOn={isVideoOn} />
             }
         </div>
     )

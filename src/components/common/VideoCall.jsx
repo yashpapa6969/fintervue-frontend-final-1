@@ -1,7 +1,7 @@
 import AgoraUIKit from 'agora-react-uikit';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-const VideoCall = () => {
+const VideoCall = ({ isMicOn, isVideoOn }) => {
     const [videoCall, setVideoCall] = useState(true);
 
     const rtcProps = {
@@ -11,8 +11,23 @@ const VideoCall = () => {
     };
 
     const callbacks = {
+        // set local-user-mute-audio as 0 (disabled)
+        ['local-user-mute-audio']: (status) => {
+            console.log('Audio status:', status);
+            if (status === 0) {
+                console.log('Audio is muted');
+            }
+        },
+        // set local-user-mute-vide as 0 (disabled)
         EndCall: () => setVideoCall(false),
     };
+
+    useEffect(() => {
+        if (!isMicOn || !isVideoOn) {
+            console.log('Mic or Video is turned off');
+        }
+    }, [isMicOn, isVideoOn])
+
     return videoCall ? (
         <div style={{ display: 'flex', width: '100vw', height: '100vh' }}>
             <AgoraUIKit rtcProps={rtcProps} callbacks={callbacks} />
