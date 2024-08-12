@@ -1,47 +1,95 @@
-import AgoraUIKit from 'agora-react-uikit';
-import { useEffect, useState } from 'react';
+import { useState } from "react";
 
-const VideoCall = ({ isMicOn, isVideoOn }) => {
-    const [videoCall, setVideoCall] = useState(true);
+import {
+    LocalUser,
+    RemoteUser,
+    useJoin,
+    useLocalCameraTrack,
+    useLocalMicrophoneTrack,
+    usePublish,
+    useRemoteAudioTracks,
+    useRemoteUsers,
+} from "agora-rtc-react";
+import { Camera, CameraOff, Mic, MicOff, PhoneMissed } from "lucide-react";
 
-    const rtcProps = {
-        appId: import.meta.env.VITE_AGORA_APPID,
-        // TODO: get channel id from backend
-        channel: "test",
-    };
 
-    const callbacks = {
-        // set local-user-mute-audio as 0 (disabled)
-        ['local-user-mute-audio']: (status) => {
-            console.log('Audio status:', status);
-            if (status === 0) {
-                console.log('Audio is muted');
-            }
+const VideoCall = ({ micOn, setMic, cameraOn, setCamera }) => {
+
+    const appId = import.meta.env.VITE_AGORA_APPID;
+
+    // set the connection state
+    const [activeConnection, setActiveConnection] = useState(true);
+
+    // get local video and mic tracks
+    const { localMicrophoneTrack } = useLocalMicrophoneTrack(micOn);
+    const { localCameraTrack } = useLocalCameraTrack(cameraOn);
+
+    // Join the channel
+    useJoin(
+        {
+            appid: appId,
+            channel: "test",
+            token: null,
         },
-        // set local-user-mute-vide as 0 (disabled)
-        EndCall: () => setVideoCall(false),
-    };
-
-    useEffect(() => {
-        if (!isMicOn || !isVideoOn) {
-            console.log('Mic or Video is turned off');
-        }
-    }, [isMicOn, isVideoOn])
-
-    return videoCall ? (
-        <div style={{ display: 'flex', width: '100vw', height: '100vh' }}>
-            <AgoraUIKit rtcProps={rtcProps} callbacks={callbacks} />
-        </div>
-    ) : (
-        <div className="flex h-full w-full items-center justify-center">
-            <button
-                className='py-3 text-white bg-blue-500 font-bold w-full md:w-40 text-lg rounded-lg'
-                onClick={() => setVideoCall(true)}
-            >
-                Join back
-            </button>
-        </div>
+        activeConnection,
     );
+
+    usePublish([localMicrophoneTrack, localCameraTrack]);
+
+    //remote users
+    const remoteUsers = useRemoteUsers();
+    const { audioTracks } = useRemoteAudioTracks(remoteUsers);
+
+    // play the remote user audio tracks
+    audioTracks.forEach((track) => track.play());
+
+
+    return (
+        <div className="h-screen w-full relative">
+            {activeConnection ? (
+                <>
+                <div id='flex flex-wrap items-center gap-10'>
+                {
+                    // Initialize each remote stream using RemoteUser component
+                    remoteUsers.map((user) => (
+                        <div key={user.uid} className="relative w-1/4 overflow-hidden max-w-[720px] min-w-[360px]">
+                            <RemoteUser user={user} />
+                        </div>
+                    ))
+                }
+            </div>
+            <div className="fixed right-10 bottom-10 m-0 w-1/2 aspect-video max-w-[480px] min-w-[360px]">
+                <LocalUser
+                    audioTrack={localMicrophoneTrack}
+                    videoTrack={localCameraTrack}
+                    cameraOn={cameraOn}
+                    micOn={micOn}
+                    playAudio={micOn}
+                    playVideo={cameraOn}
+                />
+            </div>
+            <div className="fixed bottom-0 w-full bg-blue-400 flex items-center justify-center">
+                <div id="flex items-center justify-center">
+                    <button className="btn" onClick={() => setMic(!micOn)}>
+                        {micOn ? <Mic /> : <MicOff />}
+                    </button>
+                    <button className="btn" onClick={() => setCamera(!cameraOn)}>
+                        {cameraOn ? <Camera /> : <CameraOff />}
+                    </button>
+                    <button
+                        onClick={() => {
+                            setActiveConnection(false);
+                        }}
+                    >
+                        <PhoneMissed />
+                    </button>
+                </div>
+            </div>
+            </>) : 
+                <button onClick={() => setActiveConnection(true)}>Rejoin</button>
+            }
+        </div>
+    )
 }
 
-export default VideoCall
+export default VideoCall;
