@@ -217,12 +217,15 @@ const resumeTemplate2 = `
 \\usepackage[margin=1in, a4paper]{geometry}
 \\setcounter{secnumdepth}{0}
 \\usepackage{titlesec}
+\\usepackage{enumitem}
+\\usepackage{hyperref} % This package is required for hyperlinks
+
+\\titlespacing{\\section}{0pt}{*1}{*1}
 \\titlespacing{\\subsection}{0pt}{*0}{*0}
 \\titlespacing{\\subsubsection}{0pt}{*0}{*0}
-\\titleformat{\\section}{\\large\\bfseries\\uppercase}{}{}{}[\\titlerule]
+\\titleformat{\\section}{\\large\\bfseries\\uppercase}{}{0pt}{}[\\titlerule]
 \\titleformat*{\\subsubsection}{\\large\\itshape}
-\\usepackage{enumitem}
-\\setlist[itemize]{noitemsep,left=0pt..\\parindent}
+\\setlist[itemize]{noitemsep,left=0pt}
 \\pagestyle{empty}
 \\pdfgentounicode=1
 
@@ -230,33 +233,33 @@ const resumeTemplate2 = `
 \\begin{center}
 \\begin{minipage}{0.5\\textwidth}
 {\\Huge\\bfseries
-{name}
+\\textnormal{{name}}
 } \\\\ \\medskip
-{jobRole}
+{\\textnormal{{jobRole}}}
 \\end{minipage} \\hfill
 \\begin{minipage}{0.4\\textwidth}
 \\raggedleft
-Email: {email} \\\\
-Mobile: {phone} \\\\
-LinkedIn: {linkedin} \\\\
-GitHub: {github}
+Email: \\href{mailto:{email}}{\\texttt{{email}}} \\\\
+Mobile: \\href{tel:{phone}}{\\texttt{{phone}}} \\\\
+LinkedIn: \\href{{linkedin}}{\\texttt{{linkedin}}} \\\\
+GitHub: \\href{{github}}{\\texttt{{github}}}
 \\end{minipage}
 \\end{center}
 
 \\vspace{20pt}
 
 \\section{Education}
-\\subsection{{education}}
+{educationDetails}
 
 \\vspace{20pt}
 
 \\section{Experience}
-\\subsection{{experience}}
+{experienceDetails}
 
 \\vspace{20pt}
 
 \\section{Certification \\& Awards}
-\\begin{itemize}[left=0pt..0pt, itemsep=0pt]
+\\begin{itemize}[left=0pt, itemsep=0pt]
 \\item {achievements}
 \\end{itemize}
 
@@ -270,11 +273,51 @@ GitHub: {github}
 \\vspace{20pt}
 
 \\section{Projects}
-\\subsection{{projects} $|$ \\normalfont\\textit{{github}}}
+{projectDetails}
 
 \\end{document}
-
 `;
+
+
+
+const populateTemplate2 = (template, data) => {
+  const replaceNewlines = (text) => {
+    if (typeof text !== "string") {
+      console.error("Expected a string for newline replacement, but got:", text);
+      return "";
+    }
+    return text.replace(/\n/g, "\\\\");
+  };
+
+  // General placeholder replacement
+  for (let key in data) {
+    if (typeof data[key] !== "object") {
+      template = template.replace(new RegExp(`\\{${key}\\}`, "g"), replaceNewlines(data[key]));
+    }
+  }
+
+  // Section-specific content generation
+  const generateSectionContent = (items, type) => {
+    return items.map(item => {
+      switch (type) {
+        case 'experience':
+          return `\\subsection{${item.jobRole || ""}, ${item.companyName || ""} \\hfill ${item.startDate || ""} -- ${item.endDate || ""}}\n${replaceNewlines(item.summary || "")}`;
+        case 'education':
+          return `\\subsection{${item.degree || ""}, ${item.institution || ""} \\hfill ${item.startDate || ""} -- ${item.endDate || ""}}\n${replaceNewlines(item.description || "")}`;
+        case 'projects':
+          return `\\subsection{${item.name || ""} \\hfill ${item.date || ""}}\n${replaceNewlines(item.summary || "")}`;
+        default:
+          return "";
+      }
+    }).join("\n\\vspace{10pt}\n");
+  };
+
+  template = template.replace("{experienceDetails}", generateSectionContent(data.experience, 'experience'));
+  template = template.replace("{educationDetails}", generateSectionContent(data.education, 'education'));
+  template = template.replace("{projectDetails}", generateSectionContent(data.projects, 'projects'));
+
+  return template;
+};
 
 const resumeTemplate3 = `
 \\documentclass[11pt]{article}
@@ -295,18 +338,22 @@ const resumeTemplate3 = `
 \\usepackage{enumitem}
 \\setlist[itemize]{
   noitemsep,
-  left=0pt..1.5em
+  left=0pt
 }
 \\setlist[description]{itemsep=0pt}
-\\setlist[enumerate]{align=left}
+\\setlist[enumerate]{align=left, itemsep=0pt}
+
 \\usepackage{titlesec}
+\\titlespacing{\\section}{0pt}{*1}{*1}
 \\titlespacing{\\subsection}{0pt}{*0}{*0}
 \\titlespacing{\\subsubsection}{0pt}{*0}{*0}
-\\titleformat{\\section}{\\color{Sepia}\\large\\bfseries\\uppercase}{}{}{ \\ruleafter}[ \\global\\RemVStrue]
-\\titleformat{\\subsection}{\\large\\bfseries}{}{}{}
-\\titleformat{\\subsubsection}{\\large\\bfseries}{}{ \\vspace{-1.5ex}}{}
+\\titleformat{\\section}{\\color{Sepia}\\large\\bfseries\\uppercase}{}{0pt}{}[\\ruleafter]
+\\titleformat{\\subsection}{\\large\\bfseries}{}{0pt}{}
+\\titleformat{\\subsubsection}{\\large\\bfseries}{}{0pt}{\\vspace{-1.5ex}}
+
 \\usepackage{xhfill}
 \\newcommand\\ruleafter[1]{#1~\\xrfill[.5ex]{1pt}[gray]}
+
 \\newif\\ifRemVS
 \\newcommand{\\rvs}{
   \\ifRemVS
@@ -314,6 +361,7 @@ const resumeTemplate3 = `
   \\fi
   \\global\\RemVSfalse
 }
+
 \\usepackage{fontawesome5}
 \\usepackage[bookmarks=false]{hyperref}
 \\hypersetup{
@@ -321,35 +369,39 @@ const resumeTemplate3 = `
   urlcolor=Sepia,
   pdftitle={My Resume},
 }
+
 \\usepackage[page]{totalcount}
 \\usepackage{fancyhdr}
 \\pagestyle{fancy}
 \\renewcommand{\\headrulewidth}{0pt}
 \\fancyhf{}
-\\cfoot{\\color{darkgray} Rover R\\'esum\\'e -- Page \\thepage{} of \\totalpages}
+\\cfoot{\\color{darkgray} My Resume -- Page \\thepage{} of \\totalpages}
 
 \\begin{document}
 
 \\begin{center}
-    {\\fontsize{36}{36}\\selectfont \\textnormal{name}} \\par
+    {\\fontsize{36}{36}\\selectfont \\textnormal{Name}} \\par
     \\bigskip
 
     {\\color{icnclr}\\texttt{@}} \\href{mailto:{email}}{{email}}
     \\hspace{0.5em} $|$ \\hspace{0.5em}
-    {\\color{icnclr}} \\href{tel:{phone}}{{phone}}
+    {\\color{icnclr}\\texttt{\\faPhone}} \\href{tel:{phone}}{{phone}}
 
-{\\color{icnclr}\\faLinkedinIn} \\href{{linkedin}}{{linkedin}}
+    \\hspace{0.5em} $|$ \\hspace{0.5em}
+    {\\color{icnclr}\\faLinkedinIn} \\href{{linkedin}}{{linkedin}}
 \\end{center}
 
 \\vspace{20pt}
 
 \\section{Education}
-\\subsection{{education}}
+\\subsection{Institution Name, Degree, Year}
+{educationDetails}
 
 \\vspace{20pt}
 
 \\section{Experience}
-\\subsection{{experience}}
+\\subsection{Job Title, Company Name, Dates}
+{experienceDetails}
 
 \\vspace{20pt}
 
@@ -361,17 +413,17 @@ const resumeTemplate3 = `
 \\vspace{20pt}
 
 \\section{Projects}
-\\subsection{{projects} {\\normalfont $|$ \\href{{github}}{\\textit{{github}}}}}
+\\subsection{Project Name, Date}
+{projectDetails}
 
 \\vspace{20pt}
 
-\\section{Certification \\& Awards}
+\\section{Certifications \\& Awards}
 \\begin{enumerate}[itemsep=0pt]
 \\item {achievements}
 \\end{enumerate}
 
 \\end{document}
-
 `;
 
 const resumeTemplate4 = `
@@ -391,6 +443,7 @@ const resumeTemplate4 = `
 \\titleformat*{\\subsubsection}{\\large\\itshape}
 \\usepackage{enumitem}
 \\setlist[itemize]{left=0pt..2em,itemsep=0pt}
+\\usepackage{hyperref}
 \\usepackage{fancyhdr}
 \\pagestyle{fancy}
 \\renewcommand{\\headrulewidth}{0pt}
@@ -400,34 +453,96 @@ const resumeTemplate4 = `
 \\begin{document}
 \\begin{center}
 {\\sffamily\\LARGE\\bfseries \\so{{name}}} \\par\\bigskip
-\\sffamily\\footnotesize \\so{{linkedin}} \\\\ \\medskip
-\\so{{phone} \\quad {email}} \\par\\bigskip
+\\sffamily\\footnotesize \\href{{linkedin}}{\\texttt{{linkedin}}} \\\\ \\medskip
+\\href{tel:{phone}}{\\texttt{{phone}}} \\quad \\href{mailto:{email}}{\\texttt{{email}}} \\par\\bigskip
 \\end{center}
 
 \\vspace{20pt}
 
 \\section{Education}
-\\subsection{{education}}
+{educationDetails}
 
 \\vspace{20pt}
 
 \\section{Business Experience}
-\\subsection{{experience}}
+{experienceDetails}
 
 \\vspace{20pt}
 
 \\section{Skills}
-\\subsection{{skills}}
+{skillsDetails}
 
 \\vspace{20pt}
 
 \\section{Achievements}
-\\subsection{{achievements}}
+{achievementsDetails}
+
+\\vspace{20pt}
+
+\\section{Projects}
+{projectsDetails}
 
 \\end{document}
-
-
 `;
+
+
+const populateTemplate4 = (template, data) => {
+  const replaceNewlines = (text) => {
+    if (typeof text !== "string") {
+      console.error("Expected a string for newline replacement, but got:", text);
+      return "";
+    }
+    return text.replace(/\n/g, "\\\\");
+  };
+
+  const generateListContent = (items) => {
+    if (!Array.isArray(items) || items.length === 0) {
+      return ""; // Return an empty string if no items are provided
+    }
+    return `\\begin{itemize}\n` + items.map(item => `\\item ${replaceNewlines(item)}`).join("\n") + `\n\\end{itemize}`;
+  };
+
+  const generateSubsectionContent = (items, type) => {
+    if (!Array.isArray(items) || items.length === 0) {
+      console.warn(`No items found for ${type}: ${items}`);
+      return ""; // Return an empty string if no items are provided
+    }
+
+    return items.map(item => {
+      switch (type) {
+        case 'experience':
+          return `\\subsection{${item.jobRole || ""}, ${item.companyName || ""} \\hfill ${item.startDate || ""} -- ${item.endDate || ""}}\n${replaceNewlines(item.summary || "")}`;
+        case 'education':
+          return `\\subsection{${item.degree || ""}, ${item.institution || ""} \\hfill ${item.startDate || ""} -- ${item.endDate || ""}}\n${replaceNewlines(item.description || "")}`;
+        case 'projects':
+          return `\\subsection{${item.name || ""} \\hfill ${item.date || ""}}\n${replaceNewlines(item.description || "")}`;
+        default:
+          return "";
+      }
+    }).join("\n");
+  };
+
+  // Convert skills and achievements strings to arrays if they are comma-separated
+  const skillsArray = data.skills ? data.skills.split(',').map(skill => skill.trim()) : [];
+  const achievementsArray = data.achievements ? data.achievements.split(',').map(achievement => achievement.trim()) : [];
+
+  // General placeholder replacement
+  template = template.replace("{name}", replaceNewlines(data.name || ""));
+  template = template.replace("{linkedin}", replaceNewlines(data.linkedin || ""));
+  template = template.replace("{phone}", replaceNewlines(data.phone || ""));
+  template = template.replace("{email}", replaceNewlines(data.email || ""));
+
+  // Replace each section with its generated content
+  template = template.replace("{educationDetails}", generateSubsectionContent(data.education, 'education'));
+  template = template.replace("{experienceDetails}", generateSubsectionContent(data.experience, 'experience'));
+  template = template.replace("{skillsDetails}", generateListContent(skillsArray));
+  template = template.replace("{achievementsDetails}", generateListContent(achievementsArray));
+  template = template.replace("{projectsDetails}", generateSubsectionContent(data.projects, 'projects'));
+
+  return template;
+};
+
+
 
 const populateTemplate = (template, data) => {
   // Replace newlines with double backslashes for LaTeX
@@ -498,6 +613,46 @@ const populateTemplate = (template, data) => {
   return template;
 };
 
+const populateTemplate3 = (template, data) => {
+  const replaceNewlines = (text) => {
+    if (typeof text !== "string") {
+      console.error("Expected a string for newline replacement, but got:", text);
+      return "";
+    }
+    return text.replace(/\n/g, "\\\\");
+  };
+
+  // Replacing general placeholders like {name}, {email}, etc.
+  for (let key in data) {
+    if (typeof data[key] !== "object") {
+      template = template.replace(new RegExp(`\\{${key}\\}`, "g"), replaceNewlines(data[key]));
+    }
+  }
+
+  // Handling the experience, education, and project details
+  const generateSectionContent = (items, type) => {
+    return items.map(item => {
+      switch (type) {
+        case 'experience':
+          return `\\subsection{${item.jobRole || ""}, ${item.companyName || ""} \\hfill ${item.startDate || ""} -- ${item.endDate || ""}}\n${replaceNewlines(item.summary || "")}`;
+        case 'education':
+          return `\\subsection{${item.degree || ""}, ${item.institution || ""} \\hfill ${item.startDate || ""} -- ${item.endDate || ""}}\n${replaceNewlines(item.description || "")}`;
+        case 'projects':
+          return `\\subsection{${item.name || ""} \\hfill ${item.date || ""}}\n${replaceNewlines(item.summary || "")}`;
+        default:
+          return "";
+      }
+    }).join("\n\\vspace{10pt}\n");
+  };
+
+  template = template.replace("{experienceDetails}", generateSectionContent(data.experience, 'experience'));
+  template = template.replace("{educationDetails}", generateSectionContent(data.education, 'education'));
+  template = template.replace("{projectDetails}", generateSectionContent(data.projects, 'projects'));
+
+  return template;
+};
+
+
 const [selectedResumeType, setSelectedResumeType] = useState(1);
 
 // Function to handle resume type change
@@ -551,16 +706,16 @@ const handlePrintJson = () => {
         populatedResume = populateTemplate(resumeTemplate1, userData);
         break;
       case 2:
-        populatedResume = populateTemplate(resumeTemplate2, userData);
+        populatedResume = populateTemplate2(resumeTemplate2, userData);
         break;
       case 3:
-        populatedResume = populateTemplate(resumeTemplate3, userData);
+        populatedResume = populateTemplate3(resumeTemplate3, userData);
         break;
       case 4:
-        populatedResume = populateTemplate(resumeTemplate4, userData);
+        populatedResume = populateTemplate4(resumeTemplate4, userData);
         break;
       default:
-        populatedResume = populateTemplate(resumeTemplate1, userData);
+        populatedResume = populateTemplate4(resumeTemplate1, userData);
     }
 
     console.log("Populated Resume for Template", selectedResumeType, ":", populatedResume);
