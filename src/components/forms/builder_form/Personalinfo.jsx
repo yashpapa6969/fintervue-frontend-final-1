@@ -54,6 +54,14 @@ const Personalinfo = () => {
     setUserData({ ...userData, skills: skillsArray.join(", ") });
   };
 
+  const [selectedResumeType, setSelectedResumeType] = useState(1);
+
+  const handleResumeTypeChange = (type) => {
+    setSelectedResumeType(type);
+    // Add additional logic to handle the resume type change
+  };
+
+
   const validateForm = () => {
     const newErrors = {};
 
@@ -86,8 +94,8 @@ const Personalinfo = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const resumeTemplate = `\\documentclass[letterpaper,11pt]{article}
-
+  const resumeTemplate1 = `
+  \\documentclass[letterpaper,11pt]{article}
 \\usepackage{latexsym}
 \\usepackage[empty]{fullpage}
 \\usepackage{titlesec}
@@ -212,6 +220,209 @@ const Personalinfo = () => {
 \\end{document}
 `;
 
+const resumeTemplate2 = `
+\\documentclass[11pt]{article}
+\\usepackage[margin=1in, a4paper]{geometry}
+\\setcounter{secnumdepth}{0}
+\\usepackage{titlesec}
+\\titlespacing{\\subsection}{0pt}{*0}{*0}
+\\titlespacing{\\subsubsection}{0pt}{*0}{*0}
+\\titleformat{\\section}{\\large\\bfseries\\uppercase}{}{}{}[\\titlerule]
+\\titleformat*{\\subsubsection}{\\large\\itshape}
+\\usepackage{enumitem}
+\\setlist[itemize]{noitemsep,left=0pt .. \\parindent}
+\\pagestyle{empty}
+\\pdfgentounicode=1
+\\begin{document}
+\\begin{center}
+\\begin{minipage}{0.5\\textwidth}
+{\\Huge\\bfseries
+{name}
+} \\\\ \\medskip
+{jobRole}
+\\end{minipage} \\hfill
+\\begin{minipage}{0.4\\textwidth}
+\\raggedleft
+Email: {email} \\\\
+Mobile: {phone} \\\\
+LinkedIn: {linkedin} \\\\
+GitHub: {github}
+\\end{minipage}
+\\end{center}
+\\vspace{10pt}
+\\vspace{20pt}
+\\section{Education}
+\\subsection{{education}}
+\\vspace{10pt}
+\\vspace{20pt}
+\\section{Experience}
+\\subsection{{experience}}
+\\vspace{10pt}
+\\vspace{20pt}
+\\section{Certification \\& Awards}
+\\begin{enumerate}[label=\\null, left=0pt..0pt, itemsep=0pt]
+\\item {achievements}
+\\end{enumerate}
+\\vspace{10pt}
+\\vspace{20pt}
+\\section{Skills \\& Interests}
+\\begin{description}[itemsep=0pt]
+\\item {skills}
+\\end{description}
+\\vspace{10pt}
+\\vspace{20pt}
+\\section{Projects}
+\\subsection{{projects} $|$ \\normalfont\\textit{{github}} }
+\\end{document}
+
+`;
+
+const resumeTemplate3 = `
+\\documentclass[11pt]{article}
+\\usepackage[T1]{fontenc}
+\\usepackage{inter}
+\\renewcommand*\\familydefault{\\sfdefault}
+\\usepackage{geometry}
+\\geometry{
+a4paper,
+top=1.8cm,
+bottom=1in,
+left=2.5cm,
+right=2.5cm
+}
+\\setcounter{secnumdepth}{0}
+\\pdfgentounicode=1
+\\usepackage[dvipsnames]{xcolor}
+\\colorlet{icnclr}{gray}
+\\usepackage{enumitem}
+\\setlist[itemize]{
+noitemsep,
+left=0pt..1.5em
+}
+\\setlist[description]{itemsep=0pt}
+\\setlist[enumerate]{align=left}
+\\usepackage{titlesec}
+\\titlespacing{\\subsection}{0pt}{*0}{*0}
+\\titlespacing{\\subsubsection}{0pt}{*0}{*0}
+\\titleformat{\\section}{\\color{Sepia}\\large\\fontseries{black}\\selectf
+ont\\uppercase}{}{}{\\ruleafter}[\\global\\RemVStrue]
+\\titleformat{\\subsection}{\\large\\fontseries{semibold}\\selectfont}{}{}
+{\\rvs}
+\\titleformat{\\subsubsection}{\\large\\fontseries{medium}\\selectfont}{}{
+}{}
+\\usepackage{xhfill}
+\\newcommand\\ruleafter[1]{#1~\\xrfill[.5ex]{1pt}[gray]}
+\\newif\\ifRemVS
+\\newcommand{\\rvs}{
+\\ifRemVS
+\\vspace{-1.5ex}
+\\fi
+\\global\\RemVSfalse
+}
+\\usepackage{fontawesome5}
+\\usepackage[bookmarks=false]{hyperref}
+\\hypersetup{
+colorlinks=true,
+urlcolor=Sepia,
+pdftitle={My Resume},
+}
+\\usepackage[page]{totalcount}
+\\usepackage{fancyhdr}
+\\pagestyle{fancy}
+\\renewcommand{\\headrulewidth}{0pt}
+\\fancyhf{}
+\\cfoot{\\color{darkgray} Rover R\\'esum\\'e -- Page \\thepage{} of
+\\totalpages}
+\\begin{document}
+\\begin{center}
+{\\fontsize{36}{36}\\selectfont\\interthin {name}} \\\\ \\bigskip
+{\\color{icnclr}\\faEnvelope[regular]} \\href{mailto:{email}}{{email}}
+$|$
+{\\color{icnclr}\\faIcon{mobile-alt}} \\href{tel:{phone}}{{phone}} $|$
+{\\color{icnclr}\\faLinkedinIn} \\href{{linkedin}}{{linkedin}}
+\\end{center}
+\\vspace{10pt}
+\\vspace{20pt}
+\\section{Education}
+\\subsection{{education}}
+\\vspace{10pt}
+\\vspace{20pt}
+\\section{Experience}
+\\subsection{{experience}}
+\\vspace{10pt}
+\\vspace{20pt}
+\\section{Skills}
+\\begin{description}
+\\item {skills}
+\\end{description}
+\\vspace{10pt}
+\\vspace{20pt}
+\\section{Projects}
+\\subsection{{projects} {\\normalfont $|$
+\\href{{github}}{\\textit{{github}}}}}
+\\vspace{10pt}
+\\vspace{20pt}
+\\section{Certification \\& Awards}
+\\begin{enumerate}[itemsep=0pt]
+\\item {achievements}
+\\end{enumerate}
+\\end{document}
+
+`;
+
+const resumeTemplate4 = `
+\\documentclass{article}
+\\usepackage{charter}
+\\usepackage{tgadventor}
+\\usepackage[letterspace=100]{microtype}
+\\usepackage{soul}
+\\usepackage[margin=1.5in,bottom=1.2in]{geometry}
+\\setcounter{secnumdepth}{0}
+\\usepackage{titlesec}
+\\titlespacing{\\section}{0pt}{4ex}{1ex}
+\\titlespacing{\\subsection}{0pt}{*1}{*0.5}
+\\titlespacing{\\subsubsection}{0pt}{*0.5}{*1}
+\\titleformat*{\\section}{\\titlerule\\smallskip\\footnotesize\\sffamily\\
+bfseries\\lsstyle\\uppercase}
+\\titleformat*{\\subsection}{\\Large}
+\\titleformat*{\\subsubsection}{\\large\\itshape}
+\\usepackage{enumitem}
+\\setlist[itemize]{left=0pt..2em,itemsep=0pt}
+\\usepackage{fancyhdr}
+\\pagestyle{fancy}
+\\renewcommand{\\headrulewidth}{0pt}
+\\fancyhf{}
+\\cfoot{\\sffamily\\lsstyle\\footnotesize MILKY R\\'ESUM\\'E — PAGE
+\\thepage{} OF 2}
+\\begin{document}
+\\begin{center}
+{\\sffamily\\LARGE\\bfseries \\so{{name}}} \\par\\bigskip
+\\sffamily\\footnotesize \\so{{linkedin}} \\\\ \\medskip
+\\so{{phone} \\quad {email}} \\par\\bigskip
+\\end{center}
+\\vspace{10pt}
+\\vspace{20pt}
+\\section{Education}
+\\subsection{{education}}
+\\vspace{10pt}
+\\vspace{20pt}
+\\section{Business Experience}
+\\subsection{{experience}}
+\\vspace{10pt}
+\\vspace{20pt}
+\\section{Skills}
+\\subsection{{skills}}
+\\vspace{10pt}
+\\vspace{20pt}
+\\section{Achievements}
+\\subsection{{achievements}}
+\\vspace{10pt}
+\\vspace{20pt}
+\\end{document}
+
+`;
+
+
   const populateTemplate = (template, data) => {
     const replaceNewlines = (text) => {
       if (typeof text !== "string") {
@@ -333,17 +544,32 @@ const Personalinfo = () => {
 
   const handlePrintJson = () => {
     if (validateForm()) {
-      let populatedResume = populateTemplate(resumeTemplate, userData);
+      let populatedResume;
+      switch (selectedResumeType) {
+        case 1:
+          populatedResume = populateTemplate(resumeTemplate1, userData);
+          break;
+        case 2:
+          populatedResume = populateTemplate(resumeTemplate2, userData);
+          break;
+        case 3:
+          populatedResume = populateTemplate(resumeTemplate3, userData);
+          break;
+        default:
+          populatedResume = populateTemplate(resumeTemplate4, userData); // default template
+      }
+  
       console.log(populatedResume);
       sendPostRequest(populatedResume);
       console.log(JSON.stringify(userData, null, 2));
     } else {
-       toast.error("Please fill in all required fields.", {
-         position: "top-right", // Use the string directly here
-       });
+      toast.error("Please fill in all required fields.", {
+        position: "top-right",
+      });
       console.log("error");
     }
   };
+  
 
 
   return (
@@ -676,6 +902,55 @@ const Personalinfo = () => {
           </div>
         </div>
       </div>
+
+      <div className="w-full mt-4">
+        <div className="text-xl font-semibold text-gray-600">
+          Choose Resume Type
+        </div>
+        <div className="mt-1 flex space-x-2">
+          <button
+            onClick={() => handleResumeTypeChange(1)}
+            className={`px-4 py-2 border rounded-md ${
+              selectedResumeType === 1
+                ? 'bg-blue-500 text-white'
+                : 'bg-white text-gray-800'
+            } border-gray-300 focus:outline-none`}
+          >
+            1
+          </button>
+          <button
+            onClick={() => handleResumeTypeChange(2)}
+            className={`px-4 py-2 border rounded-md ${
+              selectedResumeType === 2
+                ? 'bg-blue-500 text-white'
+                : 'bg-white text-gray-800'
+            } border-gray-300 focus:outline-none`}
+          >
+            2
+          </button>
+          <button
+            onClick={() => handleResumeTypeChange(3)}
+            className={`px-4 py-2 border rounded-md ${
+              selectedResumeType === 3
+                ? 'bg-blue-500 text-white'
+                : 'bg-white text-gray-800'
+            } border-gray-300 focus:outline-none`}
+          >
+            3
+          </button>
+          <button
+            onClick={() => handleResumeTypeChange(4)}
+            className={`px-4 py-2 border rounded-md ${
+              selectedResumeType === 4
+                ? 'bg-blue-500 text-white'
+                : 'bg-white text-gray-800'
+            } border-gray-300 focus:outline-none`}
+          >
+            4
+          </button>
+        </div>
+    </div>
+
 
       <div className="z-10 flex min-h-[5rem] items-center justify-center mt-5">
         <button onClick={handlePrintJson}>
