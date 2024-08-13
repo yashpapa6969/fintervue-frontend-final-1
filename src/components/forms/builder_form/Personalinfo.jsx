@@ -54,14 +54,6 @@ const Personalinfo = () => {
     setUserData({ ...userData, skills: skillsArray.join(", ") });
   };
 
-  const [selectedResumeType, setSelectedResumeType] = useState(1);
-
-  const handleResumeTypeChange = (type) => {
-    setSelectedResumeType(type);
-    // Add additional logic to handle the resume type change
-  };
-
-
   const validateForm = () => {
     const newErrors = {};
 
@@ -230,9 +222,10 @@ const resumeTemplate2 = `
 \\titleformat{\\section}{\\large\\bfseries\\uppercase}{}{}{}[\\titlerule]
 \\titleformat*{\\subsubsection}{\\large\\itshape}
 \\usepackage{enumitem}
-\\setlist[itemize]{noitemsep,left=0pt .. \\parindent}
+\\setlist[itemize]{noitemsep,left=0pt..\\parindent}
 \\pagestyle{empty}
 \\pdfgentounicode=1
+
 \\begin{document}
 \\begin{center}
 \\begin{minipage}{0.5\\textwidth}
@@ -249,30 +242,36 @@ LinkedIn: {linkedin} \\\\
 GitHub: {github}
 \\end{minipage}
 \\end{center}
-\\vspace{10pt}
+
 \\vspace{20pt}
+
 \\section{Education}
 \\subsection{{education}}
-\\vspace{10pt}
+
 \\vspace{20pt}
+
 \\section{Experience}
 \\subsection{{experience}}
-\\vspace{10pt}
+
 \\vspace{20pt}
+
 \\section{Certification \\& Awards}
-\\begin{enumerate}[label=\\null, left=0pt..0pt, itemsep=0pt]
+\\begin{itemize}[left=0pt..0pt, itemsep=0pt]
 \\item {achievements}
-\\end{enumerate}
-\\vspace{10pt}
+\\end{itemize}
+
 \\vspace{20pt}
+
 \\section{Skills \\& Interests}
-\\begin{description}[itemsep=0pt]
+\\begin{itemize}[itemsep=0pt]
 \\item {skills}
-\\end{description}
-\\vspace{10pt}
+\\end{itemize}
+
 \\vspace{20pt}
+
 \\section{Projects}
-\\subsection{{projects} $|$ \\normalfont\\textit{{github}} }
+\\subsection{{projects} $|$ \\normalfont\\textit{{github}}}
+
 \\end{document}
 
 `;
@@ -280,92 +279,97 @@ GitHub: {github}
 const resumeTemplate3 = `
 \\documentclass[11pt]{article}
 \\usepackage[T1]{fontenc}
-\\usepackage{inter}
-\\renewcommand*\\familydefault{\\sfdefault}
 \\usepackage{geometry}
 \\geometry{
-a4paper,
-top=1.8cm,
-bottom=1in,
-left=2.5cm,
-right=2.5cm
+  a4paper,
+  top=1.8cm,
+  bottom=1in,
+  left=2.5cm,
+  right=2.5cm
 }
+
 \\setcounter{secnumdepth}{0}
 \\pdfgentounicode=1
 \\usepackage[dvipsnames]{xcolor}
 \\colorlet{icnclr}{gray}
 \\usepackage{enumitem}
 \\setlist[itemize]{
-noitemsep,
-left=0pt..1.5em
+  noitemsep,
+  left=0pt..1.5em
 }
 \\setlist[description]{itemsep=0pt}
 \\setlist[enumerate]{align=left}
 \\usepackage{titlesec}
 \\titlespacing{\\subsection}{0pt}{*0}{*0}
 \\titlespacing{\\subsubsection}{0pt}{*0}{*0}
-\\titleformat{\\section}{\\color{Sepia}\\large\\fontseries{black}\\selectf
-ont\\uppercase}{}{}{\\ruleafter}[\\global\\RemVStrue]
-\\titleformat{\\subsection}{\\large\\fontseries{semibold}\\selectfont}{}{}
-{\\rvs}
-\\titleformat{\\subsubsection}{\\large\\fontseries{medium}\\selectfont}{}{
-}{}
+\\titleformat{\\section}{\\color{Sepia}\\large\\bfseries\\uppercase}{}{}{ \\ruleafter}[ \\global\\RemVStrue]
+\\titleformat{\\subsection}{\\large\\bfseries}{}{}{}
+\\titleformat{\\subsubsection}{\\large\\bfseries}{}{ \\vspace{-1.5ex}}{}
 \\usepackage{xhfill}
 \\newcommand\\ruleafter[1]{#1~\\xrfill[.5ex]{1pt}[gray]}
 \\newif\\ifRemVS
 \\newcommand{\\rvs}{
-\\ifRemVS
-\\vspace{-1.5ex}
-\\fi
-\\global\\RemVSfalse
+  \\ifRemVS
+  \\vspace{-1.5ex}
+  \\fi
+  \\global\\RemVSfalse
 }
 \\usepackage{fontawesome5}
 \\usepackage[bookmarks=false]{hyperref}
 \\hypersetup{
-colorlinks=true,
-urlcolor=Sepia,
-pdftitle={My Resume},
+  colorlinks=true,
+  urlcolor=Sepia,
+  pdftitle={My Resume},
 }
 \\usepackage[page]{totalcount}
 \\usepackage{fancyhdr}
 \\pagestyle{fancy}
 \\renewcommand{\\headrulewidth}{0pt}
 \\fancyhf{}
-\\cfoot{\\color{darkgray} Rover R\\'esum\\'e -- Page \\thepage{} of
-\\totalpages}
+\\cfoot{\\color{darkgray} Rover R\\'esum\\'e -- Page \\thepage{} of \\totalpages}
+
 \\begin{document}
+
 \\begin{center}
-{\\fontsize{36}{36}\\selectfont\\interthin {name}} \\\\ \\bigskip
-{\\color{icnclr}\\faEnvelope[regular]} \\href{mailto:{email}}{{email}}
-$|$
-{\\color{icnclr}\\faIcon{mobile-alt}} \\href{tel:{phone}}{{phone}} $|$
+    {\\fontsize{36}{36}\\selectfont \\textnormal{name}} \\par
+    \\bigskip
+
+    {\\color{icnclr}\\texttt{@}} \\href{mailto:{email}}{{email}}
+    \\hspace{0.5em} $|$ \\hspace{0.5em}
+    {\\color{icnclr}} \\href{tel:{phone}}{{phone}}
+
 {\\color{icnclr}\\faLinkedinIn} \\href{{linkedin}}{{linkedin}}
 \\end{center}
-\\vspace{10pt}
+
 \\vspace{20pt}
+
 \\section{Education}
 \\subsection{{education}}
-\\vspace{10pt}
+
 \\vspace{20pt}
+
 \\section{Experience}
 \\subsection{{experience}}
-\\vspace{10pt}
+
 \\vspace{20pt}
+
 \\section{Skills}
-\\begin{description}
+\\begin{itemize}
 \\item {skills}
-\\end{description}
-\\vspace{10pt}
+\\end{itemize}
+
 \\vspace{20pt}
+
 \\section{Projects}
-\\subsection{{projects} {\\normalfont $|$
-\\href{{github}}{\\textit{{github}}}}}
-\\vspace{10pt}
+\\subsection{{projects} {\\normalfont $|$ \\href{{github}}{\\textit{{github}}}}}
+
 \\vspace{20pt}
+
 \\section{Certification \\& Awards}
 \\begin{enumerate}[itemsep=0pt]
 \\item {achievements}
 \\end{enumerate}
+
 \\end{document}
 
 `;
@@ -382,8 +386,7 @@ const resumeTemplate4 = `
 \\titlespacing{\\section}{0pt}{4ex}{1ex}
 \\titlespacing{\\subsection}{0pt}{*1}{*0.5}
 \\titlespacing{\\subsubsection}{0pt}{*0.5}{*1}
-\\titleformat*{\\section}{\\titlerule\\smallskip\\footnotesize\\sffamily\\
-bfseries\\lsstyle\\uppercase}
+\\titleformat*{\\section}{\\titlerule\\smallskip\\footnotesize\\sffamily\\lsstyle\\uppercase}
 \\titleformat*{\\subsection}{\\Large}
 \\titleformat*{\\subsubsection}{\\large\\itshape}
 \\usepackage{enumitem}
@@ -392,184 +395,183 @@ bfseries\\lsstyle\\uppercase}
 \\pagestyle{fancy}
 \\renewcommand{\\headrulewidth}{0pt}
 \\fancyhf{}
-\\cfoot{\\sffamily\\lsstyle\\footnotesize MILKY R\\'ESUM\\'E — PAGE
-\\thepage{} OF 2}
+\\cfoot{\\sffamily\\lsstyle\\footnotesize MILKY R\\'ESUM\\'E — PAGE \\thepage{} OF 2}
+
 \\begin{document}
 \\begin{center}
 {\\sffamily\\LARGE\\bfseries \\so{{name}}} \\par\\bigskip
 \\sffamily\\footnotesize \\so{{linkedin}} \\\\ \\medskip
 \\so{{phone} \\quad {email}} \\par\\bigskip
 \\end{center}
-\\vspace{10pt}
+
 \\vspace{20pt}
+
 \\section{Education}
 \\subsection{{education}}
-\\vspace{10pt}
+
 \\vspace{20pt}
+
 \\section{Business Experience}
 \\subsection{{experience}}
-\\vspace{10pt}
+
 \\vspace{20pt}
+
 \\section{Skills}
 \\subsection{{skills}}
-\\vspace{10pt}
+
 \\vspace{20pt}
+
 \\section{Achievements}
 \\subsection{{achievements}}
-\\vspace{10pt}
-\\vspace{20pt}
+
 \\end{document}
+
 
 `;
 
+const populateTemplate = (template, data) => {
+  // Replace newlines with double backslashes for LaTeX
+  const replaceNewlines = (text) => {
+    if (typeof text !== "string") {
+      console.error("Expected a string for newline replacement, but got:", text);
+      return "";
+    }
+    return text.replace(/\n/g, "\\\\");
+  };
 
-  const populateTemplate = (template, data) => {
-    const replaceNewlines = (text) => {
-      if (typeof text !== "string") {
-        console.error(
-          "Expected a string for newline replacement, but got:",
-          text
-        );
-        return ""; // Or handle it in a way that suits your application
+  // Replace {VAR{key}} placeholders first
+  template = template.replace(/\{VAR\{([^}]+)\}\}/g, (match, key) => {
+    if (data.hasOwnProperty(key)) {
+      return replaceNewlines(data[key]);
+    } else {
+      console.warn(`Key ${key} not found in data.`);
+      return "";
+    }
+  });
+
+  // Replace {key} placeholders
+  for (let key in data) {
+    if (typeof data[key] === "object" && !Array.isArray(data[key])) {
+      for (let subKey in data[key]) {
+        let re = new RegExp(`\\{${key}\\.${subKey}\\}`, "g");
+        template = template.replace(re, replaceNewlines(data[key][subKey]));
       }
-      return text.replace(/\n/g, "\\\\");
-    };
-
-    // Replace \VAR{} placeholders first
-    template = template.replace(/\{VAR\{([^}]+)\}\}/g, (match, key) => {
-      if (data.hasOwnProperty(key)) {
-        return replaceNewlines(data[key]);
-      } else {
-        console.warn(`Key ${key} not found in data.`);
-        return ""; // Handle missing keys
-      }
-    });
-
-    // Handle other keys
-    for (let key in data) {
-      if (typeof data[key] === "object" && !Array.isArray(data[key])) {
-        // Handling objects within data
-        for (let subKey in data[key]) {
-          let re = new RegExp(`\\{${key}\\.${subKey}\\}`, "g");
-          template = template.replace(re, replaceNewlines(data[key][subKey]));
-        }
-      } else if (Array.isArray(data[key])) {
-        // Handling arrays within data
-        let re = new RegExp(`\\{${key}\\}`, "g");
-        let arrayContent = "";
-        data[key].forEach((item) => {
-          if (typeof item === "object") {
-            let itemContent = "";
-            if (key === "experience") {
-              itemContent = `
+    } else if (Array.isArray(data[key])) {
+      let re = new RegExp(`\\{${key}\\}`, "g");
+      let arrayContent = "";
+      data[key].forEach((item) => {
+        if (typeof item === "object") {
+          let itemContent = "";
+          if (key === "experience") {
+            itemContent = `
   \\resumeSubheading
-    {${item.companyName || "N/A"}}{${item.startDate || "N/A"} -- ${
-                item.endDate || "N/A"
-              }}
+    {${item.companyName || "N/A"}}{${item.startDate || "N/A"} -- ${item.endDate || "N/A"}}
     {${item.jobRole || "N/A"}}{}
     \\resumeItemListStart
       \\resumeItem{${replaceNewlines(item.summary || "N/A")}}
     \\resumeItemListEnd`;
-            } else if (key === "education") {
-              itemContent = `
+          } else if (key === "education") {
+            itemContent = `
   \\resumeSubheading
-    {${item.institution || "N/A"}}{${item.startDate || "N/A"} -- ${
-                item.endDate || "N/A"
-              }}
+    {${item.institution || "N/A"}}{${item.startDate || "N/A"} -- ${item.endDate || "N/A"}}
     {${item.degree || "N/A"}}{}
     \\resumeItemListStart
       \\resumeItem{${replaceNewlines(item.description || "N/A")}}
     \\resumeItemListEnd`;
-            } else if (key === "projects") {
-              itemContent = `
+          } else if (key === "projects") {
+            itemContent = `
   \\resumeProjectHeading
-    {${item.name || "N/A"}}{${replaceNewlines(item.summary || "N/A")}}{${
-                item.date || "N/A"
-              }}`;
-            }
-            arrayContent += itemContent + "\n    ";
-          } else {
-            arrayContent += `\\resumeItem{${replaceNewlines(
-              item || "N/A"
-            )}}\n    `;
+    {${item.name || "N/A"}}{${replaceNewlines(item.summary || "N/A")}}{${item.date || "N/A"}}`;
           }
-        });
-        template = template.replace(re, arrayContent.trim());
-      } else {
-        // Handling simple key-value pairs
-        let re = new RegExp(`\\{${key}\\}`, "g");
-        template = template.replace(re, replaceNewlines(data[key] || "N/A"));
-      }
-    }
-
-    return template;
-  };
-
-  const sendPostRequest = async (populatedResume) => {
-    try {
-      const response = await fetch(
-        "https://530b-2401-4900-4e5f-56b9-e4dd-50c8-1f74-cc91.ngrok-free.app/latex",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ latex_content: populatedResume }), // Replace with your data
+          arrayContent += itemContent + "\n    ";
+        } else {
+          arrayContent += `\\resumeItem{${replaceNewlines(item || "N/A")}}\n    `;
         }
-      );
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      // Handle the response as a blob
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-
-      // Create a link element and trigger a download
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "resume.pdf"; // Filename for the downloaded file
-      document.body.appendChild(a);
-      a.click();
-
-      // Clean up
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error("Error:", error.message);
-      // Handle the error (e.g., show an error message to the user)
-    }
-  };
-
-  const handlePrintJson = () => {
-    if (validateForm()) {
-      let populatedResume;
-      switch (selectedResumeType) {
-        case 1:
-          populatedResume = populateTemplate(resumeTemplate1, userData);
-          break;
-        case 2:
-          populatedResume = populateTemplate(resumeTemplate2, userData);
-          break;
-        case 3:
-          populatedResume = populateTemplate(resumeTemplate3, userData);
-          break;
-        default:
-          populatedResume = populateTemplate(resumeTemplate4, userData); // default template
-      }
-  
-      console.log(populatedResume);
-      sendPostRequest(populatedResume);
-      console.log(JSON.stringify(userData, null, 2));
-    } else {
-      toast.error("Please fill in all required fields.", {
-        position: "top-right",
       });
-      console.log("error");
+      template = template.replace(re, arrayContent.trim());
+    } else {
+      let re = new RegExp(`\\{${key}\\}`, "g");
+      template = template.replace(re, replaceNewlines(data[key] || "N/A"));
     }
-  };
-  
+  }
+
+  return template;
+};
+
+const [selectedResumeType, setSelectedResumeType] = useState(1);
+
+// Function to handle resume type change
+const handleResumeTypeChange = (type) => {
+  if (typeof type === 'number' && [1, 2, 3, 4].includes(type)) {
+    setSelectedResumeType(type);
+    console.log(`Resume type set to: ${type}`);
+  } else {
+    console.error(`Invalid resume type: ${type}`);
+  }
+};
+
+
+// Function to handle the POST request and download the PDF
+const sendPostRequest = async (populatedResume) => {
+  try {
+    const response = await fetch("https://b5ba-2401-4900-1cbd-4d-e40d-46ba-3958-6678.ngrok-free.app/latex", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ latex_content: populatedResume }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Network response was not ok, status: ${response.status}`);
+    }
+
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "resume.pdf";
+    document.body.appendChild(a);
+    a.click();
+
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error("Error:", error.message);
+  }
+};
+
+// Function to handle form validation, template selection, and triggering the PDF download
+const handlePrintJson = () => {
+  if (validateForm()) {
+    let populatedResume;
+    switch (selectedResumeType) {
+      case 1:
+        populatedResume = populateTemplate(resumeTemplate1, userData);
+        break;
+      case 2:
+        populatedResume = populateTemplate(resumeTemplate2, userData);
+        break;
+      case 3:
+        populatedResume = populateTemplate(resumeTemplate3, userData);
+        break;
+      case 4:
+        populatedResume = populateTemplate(resumeTemplate4, userData);
+        break;
+      default:
+        populatedResume = populateTemplate(resumeTemplate1, userData);
+    }
+
+    console.log("Populated Resume for Template", selectedResumeType, ":", populatedResume);
+
+    sendPostRequest(populatedResume);
+  } else {
+    toast.error("Please fill in all required fields.", {
+      position: "top-right",
+    });
+  }
+};
 
 
   return (
@@ -906,50 +908,50 @@ bfseries\\lsstyle\\uppercase}
       <div className="w-full mt-4">
         <div className="text-xl font-semibold text-gray-600">
           Choose Resume Type
-        </div>
-        <div className="mt-1 flex space-x-2">
-          <button
-            onClick={() => handleResumeTypeChange(1)}
-            className={`px-4 py-2 border rounded-md ${
-              selectedResumeType === 1
-                ? 'bg-blue-500 text-white'
-                : 'bg-white text-gray-800'
-            } border-gray-300 focus:outline-none`}
-          >
-            1
-          </button>
-          <button
-            onClick={() => handleResumeTypeChange(2)}
-            className={`px-4 py-2 border rounded-md ${
-              selectedResumeType === 2
-                ? 'bg-blue-500 text-white'
-                : 'bg-white text-gray-800'
-            } border-gray-300 focus:outline-none`}
-          >
-            2
-          </button>
-          <button
-            onClick={() => handleResumeTypeChange(3)}
-            className={`px-4 py-2 border rounded-md ${
-              selectedResumeType === 3
-                ? 'bg-blue-500 text-white'
-                : 'bg-white text-gray-800'
-            } border-gray-300 focus:outline-none`}
-          >
-            3
-          </button>
-          <button
-            onClick={() => handleResumeTypeChange(4)}
-            className={`px-4 py-2 border rounded-md ${
-              selectedResumeType === 4
-                ? 'bg-blue-500 text-white'
-                : 'bg-white text-gray-800'
-            } border-gray-300 focus:outline-none`}
-          >
-            4
-          </button>
-        </div>
-    </div>
+          </div>
+            <div className="mt-1 flex space-x-2">
+              <button
+                onClick={() => handleResumeTypeChange(1)}
+                className={`px-4 py-2 border rounded-md ${
+                  selectedResumeType === 1
+                    ? "bg-blue-500 text-white"
+                    : "bg-white text-gray-800"
+                } border-gray-300 focus:outline-none`}
+              >
+                1
+              </button>
+              <button
+                onClick={() => handleResumeTypeChange(2)}
+                className={`px-4 py-2 border rounded-md ${
+                  selectedResumeType === 2
+                    ? "bg-blue-500 text-white"
+                    : "bg-white text-gray-800"
+                } border-gray-300 focus:outline-none`}
+              >
+                2
+              </button>
+              <button
+                onClick={() => handleResumeTypeChange(3)}
+                className={`px-4 py-2 border rounded-md ${
+                  selectedResumeType === 3
+                    ? "bg-blue-500 text-white"
+                    : "bg-white text-gray-800"
+                } border-gray-300 focus:outline-none`}
+              >
+                3
+              </button>
+              <button
+                onClick={() => handleResumeTypeChange(4)}
+                className={`px-4 py-2 border rounded-md ${
+                  selectedResumeType === 4
+                    ? "bg-blue-500 text-white"
+                    : "bg-white text-gray-800"
+                } border-gray-300 focus:outline-none`}
+              >
+                4
+              </button>
+            </div>
+      </div>
 
 
       <div className="z-10 flex min-h-[5rem] items-center justify-center mt-5">
