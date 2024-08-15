@@ -1,11 +1,11 @@
 import Navbar from "../components/navbar";
 import Hero from "../components/landing_page/hero";
-import Pricing from "../components/landing_page/pricing";
+//import Pricing from "../components/landing_page/pricing";
 import Features from "../components/landing_page/features";
 import Footer from "../components/landing_page/footer";
 import CTA from "../components/landing_page/CTA";
 import Toc from "../components/landing_page/TOC";
-import RefundsAndCancellation from "../components/landing_page/RefundsAndCancellation";
+//import RefundsAndCancellation from "../components/landing_page/RefundsAndCancellation";
 
 const HomePage = () => {
   return (
@@ -13,9 +13,7 @@ const HomePage = () => {
       <Navbar />
       <Hero />
       <Features />
-      <Toc/>
-      <RefundsAndCancellation />
-      <Pricing />
+      <Toc />
       <CTA />
       <Footer />
     </>

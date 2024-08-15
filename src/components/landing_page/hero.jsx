@@ -28,12 +28,10 @@ const Hero = () => {
       <div className="md:flex items-center justify-center gap-16">
         <div className="md:w-[478px]">
           <div className="text-5xl md:text-7xl font-black my-7 bg-gradient-to-b from-black to-[#002499] text-transparent bg-clip-text tracking-tighter">
-            Revolution Your Hiring Process
+          Ace your next finance interview with Fintervue.
           </div>
           <div className="text-xl lg:text-2xl tracking-tighter opacity-85">
-            With Fintervue, leverage advanced AI to streamline and enhance your
-            recruitment process, ensuring you find the best candidates for your
-            finance-related job roles.
+          One stop shop for aspiring finance professionals, industry veterans and corporate behemoths to achieve their goals.
           </div>
 
           <div className="flex items-center gap-3 mt-6 text-lg">

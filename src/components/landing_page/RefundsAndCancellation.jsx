@@ -1,7 +1,18 @@
 import { ChevronRight } from "lucide-react"
+import React from "react";
+import Navbar from "../navbar";
+import { useTheme } from "next-themes";
+import { MagicCard } from "../../components/ui/magic-card";
+import BoxReveal from "../../components/ui/box-reveal";
+import resumeGen from "../../assests/resume_generator.png";
+import Button from "../button";
 
 const RefundsAndCancellation = () => {
-    return (
+  const { theme } = useTheme();
+
+  return (
+    <div>
+      <Navbar />
         <div className="container mx-auto p-6 flex flex-col items-center">
             <div className="text-3xl md:text-4xl lg:text-5xl py-3 font-bold tracking-tighter text-center bg-gradient-to-b from-black to-[#002499] text-transparent bg-clip-text">
                 Refunds and Cancellation
@@ -31,6 +42,7 @@ const RefundsAndCancellation = () => {
                 </div>
             </div>
         </div>
+    </div>
     )
 }
 

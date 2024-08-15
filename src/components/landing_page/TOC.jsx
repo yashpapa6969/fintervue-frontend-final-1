@@ -1,7 +1,13 @@
 import React from "react";
+import Navbar from "../navbar";
+import { useTheme } from "next-themes";
 
 const Toc = () => {
+  const { theme } = useTheme();
+
   return (
+
+
     <div className="container mx-auto p-6">
       {/* Terms and Conditions Heading */}
       <div className="text-3xl md:text-4xl lg:text-5xl py-3 font-bold tracking-tighter text-center bg-gradient-to-b from-black to-[#002499] text-transparent bg-clip-text">
@@ -11,6 +17,9 @@ const Toc = () => {
       {/* Interviewers Section */}
       <div className="text-center text-2xl font-bold mt-10 mb-4 md:text-3xl">
         For Interviewer
+      </div>
+      <div className="text-center text-1xl pb-5 mt-1 mb-1 md:text-1xl">
+      <h3>Jumpstart your corporate career using the power of AI.</h3>
       </div>
       <div className="flex flex-wrap justify-center gap-8 mb-8">
         <div className="flex flex-col items-center text-center p-6 border rounded-lg shadow-lg max-w-xs transform transition-transform duration-300 hover:scale-105 hover:bg-gray-100">
@@ -86,6 +95,9 @@ const Toc = () => {
       {/* Interviewees Section */}
       <div className="text-center text-2xl font-bold mt-10 mb-4 md:text-3xl">
         For Interviewee
+      </div>
+      <div className="text-center text-1xl pb-5 mt-1 mb-1 md:text-1xl">
+      <h3> Hire top talent screened and interviewed by AI, stamped by industry experts.</h3>
       </div>
       <div className="flex flex-wrap justify-center gap-8 mb-8">
         <div className="flex flex-col items-center text-center p-6 border rounded-lg shadow-lg max-w-xs transform transition-transform duration-300 hover:scale-105 hover:bg-gray-100">
