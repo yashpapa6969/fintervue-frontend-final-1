@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { StepperContext } from "../context/StepperContext";
 import Navbar from "../components/navbar";
 import Personalinfo from "../components/forms/builder_form/Personalinfo";
-import WordFadeIn from "../components/ui/word-fade-in";
+
 import FlipText from "../components/ui/flip-text";
 
 const ResumeBuilder = () => {
@@ -31,12 +31,13 @@ const ResumeBuilder = () => {
         description: "",
       },
     ],
-     projects: [
-    {
-      name: "",
-      summary: "",
-      date: ""
-    },],
+    projects: [
+      {
+        name: "",
+        summary: "",
+        date: "",
+      },
+    ],
   });
   const [finalData, setFinalData] = useState([]);
 
@@ -57,7 +58,7 @@ const ResumeBuilder = () => {
             into your selected template
           </h3>
         </div>
-        
+
         <div className="container horizontal mt-5">
           <div className="w-full flex justify-center ">
             {/* Optionally add a title or any additional content here */}

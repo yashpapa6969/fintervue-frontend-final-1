@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { StepperContext } from "../../../context/StepperContext";
 import ShimmerButton from "../../ui/shimmer-button";
 import { toast, ToastContainer } from "react-toastify";
@@ -44,7 +44,6 @@ const Personalinfo = () => {
     skillsArray.push("");
     setUserData({ ...userData, skills: skillsArray.join(", ") });
   };
-  
 
   const handleSkillChange = (e, index) => {
     const skillsArray = (userData.skills || "")
@@ -61,9 +60,8 @@ const Personalinfo = () => {
     if (!userData.name) newErrors.name = "Name is required.";
     if (!userData.email) newErrors.email = "Email is required.";
     if (!userData.phone) newErrors.phone = "Phone number is required.";
-    
+
     if (!userData.jobRole) newErrors.jobRole = "Job role is required.";
-    
 
     // Check for at least one experience, education, and project
     if (!userData.experience || userData.experience.length === 0) {
@@ -86,131 +84,135 @@ const Personalinfo = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+ 
+
+
+
+
+
   const resumeTemplate = `\\documentclass[letterpaper,11pt]{article}
 
-\\usepackage{latexsym}
-\\usepackage[empty]{fullpage}
-\\usepackage{titlesec}
-\\usepackage{marvosym}
-\\usepackage[usenames,dvipsnames]{color}
-\\usepackage{verbatim}
-\\usepackage{enumitem}
-\\usepackage[hidelinks]{hyperref}
-\\usepackage{fancyhdr}
-\\usepackage[english]{babel}
-\\usepackage{tabularx}
-\\usepackage{fontawesome5}
-\\usepackage{xcolor}
-\\usepackage{multicol}
-\\setlength{\\multicolsep}{-3.0pt}
-\\setlength{\\columnsep}{-1pt}
-\\input{glyphtounicode}
+  \\usepackage{latexsym}
+  \\usepackage[empty]{fullpage}
+  \\usepackage{titlesec}
+  \\usepackage{marvosym}
+  \\usepackage[usenames,dvipsnames]{color}
+  \\usepackage{verbatim}
+  \\usepackage{enumitem}
+  \\usepackage[hidelinks]{hyperref}
+  \\usepackage{fancyhdr}
+  \\usepackage[english]{babel}
+  \\usepackage{tabularx}
+  \\usepackage{fontawesome5}
+  \\usepackage{xcolor}
+  \\usepackage{multicol}
+  \\setlength{\\multicolsep}{-3.0pt}
+  \\setlength{\\columnsep}{-1pt}
+  \\input{glyphtounicode}
 
-\\pagestyle{fancy}
-\\fancyhf{} 
-\\fancyfoot{}
-\\renewcommand{\\headrulewidth}{0pt}
-\\renewcommand{\\footrulewidth}{0pt}
+  \\pagestyle{fancy}
+  \\fancyhf{}
+  \\fancyfoot{}
+  \\renewcommand{\\headrulewidth}{0pt}
+  \\renewcommand{\\footrulewidth}{0pt}
 
-\\addtolength{\\oddsidemargin}{-0.6in}
-\\addtolength{\\evensidemargin}{-0.5in}
-\\addtolength{\\textwidth}{1.19in}
-\\addtolength{\\topmargin}{-.7in}
-\\addtolength{\\textheight}{1.4in}
+  \\addtolength{\\oddsidemargin}{-0.6in}
+  \\addtolength{\\evensidemargin}{-0.5in}
+  \\addtolength{\\textwidth}{1.19in}
+  \\addtolength{\\topmargin}{-.7in}
+  \\addtolength{\\textheight}{1.4in}
 
-\\urlstyle{same}
+  \\urlstyle{same}
 
-\\raggedbottom
-\\raggedright
-\\setlength{\\tabcolsep}{0in}
-\\definecolor{deepblue}{RGB}{0,51,151}
-\\definecolor{darkblue}{RGB}{0,0,139}
+  \\raggedbottom
+  \\raggedright
+  \\setlength{\\tabcolsep}{0in}
+  \\definecolor{deepblue}{RGB}{0,51,151}
+  \\definecolor{darkblue}{RGB}{0,0,139}
 
-\\titleformat{\\section}{\\color{darkblue}
-  \\vspace{-4pt}\\scshape\\raggedright\\large\\bfseries
-}{}{0em}{}[\\color{black}\\titlerule \\vspace{-5pt}]
+  \\titleformat{\\section}{\\color{darkblue}
+    \\vspace{-4pt}\\scshape\\raggedright\\large\\bfseries
+  }{}{0em}{}[\\color{black}\\titlerule \\vspace{-5pt}]
 
-\\pdfgentounicode=1
+  \\pdfgentounicode=1
 
-\\newcommand{\\resumeItem}[1]{
-  \\item\\small{
-    {#1 \\vspace{-2pt}}
+  \\newcommand{\\resumeItem}[1]{
+    \\item\\small{
+      {#1 \\vspace{-2pt}}
+    }
   }
-}
 
-\\newcommand{\\resumeSubheading}[4]{
-  \\vspace{-2pt}\\item
-    \\begin{tabular*}{1.0\\textwidth}[t]{l@{\\extracolsep{\\fill}}r}
-      \\textbf{#1} & \\textbf{\\small #2} \\\\
-      \\color{deepblue}\\textit{\\small#3} & \\textit{\\small #4} \\\\
-    \\end{tabular*}\\vspace{-7pt}
-}
+  \\newcommand{\\resumeSubheading}[4]{
+    \\vspace{-2pt}\\item
+      \\begin{tabular*}{1.0\\textwidth}[t]{l@{\\extracolsep{\\fill}}r}
+        \\textbf{#1} & \\textbf{\\small #2} \\\\
+        \\color{deepblue}\\textit{\\small#3} & \\textit{\\small #4} \\\\
+      \\end{tabular*}\\vspace{-7pt}
+  }
 
-\\newcommand{\\resumeProjectHeading}[3]{
-    \\item
-    \\begin{tabular*}{1.001\\textwidth}{l@{\\extracolsep{\\fill}}r}
-      \\small#1 & \\textbf{\\small #3} \\\\
-    \\end{tabular*}\\vspace{-7pt}
+  \\newcommand{\\resumeProjectHeading}[3]{
+      \\item
+      \\begin{tabular*}{1.001\\textwidth}{l@{\\extracolsep{\\fill}}r}
+        \\small#1 & \\textbf{\\small #3} \\\\
+      \\end{tabular*}\\vspace{-7pt}
+      \\resumeItemListStart
+          \\resumeItem{#2}
+      \\resumeItemListEnd
+  }
+
+  \\newcommand{\\resumeSubItem}[1]{\\resumeItem{#1}\\vspace{-4pt}}
+
+  \\renewcommand\\labelitemi{$\\vcenter{\\hbox{\\tiny$\\bullet$}}$}
+  \\renewcommand\\labelitemii{$\\vcenter{\\hbox{\\tiny$\\bullet$}}$}
+
+  \\newcommand{\\resumeSubHeadingListStart}{\\begin{itemize}[leftmargin=0.0in, label={}]}
+  \\newcommand{\\resumeSubHeadingListEnd}{\\end{itemize}}
+  \\newcommand{\\resumeItemListStart}{\\begin{itemize}}
+  \\newcommand{\\resumeItemListEnd}{\\end{itemize}\\vspace{-5pt}}
+
+  \\begin{document}
+
+  \\begin{center}
+      {\\Huge \\scshape \\color{darkblue}{name}} \\\\ \\vspace{+10pt}
+      \\small \\raisebox{-0.1\\height}\\faPhone\\ {phone} ~ \\href{mailto:{email}}{\\raisebox{-0.2\\height}\\faEnvelope\\  \\underline{{email}}} ~
+      \\href{{linkedin}}{\\raisebox{-0.2\\height}\\faLinkedin\\ \\underline{{linkedin}}}
+      \\vspace{-3pt}
+  \\end{center}
+
+  \\section{Summary}
     \\resumeItemListStart
-        \\resumeItem{#2}
+      \\resumeItem{{summary}}
     \\resumeItemListEnd
-}
 
-\\newcommand{\\resumeSubItem}[1]{\\resumeItem{#1}\\vspace{-4pt}}
+  \\section{Education}
+    \\resumeSubHeadingListStart
+      {education}
+    \\resumeSubHeadingListEnd
 
-\\renewcommand\\labelitemi{$\\vcenter{\\hbox{\\tiny$\\bullet$}}$}
-\\renewcommand\\labelitemii{$\\vcenter{\\hbox{\\tiny$\\bullet$}}$}
+  \\section{Experience}
+    \\resumeSubHeadingListStart
+      {experience}
+    \\resumeSubHeadingListEnd
 
-\\newcommand{\\resumeSubHeadingListStart}{\\begin{itemize}[leftmargin=0.0in, label={}]}
-\\newcommand{\\resumeSubHeadingListEnd}{\\end{itemize}}
-\\newcommand{\\resumeItemListStart}{\\begin{itemize}}
-\\newcommand{\\resumeItemListEnd}{\\end{itemize}\\vspace{-5pt}}
+  \\section{Projects}
+    \\resumeSubHeadingListStart
+      {projects}
+    \\resumeSubHeadingListEnd
 
-\\begin{document}
+  \\section{Technical Skills}
+   \\begin{itemize}[leftmargin=0.15in, label={}]
+      \\small{\\item{
+       \\textbf{Skills}{: {skills}} \\\\
+      }}
+   \\end{itemize}
 
-\\begin{center}
-    {\\Huge \\scshape \\color{darkblue}{name}} \\\\ \\vspace{+10pt}
-    \\small \\raisebox{-0.1\\height}\\faPhone\\ {phone} ~ \\href{mailto:{email}}{\\raisebox{-0.2\\height}\\faEnvelope\\  \\underline{{email}}} ~
-    \\href{{linkedin}}{\\raisebox{-0.2\\height}\\faLinkedin\\ \\underline{{linkedin}}}
-    \\vspace{-3pt}
-\\end{center}
+  \\section{Achievements}
+    \\resumeSubHeadingListStart
+      \\resumeItem{{achievements}}
+    \\resumeSubHeadingListEnd
 
-\\section{Summary}
-  \\resumeItemListStart
-    \\resumeItem{{summary}}
-  \\resumeItemListEnd
-
-\\section{Education}
-  \\resumeSubHeadingListStart
-    {education}
-  \\resumeSubHeadingListEnd
-
-\\section{Experience}
-  \\resumeSubHeadingListStart
-    {experience}
-  \\resumeSubHeadingListEnd
-
-
-
-\\section{Projects}
-  \\resumeSubHeadingListStart
-    {projects}
-  \\resumeSubHeadingListEnd
-
-\\section{Technical Skills}
- \\begin{itemize}[leftmargin=0.15in, label={}]
-    \\small{\\item{
-     \\textbf{Skills}{: {skills}} \\\\
-    }}
- \\end{itemize}
-
-\\section{Achievements}
-  \\resumeSubHeadingListStart
-    \\resumeItem{{achievements}}
-  \\resumeSubHeadingListEnd
-
-\\end{document}
-`;
+  \\end{document}
+  `;
 
   const populateTemplate = (template, data) => {
     const replaceNewlines = (text) => {
@@ -297,7 +299,7 @@ const Personalinfo = () => {
   const sendPostRequest = async (populatedResume) => {
     try {
       const response = await fetch(
-        "https://530b-2401-4900-4e5f-56b9-e4dd-50c8-1f74-cc91.ngrok-free.app/latex",
+        "https://2d72-2401-4900-1cbd-4d-716a-a420-6773-9f10.ngrok-free.app/latex",
         {
           method: "POST",
           headers: {
@@ -338,13 +340,12 @@ const Personalinfo = () => {
       sendPostRequest(populatedResume);
       console.log(JSON.stringify(userData, null, 2));
     } else {
-       toast.error("Please fill in all required fields.", {
-         position: "top-right", // Use the string directly here
-       });
+      toast.error("Please fill in all required fields.", {
+        position: "top-right", // Use the string directly here
+      });
       console.log("error");
     }
   };
-
 
   return (
     <div className="flex flex-col gap-5 p-6 bg-blue-50 rounded-lg shadow-md">

@@ -16,6 +16,7 @@ const ProductPage = React.lazy(() => import("./pages/ProductPage.jsx"));
 const AiIntervuePage = React.lazy(() => import("./pages/AiIntervuePage.jsx"));
 const ResumeBuilder = React.lazy(() => import("./products/resumeBuilder.jsx"));
 
+
 const ResumeAnalysis = React.lazy(() =>
   import("./products/resumeAnalysis.jsx")
 );
@@ -51,12 +52,13 @@ const router = createBrowserRouter([
   },
   {
     path: "/product/resumeBuilder",
-    element: <ResumeBuilder/>,
+    element: <ResumeBuilder />,
   },
   {
     path: "/product/resumeAnalysis",
     element: <ResumeAnalysis />,
   },
+  
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')).render(
