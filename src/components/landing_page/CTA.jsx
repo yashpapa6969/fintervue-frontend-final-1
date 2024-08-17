@@ -50,7 +50,9 @@ const CTA = () => {
         </div>
 
         <div className="flex items-center gap-4 mt-4 text-lg">
+        <a href="/Contact">
           <Button text="Contact us" />
+        </a>
           <div className="font-semibold cursor-pointer  hover:underline">
             Learn more
             <FaArrowRight className="h-3 w-3 inline ml-2" />

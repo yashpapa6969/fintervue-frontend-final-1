@@ -16,6 +16,12 @@ const ProductPage = React.lazy(() => import("./pages/ProductPage.jsx"));
 const AiIntervuePage = React.lazy(() => import("./pages/AiIntervuePage.jsx"));
 const ResumeBuilder = React.lazy(() => import("./products/resumeBuilder.jsx"));
 
+const TocPage = React.lazy(() => import("./pages/TocPage.jsx"));
+const RefundsAndCancellationPage = React.lazy(() => import("./pages/RefundsAndCancellationPage.jsx"));
+const ContactPage = React.lazy(() => import("./pages/ContactPage.jsx"));
+const AboutPage = React.lazy(() => import("./pages/AboutPage.jsx"));
+const PrivacyPolicyPage = React.lazy(() => import("./pages/PrivacyPolicyPage.jsx"));
+const PricingPage = React.lazy(() => import("./pages/PricingPage.jsx"));
 
 const ResumeAnalysis = React.lazy(() =>
   import("./products/resumeAnalysis.jsx")
@@ -58,7 +64,30 @@ const router = createBrowserRouter([
     path: "/product/resumeAnalysis",
     element: <ResumeAnalysis />,
   },
-  
+  {
+    path: "/TOC",
+    element: <TocPage />,
+  },
+  {
+    path: "/Contact",
+    element: <ContactPage />,
+  },
+  {
+    path: "/About",
+    element: <AboutPage />,
+  },
+  {
+    path: "/PrivacyPolicy",
+    element: <PrivacyPolicyPage />,
+  },
+  {
+    path: "/Pricing",
+    element: <PricingPage />,
+  },
+  {
+    path: "/RefundsAndCancellation",
+    element: <RefundsAndCancellationPage />,
+  },
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')).render(
