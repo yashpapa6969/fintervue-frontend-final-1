@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Navbar from "../components/navbar";
 import FlipText from "../components/ui/flip-text";
 import { BorderBeam } from "../components/ui/border-beam";
