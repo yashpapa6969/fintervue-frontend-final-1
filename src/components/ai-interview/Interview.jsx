@@ -3,6 +3,7 @@ import { ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import VideoRecorder from "../common/VideoRecorder";
 import AudioRecorder from "../common/AudioRecorder";
+import axiosInstance from "../../config/axios";
 
 const synth = window.speechSynthesis;
 
@@ -48,7 +49,21 @@ const Interview = ({ audioOn }) => {
     }, [audioOn])
 
     const handleSubmit = () => {
-        // TODO: audio / video recording submission to the api
+        // TODO: implementation for the api
+        const formData = new FormData();
+        console.log(audio)
+        if (audio) {
+            console.log("audio present")
+            formData.append("audio", audio, audio.name);
+        }
+        if (recordedVideo) {
+            formData.append("video", recordedVideo, recordedVideo.name);
+        }
+        formData.append("question", "This is a sample question");
+        formData.append("transcription", "This is a sample transcription");
+        formData.append("analysis", "This is a sample analysis");
+        const response = axiosInstance.post("/api/addAiAnalysis", formData);
+        console.log(response.data);
     }
 
     if (!synth)

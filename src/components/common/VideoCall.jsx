@@ -21,8 +21,8 @@ const VideoCall = ({ micOn, setMic, cameraOn, setCamera }) => {
     const [activeConnection, setActiveConnection] = useState(true);
 
     // get local video and mic tracks
-    const { localMicrophoneTrack } = useLocalMicrophoneTrack(micOn);
-    const { localCameraTrack } = useLocalCameraTrack(cameraOn);
+    const { localMicrophoneTrack } = useLocalMicrophoneTrack(true);
+    const { localCameraTrack } = useLocalCameraTrack(true);
 
     // Join the channel
     useJoin(
@@ -52,7 +52,7 @@ const VideoCall = ({ micOn, setMic, cameraOn, setCamera }) => {
                 {
                     // Initialize each remote stream using RemoteUser component
                     remoteUsers.map((user) => (
-                        <div key={user.uid} className="relative w-1/4 overflow-hidden max-w-[720px] min-w-[360px]">
+                        <div key={user.uid} className="relative w-1/4 aspect-video overflow-hidden max-w-[720px] min-w-[360px]">
                             <RemoteUser user={user} />
                         </div>
                     ))
