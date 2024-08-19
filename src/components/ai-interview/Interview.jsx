@@ -79,15 +79,13 @@ const Interview = ({ audioOn }) => {
                 <br />
                 <div className="flex justify-between">
                     <div className="flex gap-4">
-                        <Button onClick={onAudioRecordOpen}>Record Audio</Button>
-                        <Button onClick={onVideoRecordOpen}>Record Video</Button>
+                        <Button onClick={onVideoRecordOpen}>Record</Button>
                     </div>
                     <Button onClick={handleSubmit}>Submit <ChevronRight size={20} /></Button>
                 </div>
             </div>
 
             <VideoRecorder recordedVideo={recordedVideo} setRecordedVideo={setRecordedVideo} onClose={onVideoRecordClose} isOpen={isVideoRecordOpen} />
-            <AudioRecorder audio={audio} setAudio={setAudio} onClose={onAudioRecordClose} isOpen={isAudioRecordOpen} />
         </div>
     )
 }

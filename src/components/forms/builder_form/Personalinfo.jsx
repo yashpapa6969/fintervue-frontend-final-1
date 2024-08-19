@@ -735,49 +735,6 @@ GitHub: \\href{{github}}{\\texttt{{github}}}
     <div className="flex flex-col gap-5">
       {/* Name and Email */}
       <ToastContainer />
-      <div className="w-full">
-        <div className="text-xl font-semibold text-gray-600">
-          Choose Resume Type
-        </div>
-        <div className="mt-1 flex space-x-2">
-          <button
-            onClick={() => handleResumeTypeChange(1)}
-            className={`px-4 py-2 border rounded-md ${selectedResumeType === 1
-              ? "bg-blue-500 text-white"
-              : "bg-white text-gray-800"
-              } border-gray-300 focus:outline-none`}
-          >
-            1
-          </button>
-          <button
-            onClick={() => handleResumeTypeChange(2)}
-            className={`px-4 py-2 border rounded-md ${selectedResumeType === 2
-              ? "bg-blue-500 text-white"
-              : "bg-white text-gray-800"
-              } border-gray-300 focus:outline-none`}
-          >
-            2
-          </button>
-          <button
-            onClick={() => handleResumeTypeChange(3)}
-            className={`px-4 py-2 border rounded-md ${selectedResumeType === 3
-              ? "bg-blue-500 text-white"
-              : "bg-white text-gray-800"
-              } border-gray-300 focus:outline-none`}
-          >
-            3
-          </button>
-          <button
-            onClick={() => handleResumeTypeChange(4)}
-            className={`px-4 py-2 border rounded-md ${selectedResumeType === 4
-              ? "bg-blue-500 text-white"
-              : "bg-white text-gray-800"
-              } border-gray-300 focus:outline-none`}
-          >
-            4
-          </button>
-        </div>
-      </div>
 
       <div className="text-xl font-semibold text-gray-600">
         Enter your information
@@ -1120,14 +1077,55 @@ GitHub: \\href{{github}}{\\texttt{{github}}}
         </TabPanels>
       </Tabs>
 
-      <div className="z-10 flex min-h-[5rem] items-center justify-center mt-5">
-        <button onClick={handlePrintJson}>
-          <ShimmerButton className="shadow-2xl">
-            <span className="whitespace-pre-wrap text-center text-xl font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-xl">
-              Get my resume
-            </span>
-          </ShimmerButton>
-        </button>
+      <div className="z-10 mb-4 flex flex-col md:flex-row gap-4 min-h-[5rem] md:items-center justify-center mt-5">
+        <div className="w-full">
+          <div className="text-xl font-semibold text-gray-600">
+            Choose Resume Type
+          </div>
+          <div className="mt-1 flex space-x-2">
+            <button
+              onClick={() => handleResumeTypeChange(1)}
+              className={`px-4 py-2 border rounded-md ${selectedResumeType === 1
+                ? "bg-blue-500 text-white"
+                : "bg-white text-gray-800"
+                } border-gray-300 focus:outline-none`}
+            >
+              1
+            </button>
+            <button
+              onClick={() => handleResumeTypeChange(2)}
+              className={`px-4 py-2 border rounded-md ${selectedResumeType === 2
+                ? "bg-blue-500 text-white"
+                : "bg-white text-gray-800"
+                } border-gray-300 focus:outline-none`}
+            >
+              2
+            </button>
+            <button
+              onClick={() => handleResumeTypeChange(3)}
+              className={`px-4 py-2 border rounded-md ${selectedResumeType === 3
+                ? "bg-blue-500 text-white"
+                : "bg-white text-gray-800"
+                } border-gray-300 focus:outline-none`}
+            >
+              3
+            </button>
+            <button
+              onClick={() => handleResumeTypeChange(4)}
+              className={`px-4 py-2 border rounded-md ${selectedResumeType === 4
+                ? "bg-blue-500 text-white"
+                : "bg-white text-gray-800"
+                } border-gray-300 focus:outline-none`}
+            >
+              4
+            </button>
+          </div>
+        </div>
+        <ShimmerButton className="shadow-2xl w-[220px]" onClick={handlePrintJson}>
+          <span className="whitespace-pre-wrap text-center text-xl font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-xl">
+            Get my resume
+          </span>
+        </ShimmerButton>
       </div>
     </div>
   );

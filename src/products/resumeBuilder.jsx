@@ -3,8 +3,26 @@ import { StepperContext } from "../context/StepperContext";
 import Navbar from "../components/navbar";
 import Personalinfo from "../components/forms/builder_form/Personalinfo";
 import FlipText from "../components/ui/flip-text";
+import { Select } from "@chakra-ui/react";
+
+const ExperienceLevelForm = ({ setExperienceLevel }) => {
+  return (
+    <div className="my-4 max-w-[300px]">
+      <span className="font-semibold">
+        Choose your experience level
+      </span>
+      <Select mt={2} onChange={(e) => setExperienceLevel(e.target.value)}>
+        <option defaultValue={""}>What is your experience?</option>
+        <option value={"beginner"}>Beginner</option>
+        <option value={"intermediate"}>Intermediate</option>
+        <option value={"expert"}>Expert</option>
+      </Select>
+    </div>
+  )
+}
 
 const ResumeBuilder = () => {
+  const [experienceLevel, setExperienceLevel] = useState("");
   const [userData, setUserData] = useState({
     name: "",
     email: "",
@@ -38,6 +56,7 @@ const ResumeBuilder = () => {
       },],
   });
   const [finalData, setFinalData] = useState([]);
+  console.log(experienceLevel)
 
   return (
     <div>
@@ -57,21 +76,26 @@ const ResumeBuilder = () => {
           </h3>
         </div>
 
-        <div className="container horizontal">
-          <div className="w-full flex justify-center ">
-            {/* Optionally add a title or any additional content here */}
-          </div>
-          <StepperContext.Provider
-            value={{
-              userData,
-              setUserData,
-              finalData,
-              setFinalData,
-            }}
-          >
-            <Personalinfo />
-          </StepperContext.Provider>
-        </div>
+        <ExperienceLevelForm setExperienceLevel={setExperienceLevel} />
+        {experienceLevel && (
+          <>
+            <div className="container horizontal">
+              <div className="w-full flex justify-center ">
+                {/* Optionally add a title or any additional content here */}
+              </div>
+              <StepperContext.Provider
+                value={{
+                  userData,
+                  setUserData,
+                  finalData,
+                  setFinalData,
+                }}
+              >
+                <Personalinfo />
+              </StepperContext.Provider>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
