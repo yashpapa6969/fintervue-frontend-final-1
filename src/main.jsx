@@ -9,6 +9,8 @@ import "./styles/index.css";
 import App from './App.jsx'
 import { ChakraProvider } from '@chakra-ui/react'
 import SignupPage2 from './pages/signupPage2.jsx';
+import DisplayPage from './pages/DisplayPage.jsx';
+import JobDetailPage from './pages/JobDetailPage.jsx';
 
 
 
@@ -46,17 +48,15 @@ const router = createBrowserRouter([
   },
   {
     path: "/signup",
-    // element: <SignupPage />,
-    element:<SignupPage2/>
+    element: <SignupPage2 />,
   },
   {
     path: "/signup/candidate",
-   
     element: <SignupPage />,
   },
   {
     path: "/signup/interviewer",
-   
+
     element: <InterviewerSignupPage />,
   },
   {
@@ -102,6 +102,14 @@ const router = createBrowserRouter([
   {
     path: "/RefundsAndCancellation",
     element: <RefundsAndCancellationPage />,
+  },
+  {
+    path: "/display",
+    element: <DisplayPage />,
+  },
+  {
+    path: "/display/job",
+    element: <JobDetailPage/>,
   },
 ]);
 
