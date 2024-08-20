@@ -13,6 +13,7 @@ import SignupPage2 from './pages/signupPage2.jsx';
 
 
 const SignupPage = React.lazy(() => import("./pages/SignupPage.jsx"));
+const InterviewerSignupPage = React.lazy(() => import("./pages/InterviewerSignupPage.jsx"));
 const LoginPage = React.lazy(() => import("./pages/LoginPage.jsx"));
 const MeetingPage = React.lazy(() => import("./pages/MeetingPage.jsx"));
 const ProductPage = React.lazy(() => import("./pages/ProductPage.jsx"));
@@ -53,8 +54,11 @@ const router = createBrowserRouter([
    
     element: <SignupPage />,
   },
-
-
+  {
+    path: "/signup/interviewer",
+   
+    element: <InterviewerSignupPage />,
+  },
   {
     path: "/login",
     element: <LoginPage />,
