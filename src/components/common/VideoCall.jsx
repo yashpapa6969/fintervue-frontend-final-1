@@ -1,136 +1,106 @@
-import { useState, useRef } from "react";
 import AgoraRTC from "agora-rtc-sdk-ng";
 
-const appId = import.meta.env.VITE_AGORA_APPID; // Your Agora App ID
-const token = null; // Token is optional
-const channelName = "test";
+let rtc = {
+    // For the local audio and video tracks.
+    localAudioTrack: null,
+    localVideoTrack: null,
+    client: null,
+};
 
-const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+let options = {
+    // Pass your app ID here.
+    appId: import.meta.env.VITE_AGORA_APPID,
+    // Set the channel name.
+    channel: "test",
+    // Use a temp token
+    token: null,
+    // Uid
+    uid: 123456,
+};
+
+rtc.client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
 
 const VideoCall = () => {
-    const [inCall, setInCall] = useState(false);
-    const [name, setName] = useState("");
-    const [micOn, setMicOn] = useState(true);
-    const [cameraOn, setCameraOn] = useState(true);
-    const localTracks = useRef({ audioTrack: null, videoTrack: null });
 
-    const handleJoin = async () => {
-        if (name.trim()) {
-            await client.join(appId, channelName, token, null);
+    // Listen for the "user-published" event, from which you can get an AgoraRTCRemoteUser object.
+    rtc.client.on("user-published", async (user, mediaType) => {
+        // Subscribe to the remote user when the SDK triggers the "user-published" event
+        await rtc.client.subscribe(user, mediaType);
+        console.log("subscribe success");
 
-            // Create microphone and camera tracks
-            const [microphoneTrack, cameraTrack] = await AgoraRTC.createMicrophoneAndCameraTracks();
+        // If the remote user publishes a video track.
+        if (mediaType === "video") {
+            // Get the RemoteVideoTrack object in the AgoraRTCRemoteUser object.
+            const remoteVideoTrack = user.videoTrack;
+            // Dynamically create a container in the form of a DIV element for playing the remote video track.
+            const remotePlayerContainer = document.createElement("div");
+            // Specify the ID of the DIV container. You can use the uid of the remote user.
+            remotePlayerContainer.id = user.uid.toString();
+            remotePlayerContainer.textContent = "Remote user " + user.uid.toString();
+            remotePlayerContainer.style.width = "640px";
+            remotePlayerContainer.style.height = "480px";
+            document.body.append(remotePlayerContainer);
 
-            // Save the tracks to ref
-            localTracks.current.audioTrack = microphoneTrack;
-            localTracks.current.videoTrack = cameraTrack;
-
-            // Play the video track in the "local-player" div
-            cameraTrack.play("local-player");
-
-            // Publish the tracks
-            await client.publish([microphoneTrack, cameraTrack]);
-
-            setInCall(true);  // Update state to indicate that the user is now in the call
-        } else {
-            alert("Please enter your name before joining.");
-        }
-    };
-
-    const handleLeave = async () => {
-        for (let track in localTracks.current) {
-            if (localTracks.current[track]) {
-                localTracks.current[track].stop();
-                localTracks.current[track].close();
-            }
+            // Play the remote video track.
+            // Pass the DIV container and the SDK dynamically creates a player in the container for playing the remote video track.
+            remoteVideoTrack.play(remotePlayerContainer);
         }
 
-        await client.leave();
-        setInCall(false);  // Update state to indicate that the user has left the call
-    };
-
-    const toggleMic = async () => {
-        if (localTracks.current.audioTrack) {
-            localTracks.current.audioTrack.setEnabled(!micOn);
-            setMicOn(!micOn);
+        // If the remote user publishes an audio track.
+        if (mediaType === "audio") {
+            // Get the RemoteAudioTrack object in the AgoraRTCRemoteUser object.
+            const remoteAudioTrack = user.audioTrack;
+            // Play the remote audio track. No need to pass any DOM element.
+            remoteAudioTrack.play();
         }
-    };
+    });
 
-    const toggleCamera = async () => {
-        if (localTracks.current.videoTrack) {
-            localTracks.current.videoTrack.setEnabled(!cameraOn);
-            setCameraOn(!cameraOn);
-        }
-    };
+    // Listen for the "user-unpublished" event
+    rtc.client.on("user-unpublished", user => {
+        // Get the dynamically created DIV container.
+        const remotePlayerContainer = document.getElementById(user.uid);
+        // Destroy the container.
+        remotePlayerContainer.remove();
+    });
+
+    const JoinCall = async () => {
+        await rtc.client.join(options.appId, options.channel, options.token, options.uid);
+        rtc.localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+        rtc.localVideoTrack = await AgoraRTC.createCameraVideoTrack();
+        await rtc.localVideoTrack.setEnabled(true);
+
+        await rtc.client.publish([rtc.localAudioTrack, rtc.localVideoTrack]);
+
+        const localPlayerContainer = document.createElement("div");
+        localPlayerContainer.id = options.uid;
+        localPlayerContainer.textContent = "Local user " + options.uid;
+        localPlayerContainer.style.width = "640px";
+        localPlayerContainer.style.height = "480px";
+        document.body.append(localPlayerContainer);
+
+        rtc.localVideoTrack.play(localPlayerContainer);
+        console.log("publish success!");
+    }
+
+    const LeaveCall = async () => {
+        // Unpublish local tracks.
+        await rtc.client.unpublish([rtc.localAudioTrack, rtc.localVideoTrack]);
+        // Destroy the local audio and video tracks.
+        rtc.localAudioTrack.close();
+        rtc.localVideoTrack.close();
+        rtc.client.remoteUsers.forEach(user => {
+            // Destroy the dynamically created DIV containers.
+            const playerContainer = document.getElementById(user.uid);
+            playerContainer && playerContainer.remove();
+        });
+        await rtc.client.leave();
+    }
 
     return (
-        <div className="App">
-            {!inCall ? (
-                <PreJoinScreen
-                    name={name}
-                    setName={setName}
-                    micOn={micOn}
-                    setMicOn={setMicOn}
-                    cameraOn={cameraOn}
-                    setCameraOn={setCameraOn}
-                    handleJoin={handleJoin}
-                />
-            ) : (
-                <Video
-                    micOn={micOn}
-                    toggleMic={toggleMic}
-                    cameraOn={cameraOn}
-                    toggleCamera={toggleCamera}
-                    handleLeave={handleLeave}
-                />
-            )}
-        </div>
-    );
-};
-
-const PreJoinScreen = ({
-    name,
-    setName,
-    micOn,
-    setMicOn,
-    cameraOn,
-    setCameraOn,
-    handleJoin,
-}) => {
-    return (
-        <div>
-            <h2>Join Video Call</h2>
-            <input
-                type="text"
-                placeholder="Enter your name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-            />
-            <div>
-                <button onClick={() => setMicOn(!micOn)}>
-                    {micOn ? "Turn Off Mic" : "Turn On Mic"}
-                </button>
-                <button onClick={() => setCameraOn(!cameraOn)}>
-                    {cameraOn ? "Turn Off Camera" : "Turn On Camera"}
-                </button>
-            </div>
-            <button onClick={handleJoin}>Join Meeting</button>
-        </div>
-    );
-};
-
-const Video = ({ micOn, toggleMic, cameraOn, toggleCamera, handleLeave }) => {
-    return (
-        <div>
-            <div id="local-player" style={{ width: "640px", height: "480px", background: "black" }} />
-            <div>
-                <button onClick={toggleMic}>{micOn ? "Mute Mic" : "Unmute Mic"}</button>
-                <button onClick={toggleCamera}>
-                    {cameraOn ? "Turn Off Camera" : "Turn On Camera"}
-                </button>
-                <button onClick={handleLeave}>Leave Call</button>
-            </div>
-        </div>
+        <>
+        <button onClick={JoinCall}>Join</button>
+        <button onClick={LeaveCall}>Leave</button>
+        </>
     );
 };
 

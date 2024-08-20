@@ -15,6 +15,7 @@ import JobDetailPage from './pages/JobDetailPage.jsx';
 
 
 const SignupPage = React.lazy(() => import("./pages/SignupPage.jsx"));
+const InterviewerSignupPage = React.lazy(() => import("./pages/InterviewerSignupPage.jsx"));
 const LoginPage = React.lazy(() => import("./pages/LoginPage.jsx"));
 const MeetingPage = React.lazy(() => import("./pages/MeetingPage.jsx"));
 const ProductPage = React.lazy(() => import("./pages/ProductPage.jsx"));
@@ -47,7 +48,6 @@ const router = createBrowserRouter([
   },
   {
     path: "/signup",
-
     element: <SignupPage2 />,
   },
   {
@@ -55,12 +55,9 @@ const router = createBrowserRouter([
     element: <SignupPage />,
   },
   {
-    path: "/display",
-    element: <DisplayPage />,
-  },
-  {
-    path: "/display/job",
-    element: <JobDetailPage />,
+    path: "/signup/interviewer",
+
+    element: <InterviewerSignupPage />,
   },
   {
     path: "/login",
@@ -105,6 +102,14 @@ const router = createBrowserRouter([
   {
     path: "/RefundsAndCancellation",
     element: <RefundsAndCancellationPage />,
+  },
+  {
+    path: "/display",
+    element: <DisplayPage />,
+  },
+  {
+    path: "/display/job",
+    element: <JobDetailPage/>,
   },
 ]);
 
