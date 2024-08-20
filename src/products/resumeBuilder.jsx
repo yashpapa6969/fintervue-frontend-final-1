@@ -5,24 +5,38 @@ import Personalinfo from "../components/forms/builder_form/Personalinfo";
 import FlipText from "../components/ui/flip-text";
 import { Select } from "@chakra-ui/react";
 
-const ExperienceLevelForm = ({ setExperienceLevel }) => {
+const PreResumeForm = ({ setExperienceLevel, setDomain }) => {
   return (
-    <div className="my-4 max-w-[300px]">
-      <span className="font-semibold">
-        Choose your experience level
-      </span>
-      <Select mt={2} onChange={(e) => setExperienceLevel(e.target.value)}>
-        <option defaultValue={""}>What is your experience?</option>
-        <option value={"beginner"}>Beginner</option>
-        <option value={"intermediate"}>Intermediate</option>
-        <option value={"expert"}>Expert</option>
-      </Select>
+    <div className="flex gap-4">
+      <div className="my-4 max-w-[300px]">
+        <span className="font-semibold">
+          Choose your experience level
+        </span>
+        <Select mt={2} onChange={(e) => setExperienceLevel(e.target.value)}>
+          <option defaultValue={""}>What is your experience?</option>
+          <option value={"beginner"}>Beginner</option>
+          <option value={"intermediate"}>Intermediate</option>
+          <option value={"expert"}>Expert</option>
+        </Select>
+      </div>
+      <div className="my-4 max-w-[300px]">
+        <span className="font-semibold">
+          Choose your domain
+        </span>
+        <Select mt={2} onChange={(e) => setDomain(e.target.value)}>
+          <option defaultValue={""}>What is your domain?</option>
+          <option value={"finance1"}>Finance 1</option>
+          <option value={"finance2"}>Finance 2</option>
+          <option value={"finance3"}>Finance 3</option>
+        </Select>
+      </div>
     </div>
   )
 }
 
 const ResumeBuilder = () => {
   const [experienceLevel, setExperienceLevel] = useState("");
+  const [domain, setDomain] = useState("");
   const [userData, setUserData] = useState({
     name: "",
     email: "",
@@ -76,8 +90,8 @@ const ResumeBuilder = () => {
           </h3>
         </div>
 
-        <ExperienceLevelForm setExperienceLevel={setExperienceLevel} />
-        {experienceLevel && (
+        <PreResumeForm setExperienceLevel={setExperienceLevel} setDomain={setDomain} />
+        {experienceLevel && domain && (
           <>
             <div className="container horizontal">
               <div className="w-full flex justify-center ">
