@@ -3,7 +3,7 @@
 import { FaArrowRight } from "react-icons/fa";
 import Button from "../button";
 import HeroImage from "../../assests/svg-2.svg"; 
-// import HalfTorus from "../../assests/half-torus1.png"; 
+import HalfTorus from "../../assests/half-torus1.png"; 
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 

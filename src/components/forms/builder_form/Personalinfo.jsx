@@ -1,8 +1,10 @@
-import React, { useContext, useState, useEffect } from "react";
+import { useContext, useState } from "react";
 import { StepperContext } from "../../../context/StepperContext";
 import ShimmerButton from "../../ui/shimmer-button";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import RequiredIndicator from "../../ui/RequiredIndicator";
+import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
 
 const Personalinfo = () => {
   const { userData, setUserData } = useContext(StepperContext);
@@ -104,109 +106,111 @@ const Personalinfo = () => {
 \\setlength{\\columnsep}{-1pt}
 \\input{glyphtounicode}
 
-  \\pagestyle{fancy}
-  \\fancyhf{}
-  \\fancyfoot{}
-  \\renewcommand{\\headrulewidth}{0pt}
-  \\renewcommand{\\footrulewidth}{0pt}
+\\pagestyle{fancy}
+\\fancyhf{} 
+\\fancyfoot{}
+\\renewcommand{\\headrulewidth}{0pt}
+\\renewcommand{\\footrulewidth}{0pt}
 
-  \\addtolength{\\oddsidemargin}{-0.6in}
-  \\addtolength{\\evensidemargin}{-0.5in}
-  \\addtolength{\\textwidth}{1.19in}
-  \\addtolength{\\topmargin}{-.7in}
-  \\addtolength{\\textheight}{1.4in}
+\\addtolength{\\oddsidemargin}{-0.6in}
+\\addtolength{\\evensidemargin}{-0.5in}
+\\addtolength{\\textwidth}{1.19in}
+\\addtolength{\\topmargin}{-.7in}
+\\addtolength{\\textheight}{1.4in}
 
-  \\urlstyle{same}
+\\urlstyle{same}
 
-  \\raggedbottom
-  \\raggedright
-  \\setlength{\\tabcolsep}{0in}
-  \\definecolor{deepblue}{RGB}{0,51,151}
-  \\definecolor{darkblue}{RGB}{0,0,139}
+\\raggedbottom
+\\raggedright
+\\setlength{\\tabcolsep}{0in}
+\\definecolor{deepblue}{RGB}{0,51,151}
+\\definecolor{darkblue}{RGB}{0,0,139}
 
-  \\titleformat{\\section}{\\color{darkblue}
-    \\vspace{-4pt}\\scshape\\raggedright\\large\\bfseries
-  }{}{0em}{}[\\color{black}\\titlerule \\vspace{-5pt}]
+\\titleformat{\\section}{\\color{darkblue}
+  \\vspace{-4pt}\\scshape\\raggedright\\large\\bfseries
+}{}{0em}{}[\\color{black}\\titlerule \\vspace{-5pt}]
 
-  \\pdfgentounicode=1
+\\pdfgentounicode=1
 
-  \\newcommand{\\resumeItem}[1]{
-    \\item\\small{
-      {#1 \\vspace{-2pt}}
-    }
+\\newcommand{\\resumeItem}[1]{
+  \\item\\small{
+    {#1 \\vspace{-2pt}}
   }
+}
 
-  \\newcommand{\\resumeSubheading}[4]{
-    \\vspace{-2pt}\\item
-      \\begin{tabular*}{1.0\\textwidth}[t]{l@{\\extracolsep{\\fill}}r}
-        \\textbf{#1} & \\textbf{\\small #2} \\\\
-        \\color{deepblue}\\textit{\\small#3} & \\textit{\\small #4} \\\\
-      \\end{tabular*}\\vspace{-7pt}
-  }
+\\newcommand{\\resumeSubheading}[4]{
+  \\vspace{-2pt}\\item
+    \\begin{tabular*}{1.0\\textwidth}[t]{l@{\\extracolsep{\\fill}}r}
+      \\textbf{#1} & \\textbf{\\small #2} \\\\
+      \\color{deepblue}\\textit{\\small#3} & \\textit{\\small #4} \\\\
+    \\end{tabular*}\\vspace{-7pt}
+}
 
-  \\newcommand{\\resumeProjectHeading}[3]{
-      \\item
-      \\begin{tabular*}{1.001\\textwidth}{l@{\\extracolsep{\\fill}}r}
-        \\small#1 & \\textbf{\\small #3} \\\\
-      \\end{tabular*}\\vspace{-7pt}
-      \\resumeItemListStart
-          \\resumeItem{#2}
-      \\resumeItemListEnd
-  }
-
-  \\newcommand{\\resumeSubItem}[1]{\\resumeItem{#1}\\vspace{-4pt}}
-
-  \\renewcommand\\labelitemi{$\\vcenter{\\hbox{\\tiny$\\bullet$}}$}
-  \\renewcommand\\labelitemii{$\\vcenter{\\hbox{\\tiny$\\bullet$}}$}
-
-  \\newcommand{\\resumeSubHeadingListStart}{\\begin{itemize}[leftmargin=0.0in, label={}]}
-  \\newcommand{\\resumeSubHeadingListEnd}{\\end{itemize}}
-  \\newcommand{\\resumeItemListStart}{\\begin{itemize}}
-  \\newcommand{\\resumeItemListEnd}{\\end{itemize}\\vspace{-5pt}}
-
-  \\begin{document}
-
-  \\begin{center}
-      {\\Huge \\scshape \\color{darkblue}{name}} \\\\ \\vspace{+10pt}
-      \\small \\raisebox{-0.1\\height}\\faPhone\\ {phone} ~ \\href{mailto:{email}}{\\raisebox{-0.2\\height}\\faEnvelope\\  \\underline{{email}}} ~
-      \\href{{linkedin}}{\\raisebox{-0.2\\height}\\faLinkedin\\ \\underline{{linkedin}}}
-      \\vspace{-3pt}
-  \\end{center}
-
-  \\section{Summary}
+\\newcommand{\\resumeProjectHeading}[3]{
+    \\item
+    \\begin{tabular*}{1.001\\textwidth}{l@{\\extracolsep{\\fill}}r}
+      \\small#1 & \\textbf{\\small #3} \\\\
+    \\end{tabular*}\\vspace{-7pt}
     \\resumeItemListStart
-      \\resumeItem{{summary}}
+        \\resumeItem{#2}
     \\resumeItemListEnd
+}
 
-  \\section{Education}
-    \\resumeSubHeadingListStart
-      {education}
-    \\resumeSubHeadingListEnd
+\\newcommand{\\resumeSubItem}[1]{\\resumeItem{#1}\\vspace{-4pt}}
 
-  \\section{Experience}
-    \\resumeSubHeadingListStart
-      {experience}
-    \\resumeSubHeadingListEnd
+\\renewcommand\\labelitemi{$\\vcenter{\\hbox{\\tiny$\\bullet$}}$}
+\\renewcommand\\labelitemii{$\\vcenter{\\hbox{\\tiny$\\bullet$}}$}
 
-  \\section{Projects}
-    \\resumeSubHeadingListStart
-      {projects}
-    \\resumeSubHeadingListEnd
+\\newcommand{\\resumeSubHeadingListStart}{\\begin{itemize}[leftmargin=0.0in, label={}]}
+\\newcommand{\\resumeSubHeadingListEnd}{\\end{itemize}}
+\\newcommand{\\resumeItemListStart}{\\begin{itemize}}
+\\newcommand{\\resumeItemListEnd}{\\end{itemize}\\vspace{-5pt}}
 
-  \\section{Technical Skills}
-   \\begin{itemize}[leftmargin=0.15in, label={}]
-      \\small{\\item{
-       \\textbf{Skills}{: {skills}} \\\\
-      }}
-   \\end{itemize}
+\\begin{document}
 
-  \\section{Achievements}
-    \\resumeSubHeadingListStart
-      \\resumeItem{{achievements}}
-    \\resumeSubHeadingListEnd
+\\begin{center}
+    {\\Huge \\scshape \\color{darkblue}{name}} \\\\ \\vspace{+10pt}
+    \\small \\raisebox{-0.1\\height}\\faPhone\\ {phone} ~ \\href{mailto:{email}}{\\raisebox{-0.2\\height}\\faEnvelope\\  \\underline{{email}}} ~
+    \\href{{linkedin}}{\\raisebox{-0.2\\height}\\faLinkedin\\ \\underline{{linkedin}}}
+    \\vspace{-3pt}
+\\end{center}
 
-  \\end{document}
-  `;
+\\section{Summary}
+  \\resumeItemListStart
+    \\resumeItem{{summary}}
+  \\resumeItemListEnd
+
+\\section{Education}
+  \\resumeSubHeadingListStart
+    {education}
+  \\resumeSubHeadingListEnd
+
+\\section{Experience}
+  \\resumeSubHeadingListStart
+    {experience}
+  \\resumeSubHeadingListEnd
+
+
+
+\\section{Projects}
+  \\resumeSubHeadingListStart
+    {projects}
+  \\resumeSubHeadingListEnd
+
+\\section{Technical Skills}
+ \\begin{itemize}[leftmargin=0.15in, label={}]
+    \\small{\\item{
+     \\textbf{Skills}{: {skills}} \\\\
+    }}
+ \\end{itemize}
+
+\\section{Achievements}
+  \\resumeSubHeadingListStart
+    \\resumeItem{{achievements}}
+  \\resumeSubHeadingListEnd
+
+\\end{document}
+`;
 
   const resumeTemplate2 = `
 \\documentclass[11pt]{article}
@@ -834,337 +838,10 @@ GitHub: \\href{{github}}{\\texttt{{github}}}
   };
 
   return (
-    <div className="flex flex-col gap-5 p-6 bg-blue-50 rounded-lg shadow-md">
+    <div className="flex flex-col gap-5">
       {/* Name and Email */}
       <ToastContainer />
-      <div className="flex flex-row gap-5">
-        <div className="w-full">
-          <div className="text-xl font-semibold text-gray-600">Name*</div>
-          <div className="mt-1">
-            <input
-              onChange={handleChange}
-              value={userData["name"] || ""}
-              name="name"
-              placeholder="Full Name"
-              className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-            />
-          </div>
-        </div>
-
-        <div className="w-full">
-          <div className="text-xl font-semibold text-gray-600">Email*</div>
-          <div className="mt-1">
-            <input
-              onChange={handleChange}
-              value={userData["email"] || ""}
-              name="email"
-              type="email"
-              placeholder="Email Address"
-              className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Phone Number and LinkedIn URL */}
-      <div className="flex flex-row gap-5">
-        <div className="w-full">
-          <div className="text-xl font-semibold text-gray-600">
-            Phone Number*
-          </div>
-          <div className="mt-1">
-            <input
-              onChange={handleChange}
-              value={userData["phone"] || ""}
-              name="phone"
-              type="tel"
-              placeholder="Phone Number"
-              className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-            />
-          </div>
-        </div>
-
-        <div className="w-full">
-          <div className="text-xl font-semibold text-gray-600">
-            LinkedIn URL
-          </div>
-          <div className="mt-1">
-            <input
-              onChange={handleChange}
-              value={userData["linkedin"] || ""}
-              name="linkedin"
-              type="url"
-              placeholder="LinkedIn Profile URL"
-              className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Job Role */}
       <div className="w-full">
-        <div className="text-xl font-semibold text-gray-600">Job Role*</div>
-        <div className="mt-1">
-          <select
-            onChange={handleChange}
-            value={userData["jobRole"] || ""}
-            name="jobRole"
-            className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-          >
-            <option value="" disabled>
-              Select Job Role
-            </option>
-            <option value="Developer">Developer</option>
-            <option value="Designer">Designer</option>
-            <option value="Manager">Manager</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
-      </div>
-
-      {/* Professional Summary */}
-      <div className="w-full">
-        <div className="text-xl font-semibold text-gray-600">
-          Professional Summary
-        </div>
-        <div className="mt-1">
-          <textarea
-            onChange={handleChange}
-            value={userData["summary"] || ""}
-            name="summary"
-            placeholder="Brief summary of your experience"
-            className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-            rows="4"
-          />
-        </div>
-      </div>
-
-      {/* Experience and Education */}
-      <div className="flex flex-row gap-5">
-        {/* Experience */}
-        <div className="w-full mt-4">
-          <div className="text-xl font-semibold text-gray-600">Experience*</div>
-          {(userData.experience || []).map((exp, index) => (
-            <div
-              key={index}
-              className="mt-3 p-4 border rounded-md bg-white border-gray-300"
-            >
-              <input
-                onChange={(e) =>
-                  handleChange(e, index, "experience", "companyName")
-                }
-                value={exp.companyName || ""}
-                placeholder="Company Name"
-                className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-              />
-              <input
-                onChange={(e) =>
-                  handleChange(e, index, "experience", "jobRole")
-                }
-                value={exp.jobRole || ""}
-                placeholder="Job Role"
-                className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-              />
-              <div className="flex flex-row gap-3">
-                <input
-                  onChange={(e) =>
-                    handleChange(e, index, "experience", "startDate")
-                  }
-                  value={exp.startDate || ""}
-                  type="date"
-                  placeholder="Start Date"
-                  className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-                />
-                <input
-                  onChange={(e) =>
-                    handleChange(e, index, "experience", "endDate")
-                  }
-                  value={exp.endDate || ""}
-                  type="date"
-                  placeholder="End Date"
-                  className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-                />
-              </div>
-              <textarea
-                onChange={(e) =>
-                  handleChange(e, index, "experience", "summary")
-                }
-                value={exp.summary || ""}
-                placeholder="Experience Summary"
-                className="w-full p-2 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-                rows="3"
-              />
-            </div>
-          ))}
-          <div className="flex justify-center mt-3">
-            <button onClick={addExperience} className="transition duration-300">
-              <ShimmerButton className="shadow-2xl">
-                <span className="whitespace-pre-wrap text-center text-xl font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-sm">
-                  Add experience
-                </span>
-              </ShimmerButton>
-            </button>
-          </div>
-        </div>
-
-        {/* Education */}
-        <div className="w-full mt-4">
-          <div className="text-xl font-semibold text-gray-600">Education*</div>
-          {(userData.education || []).map((edu, index) => (
-            <div
-              key={index}
-              className="mt-3 p-4 border rounded-md bg-white border-gray-300"
-            >
-              <input
-                onChange={(e) =>
-                  handleChange(e, index, "education", "institution")
-                }
-                value={edu.institution || ""}
-                placeholder="Institution Name"
-                className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-              />
-              <input
-                onChange={(e) => handleChange(e, index, "education", "degree")}
-                value={edu.degree || ""}
-                placeholder="Degree"
-                className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-              />
-              <div className="flex flex-row gap-3">
-                <input
-                  onChange={(e) =>
-                    handleChange(e, index, "education", "startDate")
-                  }
-                  value={edu.startDate || ""}
-                  type="date"
-                  placeholder="Start Date"
-                  className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-                />
-                <input
-                  onChange={(e) =>
-                    handleChange(e, index, "education", "endDate")
-                  }
-                  value={edu.endDate || ""}
-                  type="date"
-                  placeholder="End Date"
-                  className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-                />
-              </div>
-              <textarea
-                onChange={(e) =>
-                  handleChange(e, index, "education", "description")
-                }
-                value={edu.description || ""}
-                placeholder="Description"
-                className="w-full p-2 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-                rows="3"
-              />
-            </div>
-          ))}
-
-          <div className="flex justify-center mt-3">
-            <button onClick={addEducation} className="transition duration-300">
-              <ShimmerButton className="shadow-2xl">
-                <span className="whitespace-pre-wrap text-center text-xl font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-sm">
-                  Add education
-                </span>
-              </ShimmerButton>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Projects */}
-      <div className="flex flex-row gap-5">
-        <div className="w-full mt-4">
-          <div className="text-xl font-semibold text-gray-600">Projects*</div>
-          {(userData.projects || []).map((project, index) => (
-            <div
-              key={index}
-              className="mt-3 p-4 border rounded-md bg-white border-gray-300"
-            >
-              <input
-                onChange={(e) => handleChange(e, index, "projects", "name")}
-                value={project.name || ""}
-                placeholder="Project Name"
-                className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-              />
-              <textarea
-                onChange={(e) => handleChange(e, index, "projects", "summary")}
-                value={project.summary || ""}
-                placeholder="Project Summary"
-                className="w-full p-2  border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-                rows="3"
-              />
-              <input
-                onChange={(e) => handleChange(e, index, "projects", "date")}
-                value={project.date || ""}
-                type="date"
-                placeholder="Date"
-                className="w-full p-2 mb-3 mt-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-              />
-            </div>
-          ))}
-          <div className="flex justify-center mt-3">
-            <button onClick={addProject} className="transition duration-300">
-              <ShimmerButton className="shadow-2xl">
-                <span className="whitespace-pre-wrap text-center text-xl font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-sm">
-                  Add projects
-                </span>
-              </ShimmerButton>
-            </button>
-          </div>
-        </div>
-
-        {/* Skills */}
-        <div className="w-full mt-4">
-          <div className="w-full">
-            <div className="text-xl font-semibold text-gray-600">Skills*</div>
-            <div className="flex flex-row gap-5">
-              {((userData.skills || "").split(",") || []).map(
-                (skill, index) => (
-                  <div key={index} className="mt-2">
-                    <input
-                      onChange={(e) => handleSkillChange(e, index)}
-                      value={skill || ""}
-                      placeholder="Skill"
-                      className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-                    />
-                  </div>
-                )
-              )}
-
-              <div className="flex justify-center ">
-                <button onClick={addSkill} className="transition duration-300">
-                  <ShimmerButton className="shadow-2xl ">
-                    <span className="whitespace-pre-wrap text-center text-xl font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-sm">
-                      Add Skills
-                    </span>
-                  </ShimmerButton>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Achievements */}
-          <div className="w-full mt-4">
-            <div className="text-xl font-semibold text-gray-600">
-              Achievements
-            </div>
-            <div className="mt-1">
-              <textarea
-                onChange={handleChange}
-                value={userData["achievements"] || ""}
-                name="achievements"
-                placeholder="Achievements (comma-separated)"
-                className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-                rows="7"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="w-full mt-4">
         <div className="text-xl font-semibold text-gray-600">
           Choose Resume Type
         </div>
@@ -1211,6 +888,388 @@ GitHub: \\href{{github}}{\\texttt{{github}}}
           </button>
         </div>
       </div>
+
+      <div className="text-xl font-semibold text-gray-600">
+        Enter your information
+      </div>
+      <Tabs p={0}>
+        <TabList>
+          <Tab>Personal</Tab>
+          <Tab>Job</Tab>
+          <Tab>Projects</Tab>
+        </TabList>
+        <TabPanels>
+          <TabPanel px={0}>
+            <div className="flex flex-row gap-5">
+              <div className="w-full">
+                <div className="text-xl font-semibold text-gray-600">
+                  Name
+                  <RequiredIndicator />
+                </div>
+                <div className="mt-1">
+                  <input
+                    onChange={handleChange}
+                    value={userData["name"] || ""}
+                    name="name"
+                    placeholder="Full Name"
+                    className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="w-full">
+                <div className="text-xl font-semibold text-gray-600">
+                  Email
+                  <RequiredIndicator />
+                </div>
+                <div className="mt-1">
+                  <input
+                    onChange={handleChange}
+                    value={userData["email"] || ""}
+                    name="email"
+                    type="email"
+                    placeholder="Email Address"
+                    className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+                  />
+                </div>
+              </div>
+            </div>
+            {/* Phone Number and LinkedIn URL */}
+            <div className="flex flex-row gap-5 mt-5">
+              <div className="w-full">
+                <div className="text-xl font-semibold text-gray-600">
+                  Phone Number*
+                </div>
+                <div className="mt-1">
+                  <input
+                    onChange={handleChange}
+                    value={userData["phone"] || ""}
+                    name="phone"
+                    type="tel"
+                    placeholder="Phone Number"
+                    className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="w-full">
+                <div className="text-xl font-semibold text-gray-600">
+                  LinkedIn URL
+                </div>
+                <div className="mt-1">
+                  <input
+                    onChange={handleChange}
+                    value={userData["linkedin"] || ""}
+                    name="linkedin"
+                    type="url"
+                    placeholder="LinkedIn Profile URL"
+                    className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+                  />
+                </div>
+              </div>
+            </div>
+          </TabPanel>
+          <TabPanel px={0}>
+            {/* Job Role */}
+            <div className="w-full">
+              <div className="text-xl font-semibold text-gray-600">
+                Job Role
+                <RequiredIndicator />
+              </div>
+              <div className="mt-1">
+                <select
+                  onChange={handleChange}
+                  value={userData["jobRole"] || ""}
+                  name="jobRole"
+                  className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+                >
+                  <option value="" disabled>
+                    Select Job Role
+                  </option>
+                  <option value="Developer">Developer</option>
+                  <option value="Designer">Designer</option>
+                  <option value="Manager">Manager</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+            </div>
+            {/* Professional Summary */}
+            <div className="w-full">
+              <div className="text-xl font-semibold text-gray-600">
+                Professional Summary
+              </div>
+              <div className="mt-1">
+                <textarea
+                  onChange={handleChange}
+                  value={userData["summary"] || ""}
+                  name="summary"
+                  placeholder="Brief summary of your experience"
+                  className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+                  rows="4"
+                />
+              </div>
+            </div>
+
+            {/* Experience and Education */}
+            <div className="flex flex-col md:flex-row gap-5">
+              {/* Experience */}
+              <div className="w-full mt-4">
+                <div className="text-xl font-semibold text-gray-600">
+                  Experience
+                  <RequiredIndicator />
+                </div>
+                {(userData.experience || []).map((exp, index) => (
+                  <div
+                    key={index}
+                    className="mt-3 p-4 border rounded-md bg-white border-gray-300"
+                  >
+                    <input
+                      onChange={(e) =>
+                        handleChange(e, index, "experience", "companyName")
+                      }
+                      value={exp.companyName || ""}
+                      placeholder="Company Name"
+                      className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+                    />
+                    <input
+                      onChange={(e) =>
+                        handleChange(e, index, "experience", "jobRole")
+                      }
+                      value={exp.jobRole || ""}
+                      placeholder="Job Role"
+                      className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+                    />
+                    <div className="flex flex-col md:flex-row md:gap-3">
+                      <input
+                        onChange={(e) =>
+                          handleChange(e, index, "experience", "startDate")
+                        }
+                        value={exp.startDate || ""}
+                        type="date"
+                        placeholder="Start Date"
+                        className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+                      />
+                      <input
+                        onChange={(e) =>
+                          handleChange(e, index, "experience", "endDate")
+                        }
+                        value={exp.endDate || ""}
+                        type="date"
+                        placeholder="End Date"
+                        className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+                      />
+                    </div>
+                    <textarea
+                      onChange={(e) =>
+                        handleChange(e, index, "experience", "summary")
+                      }
+                      value={exp.summary || ""}
+                      placeholder="Experience Summary"
+                      className="w-full p-2 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+                      rows="3"
+                    />
+                  </div>
+                ))}
+                <div className="flex justify-center mt-3">
+                  <button
+                    onClick={addExperience}
+                    className="transition duration-300"
+                  >
+                    <ShimmerButton className="shadow-2xl">
+                      <span className="whitespace-pre-wrap text-center text-xl font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-sm">
+                        Add experience
+                      </span>
+                    </ShimmerButton>
+                  </button>
+                </div>
+              </div>
+
+              {/* Education */}
+              <div className="w-full mt-4">
+                <div className="text-xl font-semibold text-gray-600">
+                  Education
+                  <RequiredIndicator />
+                </div>
+                {(userData.education || []).map((edu, index) => (
+                  <div
+                    key={index}
+                    className="mt-3 p-4 border rounded-md bg-white border-gray-300"
+                  >
+                    <input
+                      onChange={(e) =>
+                        handleChange(e, index, "education", "institution")
+                      }
+                      value={edu.institution || ""}
+                      placeholder="Institution Name"
+                      className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+                    />
+                    <input
+                      onChange={(e) =>
+                        handleChange(e, index, "education", "degree")
+                      }
+                      value={edu.degree || ""}
+                      placeholder="Degree"
+                      className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+                    />
+                    <div className="flex flex-col md:flex-row md:gap-3">
+                      <input
+                        onChange={(e) =>
+                          handleChange(e, index, "education", "startDate")
+                        }
+                        value={edu.startDate || ""}
+                        type="date"
+                        placeholder="Start Date"
+                        className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+                      />
+                      <input
+                        onChange={(e) =>
+                          handleChange(e, index, "education", "endDate")
+                        }
+                        value={edu.endDate || ""}
+                        type="date"
+                        placeholder="End Date"
+                        className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+                      />
+                    </div>
+                    <textarea
+                      onChange={(e) =>
+                        handleChange(e, index, "education", "description")
+                      }
+                      value={edu.description || ""}
+                      placeholder="Description"
+                      className="w-full p-2 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+                      rows="3"
+                    />
+                  </div>
+                ))}
+
+                <div className="flex justify-center mt-3">
+                  <button
+                    onClick={addEducation}
+                    className="transition duration-300"
+                  >
+                    <ShimmerButton className="shadow-2xl">
+                      <span className="whitespace-pre-wrap text-center text-xl font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-sm">
+                        Add education
+                      </span>
+                    </ShimmerButton>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </TabPanel>
+          <TabPanel px={0}>
+            {/* Projects */}
+            <div className="flex flex-col md:flex-row gap-5">
+              <div className="w-full mt-4">
+                <div className="text-xl font-semibold text-gray-600">
+                  Projects
+                  <RequiredIndicator />
+                </div>
+                {(userData.projects || []).map((project, index) => (
+                  <div
+                    key={index}
+                    className="mt-3 p-4 border rounded-md bg-white border-gray-300"
+                  >
+                    <input
+                      onChange={(e) =>
+                        handleChange(e, index, "projects", "name")
+                      }
+                      value={project.name || ""}
+                      placeholder="Project Name"
+                      className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+                    />
+                    <textarea
+                      onChange={(e) =>
+                        handleChange(e, index, "projects", "summary")
+                      }
+                      value={project.summary || ""}
+                      placeholder="Project Summary"
+                      className="w-full p-2  border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+                      rows="3"
+                    />
+                    <input
+                      onChange={(e) =>
+                        handleChange(e, index, "projects", "date")
+                      }
+                      value={project.date || ""}
+                      type="date"
+                      placeholder="Date"
+                      className="w-full p-2 mb-3 mt-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+                    />
+                  </div>
+                ))}
+                <div className="flex justify-center mt-3">
+                  <button
+                    onClick={addProject}
+                    className="transition duration-300"
+                  >
+                    <ShimmerButton className="shadow-2xl">
+                      <span className="whitespace-pre-wrap text-center text-xl font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-sm">
+                        Add projects
+                      </span>
+                    </ShimmerButton>
+                  </button>
+                </div>
+              </div>
+
+              {/* Skills */}
+              <div className="w-full mt-4">
+                <div className="w-full">
+                  <div className="text-xl font-semibold text-gray-600">
+                    Skills
+                    <RequiredIndicator />
+                  </div>
+                  <div className="flex flex-row gap-5">
+                    {((userData.skills || "").split(",") || []).map(
+                      (skill, index) => (
+                        <div key={index} className="mt-2">
+                          <input
+                            onChange={(e) => handleSkillChange(e, index)}
+                            value={skill || ""}
+                            placeholder="Skill"
+                            className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+                          />
+                        </div>
+                      )
+                    )}
+
+                    <div className="flex justify-center ">
+                      <button
+                        onClick={addSkill}
+                        className="transition duration-300"
+                      >
+                        <ShimmerButton className="shadow-2xl ">
+                          <span className="whitespace-pre-wrap text-center text-xl font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-sm">
+                            Add Skills
+                          </span>
+                        </ShimmerButton>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Achievements */}
+                <div className="w-full mt-4">
+                  <div className="text-xl font-semibold text-gray-600">
+                    Achievements
+                  </div>
+                  <div className="mt-1">
+                    <textarea
+                      onChange={handleChange}
+                      value={userData["achievements"] || ""}
+                      name="achievements"
+                      placeholder="Achievements (comma-separated)"
+                      className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+                      rows="7"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
 
       <div className="z-10 flex min-h-[5rem] items-center justify-center mt-5">
         <button onClick={handlePrintJson}>

@@ -25,7 +25,9 @@ const Navbar = () => {
           <li>
             <a href="#">Help</a>
           </li>
-          <Button text="Request Demo" />
+          <a href="/signup">
+            <Button text="Get Started" />
+          </a>
           <Button text="Get for free" />
         </ul>
       </nav>

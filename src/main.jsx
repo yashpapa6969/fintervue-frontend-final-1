@@ -8,6 +8,9 @@ import {
 import "./styles/index.css";
 import App from './App.jsx'
 import { ChakraProvider } from '@chakra-ui/react'
+import SignupPage2 from './pages/signupPage2.jsx';
+
+
 
 const SignupPage = React.lazy(() => import("./pages/SignupPage.jsx"));
 const LoginPage = React.lazy(() => import("./pages/LoginPage.jsx"));
@@ -42,8 +45,16 @@ const router = createBrowserRouter([
   },
   {
     path: "/signup",
+    // element: <SignupPage />,
+    element:<SignupPage2/>
+  },
+  {
+    path: "/signup/candidate",
+   
     element: <SignupPage />,
   },
+
+
   {
     path: "/login",
     element: <LoginPage />,
