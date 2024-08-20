@@ -47,7 +47,6 @@ const Personalinfo = () => {
     setUserData({ ...userData, skills: skillsArray.join(", ") });
   };
 
-
   const handleSkillChange = (e, index) => {
     const skillsArray = (userData.skills || "")
       .split(",")
@@ -65,7 +64,6 @@ const Personalinfo = () => {
     if (!userData.phone) newErrors.phone = "Phone number is required.";
 
     if (!userData.jobRole) newErrors.jobRole = "Job role is required.";
-
 
     // Check for at least one experience, education, and project
     if (!userData.experience || userData.experience.length === 0) {
@@ -280,12 +278,13 @@ GitHub: \\href{{github}}{\\texttt{{github}}}
 \\end{document}
 `;
 
-
-
   const populateTemplate2 = (template, data) => {
     const replaceNewlines = (text) => {
       if (typeof text !== "string") {
-        console.error("Expected a string for newline replacement, but got:", text);
+        console.error(
+          "Expected a string for newline replacement, but got:",
+          text
+        );
         return "";
       }
       return text.replace(/\n/g, "\\\\");
@@ -294,29 +293,53 @@ GitHub: \\href{{github}}{\\texttt{{github}}}
     // General placeholder replacement
     for (let key in data) {
       if (typeof data[key] !== "object") {
-        template = template.replace(new RegExp(`\\{${key}\\}`, "g"), replaceNewlines(data[key]));
+        template = template.replace(
+          new RegExp(`\\{${key}\\}`, "g"),
+          replaceNewlines(data[key])
+        );
       }
     }
 
     // Section-specific content generation
     const generateSectionContent = (items, type) => {
-      return items.map(item => {
-        switch (type) {
-          case 'experience':
-            return `\\subsection{${item.jobRole || ""}, ${item.companyName || ""} \\hfill ${item.startDate || ""} -- ${item.endDate || ""}}\n${replaceNewlines(item.summary || "")}`;
-          case 'education':
-            return `\\subsection{${item.degree || ""}, ${item.institution || ""} \\hfill ${item.startDate || ""} -- ${item.endDate || ""}}\n${replaceNewlines(item.description || "")}`;
-          case 'projects':
-            return `\\subsection{${item.name || ""} \\hfill ${item.date || ""}}\n${replaceNewlines(item.summary || "")}`;
-          default:
-            return "";
-        }
-      }).join("\n\\vspace{10pt}\n");
+      return items
+        .map((item) => {
+          switch (type) {
+            case "experience":
+              return `\\subsection{${item.jobRole || ""}, ${
+                item.companyName || ""
+              } \\hfill ${item.startDate || ""} -- ${
+                item.endDate || ""
+              }}\n${replaceNewlines(item.summary || "")}`;
+            case "education":
+              return `\\subsection{${item.degree || ""}, ${
+                item.institution || ""
+              } \\hfill ${item.startDate || ""} -- ${
+                item.endDate || ""
+              }}\n${replaceNewlines(item.description || "")}`;
+            case "projects":
+              return `\\subsection{${item.name || ""} \\hfill ${
+                item.date || ""
+              }}\n${replaceNewlines(item.summary || "")}`;
+            default:
+              return "";
+          }
+        })
+        .join("\n\\vspace{10pt}\n");
     };
 
-    template = template.replace("{experienceDetails}", generateSectionContent(data.experience, 'experience'));
-    template = template.replace("{educationDetails}", generateSectionContent(data.education, 'education'));
-    template = template.replace("{projectDetails}", generateSectionContent(data.projects, 'projects'));
+    template = template.replace(
+      "{experienceDetails}",
+      generateSectionContent(data.experience, "experience")
+    );
+    template = template.replace(
+      "{educationDetails}",
+      generateSectionContent(data.education, "education")
+    );
+    template = template.replace(
+      "{projectDetails}",
+      generateSectionContent(data.projects, "projects")
+    );
 
     return template;
   };
@@ -487,11 +510,13 @@ GitHub: \\href{{github}}{\\texttt{{github}}}
 \\end{document}
 `;
 
-
   const populateTemplate4 = (template, data) => {
     const replaceNewlines = (text) => {
       if (typeof text !== "string") {
-        console.error("Expected a string for newline replacement, but got:", text);
+        console.error(
+          "Expected a string for newline replacement, but got:",
+          text
+        );
         return "";
       }
       return text.replace(/\n/g, "\\\\");
@@ -501,7 +526,11 @@ GitHub: \\href{{github}}{\\texttt{{github}}}
       if (!Array.isArray(items) || items.length === 0) {
         return ""; // Return an empty string if no items are provided
       }
-      return `\\begin{itemize}\n` + items.map(item => `\\item ${replaceNewlines(item)}`).join("\n") + `\n\\end{itemize}`;
+      return (
+        `\\begin{itemize}\n` +
+        items.map((item) => `\\item ${replaceNewlines(item)}`).join("\n") +
+        `\n\\end{itemize}`
+      );
     };
 
     const generateSubsectionContent = (items, type) => {
@@ -510,47 +539,82 @@ GitHub: \\href{{github}}{\\texttt{{github}}}
         return ""; // Return an empty string if no items are provided
       }
 
-      return items.map(item => {
-        switch (type) {
-          case 'experience':
-            return `\\subsection{${item.jobRole || ""}, ${item.companyName || ""} \\hfill ${item.startDate || ""} -- ${item.endDate || ""}}\n${replaceNewlines(item.summary || "")}`;
-          case 'education':
-            return `\\subsection{${item.degree || ""}, ${item.institution || ""} \\hfill ${item.startDate || ""} -- ${item.endDate || ""}}\n${replaceNewlines(item.description || "")}`;
-          case 'projects':
-            return `\\subsection{${item.name || ""} \\hfill ${item.date || ""}}\n${replaceNewlines(item.description || "")}`;
-          default:
-            return "";
-        }
-      }).join("\n");
+      return items
+        .map((item) => {
+          switch (type) {
+            case "experience":
+              return `\\subsection{${item.jobRole || ""}, ${
+                item.companyName || ""
+              } \\hfill ${item.startDate || ""} -- ${
+                item.endDate || ""
+              }}\n${replaceNewlines(item.summary || "")}`;
+            case "education":
+              return `\\subsection{${item.degree || ""}, ${
+                item.institution || ""
+              } \\hfill ${item.startDate || ""} -- ${
+                item.endDate || ""
+              }}\n${replaceNewlines(item.description || "")}`;
+            case "projects":
+              return `\\subsection{${item.name || ""} \\hfill ${
+                item.date || ""
+              }}\n${replaceNewlines(item.description || "")}`;
+            default:
+              return "";
+          }
+        })
+        .join("\n");
     };
 
     // Convert skills and achievements strings to arrays if they are comma-separated
-    const skillsArray = data.skills ? data.skills.split(',').map(skill => skill.trim()) : [];
-    const achievementsArray = data.achievements ? data.achievements.split(',').map(achievement => achievement.trim()) : [];
+    const skillsArray = data.skills
+      ? data.skills.split(",").map((skill) => skill.trim())
+      : [];
+    const achievementsArray = data.achievements
+      ? data.achievements.split(",").map((achievement) => achievement.trim())
+      : [];
 
     // General placeholder replacement
     template = template.replace("{name}", replaceNewlines(data.name || ""));
-    template = template.replace("{linkedin}", replaceNewlines(data.linkedin || ""));
+    template = template.replace(
+      "{linkedin}",
+      replaceNewlines(data.linkedin || "")
+    );
     template = template.replace("{phone}", replaceNewlines(data.phone || ""));
     template = template.replace("{email}", replaceNewlines(data.email || ""));
 
     // Replace each section with its generated content
-    template = template.replace("{educationDetails}", generateSubsectionContent(data.education, 'education'));
-    template = template.replace("{experienceDetails}", generateSubsectionContent(data.experience, 'experience'));
-    template = template.replace("{skillsDetails}", generateListContent(skillsArray));
-    template = template.replace("{achievementsDetails}", generateListContent(achievementsArray));
-    template = template.replace("{projectsDetails}", generateSubsectionContent(data.projects, 'projects'));
+    template = template.replace(
+      "{educationDetails}",
+      generateSubsectionContent(data.education, "education")
+    );
+    template = template.replace(
+      "{experienceDetails}",
+      generateSubsectionContent(data.experience, "experience")
+    );
+    template = template.replace(
+      "{skillsDetails}",
+      generateListContent(skillsArray)
+    );
+    template = template.replace(
+      "{achievementsDetails}",
+      generateListContent(achievementsArray)
+    );
+    template = template.replace(
+      "{projectsDetails}",
+      generateSubsectionContent(data.projects, "projects")
+    );
 
     return template;
   };
-
-
 
   const populateTemplate = (template, data) => {
     // Replace newlines with double backslashes for LaTeX
     const replaceNewlines = (text) => {
       if (typeof text !== "string") {
-        console.error("Expected a string for newline replacement, but got:", text);
+        console.error(
+          "Expected a string for newline replacement, but got:",
+          text
+        );
         return "";
       }
       return text.replace(/\n/g, "\\\\");
@@ -582,7 +646,9 @@ GitHub: \\href{{github}}{\\texttt{{github}}}
             if (key === "experience") {
               itemContent = `
   \\resumeSubheading
-    {${item.companyName || "N/A"}}{${item.startDate || "N/A"} -- ${item.endDate || "N/A"}}
+    {${item.companyName || "N/A"}}{${item.startDate || "N/A"} -- ${
+                item.endDate || "N/A"
+              }}
     {${item.jobRole || "N/A"}}{}
     \\resumeItemListStart
       \\resumeItem{${replaceNewlines(item.summary || "N/A")}}
@@ -590,7 +656,9 @@ GitHub: \\href{{github}}{\\texttt{{github}}}
             } else if (key === "education") {
               itemContent = `
   \\resumeSubheading
-    {${item.institution || "N/A"}}{${item.startDate || "N/A"} -- ${item.endDate || "N/A"}}
+    {${item.institution || "N/A"}}{${item.startDate || "N/A"} -- ${
+                item.endDate || "N/A"
+              }}
     {${item.degree || "N/A"}}{}
     \\resumeItemListStart
       \\resumeItem{${replaceNewlines(item.description || "N/A")}}
@@ -598,11 +666,15 @@ GitHub: \\href{{github}}{\\texttt{{github}}}
             } else if (key === "projects") {
               itemContent = `
   \\resumeProjectHeading
-    {${item.name || "N/A"}}{${replaceNewlines(item.summary || "N/A")}}{${item.date || "N/A"}}`;
+    {${item.name || "N/A"}}{${replaceNewlines(item.summary || "N/A")}}{${
+                item.date || "N/A"
+              }}`;
             }
             arrayContent += itemContent + "\n    ";
           } else {
-            arrayContent += `\\resumeItem{${replaceNewlines(item || "N/A")}}\n    `;
+            arrayContent += `\\resumeItem{${replaceNewlines(
+              item || "N/A"
+            )}}\n    `;
           }
         });
         template = template.replace(re, arrayContent.trim());
@@ -618,7 +690,10 @@ GitHub: \\href{{github}}{\\texttt{{github}}}
   const populateTemplate3 = (template, data) => {
     const replaceNewlines = (text) => {
       if (typeof text !== "string") {
-        console.error("Expected a string for newline replacement, but got:", text);
+        console.error(
+          "Expected a string for newline replacement, but got:",
+          text
+        );
         return "";
       }
       return text.replace(/\n/g, "\\\\");
@@ -627,39 +702,62 @@ GitHub: \\href{{github}}{\\texttt{{github}}}
     // Replacing general placeholders like {name}, {email}, etc.
     for (let key in data) {
       if (typeof data[key] !== "object") {
-        template = template.replace(new RegExp(`\\{${key}\\}`, "g"), replaceNewlines(data[key]));
+        template = template.replace(
+          new RegExp(`\\{${key}\\}`, "g"),
+          replaceNewlines(data[key])
+        );
       }
     }
 
     // Handling the experience, education, and project details
     const generateSectionContent = (items, type) => {
-      return items.map(item => {
-        switch (type) {
-          case 'experience':
-            return `\\subsection{${item.jobRole || ""}, ${item.companyName || ""} \\hfill ${item.startDate || ""} -- ${item.endDate || ""}}\n${replaceNewlines(item.summary || "")}`;
-          case 'education':
-            return `\\subsection{${item.degree || ""}, ${item.institution || ""} \\hfill ${item.startDate || ""} -- ${item.endDate || ""}}\n${replaceNewlines(item.description || "")}`;
-          case 'projects':
-            return `\\subsection{${item.name || ""} \\hfill ${item.date || ""}}\n${replaceNewlines(item.summary || "")}`;
-          default:
-            return "";
-        }
-      }).join("\n\\vspace{10pt}\n");
+      return items
+        .map((item) => {
+          switch (type) {
+            case "experience":
+              return `\\subsection{${item.jobRole || ""}, ${
+                item.companyName || ""
+              } \\hfill ${item.startDate || ""} -- ${
+                item.endDate || ""
+              }}\n${replaceNewlines(item.summary || "")}`;
+            case "education":
+              return `\\subsection{${item.degree || ""}, ${
+                item.institution || ""
+              } \\hfill ${item.startDate || ""} -- ${
+                item.endDate || ""
+              }}\n${replaceNewlines(item.description || "")}`;
+            case "projects":
+              return `\\subsection{${item.name || ""} \\hfill ${
+                item.date || ""
+              }}\n${replaceNewlines(item.summary || "")}`;
+            default:
+              return "";
+          }
+        })
+        .join("\n\\vspace{10pt}\n");
     };
 
-    template = template.replace("{experienceDetails}", generateSectionContent(data.experience, 'experience'));
-    template = template.replace("{educationDetails}", generateSectionContent(data.education, 'education'));
-    template = template.replace("{projectDetails}", generateSectionContent(data.projects, 'projects'));
+    template = template.replace(
+      "{experienceDetails}",
+      generateSectionContent(data.experience, "experience")
+    );
+    template = template.replace(
+      "{educationDetails}",
+      generateSectionContent(data.education, "education")
+    );
+    template = template.replace(
+      "{projectDetails}",
+      generateSectionContent(data.projects, "projects")
+    );
 
     return template;
   };
-
 
   const [selectedResumeType, setSelectedResumeType] = useState(1);
 
   // Function to handle resume type change
   const handleResumeTypeChange = (type) => {
-    if (typeof type === 'number' && [1, 2, 3, 4].includes(type)) {
+    if (typeof type === "number" && [1, 2, 3, 4].includes(type)) {
       setSelectedResumeType(type);
       console.log(`Resume type set to: ${type}`);
     } else {
@@ -667,20 +765,24 @@ GitHub: \\href{{github}}{\\texttt{{github}}}
     }
   };
 
-
   // Function to handle the POST request and download the PDF
   const sendPostRequest = async (populatedResume) => {
     try {
-      const response = await fetch("https://b5ba-2401-4900-1cbd-4d-e40d-46ba-3958-6678.ngrok-free.app/latex", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ latex_content: populatedResume }),
-      });
+      const response = await fetch(
+        "https://b5ba-2401-4900-1cbd-4d-e40d-46ba-3958-6678.ngrok-free.app/latex",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ latex_content: populatedResume }),
+        }
+      );
 
       if (!response.ok) {
-        throw new Error(`Network response was not ok, status: ${response.status}`);
+        throw new Error(
+          `Network response was not ok, status: ${response.status}`
+        );
       }
 
       const blob = await response.blob();
@@ -720,7 +822,12 @@ GitHub: \\href{{github}}{\\texttt{{github}}}
           populatedResume = populateTemplate4(resumeTemplate1, userData);
       }
 
-      console.log("Populated Resume for Template", selectedResumeType, ":", populatedResume);
+      console.log(
+        "Populated Resume for Template",
+        selectedResumeType,
+        ":",
+        populatedResume
+      );
 
       sendPostRequest(populatedResume);
     } else {
@@ -729,7 +836,6 @@ GitHub: \\href{{github}}{\\texttt{{github}}}
       });
     }
   };
-
 
   return (
     <div className="flex flex-col gap-5">
@@ -749,7 +855,10 @@ GitHub: \\href{{github}}{\\texttt{{github}}}
           <TabPanel px={0}>
             <div className="flex flex-row gap-5">
               <div className="w-full">
-                <div className="text-xl font-semibold text-gray-600">Name<RequiredIndicator /></div>
+                <div className="text-xl font-semibold text-gray-600">
+                  Name
+                  <RequiredIndicator />
+                </div>
                 <div className="mt-1">
                   <input
                     onChange={handleChange}
@@ -762,7 +871,10 @@ GitHub: \\href{{github}}{\\texttt{{github}}}
               </div>
 
               <div className="w-full">
-                <div className="text-xl font-semibold text-gray-600">Email<RequiredIndicator /></div>
+                <div className="text-xl font-semibold text-gray-600">
+                  Email
+                  <RequiredIndicator />
+                </div>
                 <div className="mt-1">
                   <input
                     onChange={handleChange}
@@ -813,7 +925,10 @@ GitHub: \\href{{github}}{\\texttt{{github}}}
           <TabPanel px={0}>
             {/* Job Role */}
             <div className="w-full">
-              <div className="text-xl font-semibold text-gray-600">Job Role<RequiredIndicator /></div>
+              <div className="text-xl font-semibold text-gray-600">
+                Job Role
+                <RequiredIndicator />
+              </div>
               <div className="mt-1">
                 <select
                   onChange={handleChange}
@@ -852,7 +967,10 @@ GitHub: \\href{{github}}{\\texttt{{github}}}
             <div className="flex flex-col md:flex-row gap-5">
               {/* Experience */}
               <div className="w-full mt-4">
-                <div className="text-xl font-semibold text-gray-600">Experience<RequiredIndicator /></div>
+                <div className="text-xl font-semibold text-gray-600">
+                  Experience
+                  <RequiredIndicator />
+                </div>
                 {(userData.experience || []).map((exp, index) => (
                   <div
                     key={index}
@@ -906,7 +1024,10 @@ GitHub: \\href{{github}}{\\texttt{{github}}}
                   </div>
                 ))}
                 <div className="flex justify-center mt-3">
-                  <button onClick={addExperience} className="transition duration-300">
+                  <button
+                    onClick={addExperience}
+                    className="transition duration-300"
+                  >
                     <ShimmerButton className="shadow-2xl">
                       <span className="whitespace-pre-wrap text-center text-xl font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-sm">
                         Add experience
@@ -918,7 +1039,10 @@ GitHub: \\href{{github}}{\\texttt{{github}}}
 
               {/* Education */}
               <div className="w-full mt-4">
-                <div className="text-xl font-semibold text-gray-600">Education<RequiredIndicator /></div>
+                <div className="text-xl font-semibold text-gray-600">
+                  Education
+                  <RequiredIndicator />
+                </div>
                 {(userData.education || []).map((edu, index) => (
                   <div
                     key={index}
@@ -933,7 +1057,9 @@ GitHub: \\href{{github}}{\\texttt{{github}}}
                       className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
                     />
                     <input
-                      onChange={(e) => handleChange(e, index, "education", "degree")}
+                      onChange={(e) =>
+                        handleChange(e, index, "education", "degree")
+                      }
                       value={edu.degree || ""}
                       placeholder="Degree"
                       className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
@@ -971,7 +1097,10 @@ GitHub: \\href{{github}}{\\texttt{{github}}}
                 ))}
 
                 <div className="flex justify-center mt-3">
-                  <button onClick={addEducation} className="transition duration-300">
+                  <button
+                    onClick={addEducation}
+                    className="transition duration-300"
+                  >
                     <ShimmerButton className="shadow-2xl">
                       <span className="whitespace-pre-wrap text-center text-xl font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-sm">
                         Add education
@@ -986,27 +1115,36 @@ GitHub: \\href{{github}}{\\texttt{{github}}}
             {/* Projects */}
             <div className="flex flex-col md:flex-row gap-5">
               <div className="w-full mt-4">
-                <div className="text-xl font-semibold text-gray-600">Projects<RequiredIndicator /></div>
+                <div className="text-xl font-semibold text-gray-600">
+                  Projects
+                  <RequiredIndicator />
+                </div>
                 {(userData.projects || []).map((project, index) => (
                   <div
                     key={index}
                     className="mt-3 p-4 border rounded-md bg-white border-gray-300"
                   >
                     <input
-                      onChange={(e) => handleChange(e, index, "projects", "name")}
+                      onChange={(e) =>
+                        handleChange(e, index, "projects", "name")
+                      }
                       value={project.name || ""}
                       placeholder="Project Name"
                       className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
                     />
                     <textarea
-                      onChange={(e) => handleChange(e, index, "projects", "summary")}
+                      onChange={(e) =>
+                        handleChange(e, index, "projects", "summary")
+                      }
                       value={project.summary || ""}
                       placeholder="Project Summary"
                       className="w-full p-2  border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
                       rows="3"
                     />
                     <input
-                      onChange={(e) => handleChange(e, index, "projects", "date")}
+                      onChange={(e) =>
+                        handleChange(e, index, "projects", "date")
+                      }
                       value={project.date || ""}
                       type="date"
                       placeholder="Date"
@@ -1015,7 +1153,10 @@ GitHub: \\href{{github}}{\\texttt{{github}}}
                   </div>
                 ))}
                 <div className="flex justify-center mt-3">
-                  <button onClick={addProject} className="transition duration-300">
+                  <button
+                    onClick={addProject}
+                    className="transition duration-300"
+                  >
                     <ShimmerButton className="shadow-2xl">
                       <span className="whitespace-pre-wrap text-center text-xl font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-sm">
                         Add projects
@@ -1028,7 +1169,10 @@ GitHub: \\href{{github}}{\\texttt{{github}}}
               {/* Skills */}
               <div className="w-full mt-4">
                 <div className="w-full">
-                  <div className="text-xl font-semibold text-gray-600">Skills<RequiredIndicator /></div>
+                  <div className="text-xl font-semibold text-gray-600">
+                    Skills
+                    <RequiredIndicator />
+                  </div>
                   <div className="flex flex-row gap-5">
                     {((userData.skills || "").split(",") || []).map(
                       (skill, index) => (
@@ -1044,7 +1188,10 @@ GitHub: \\href{{github}}{\\texttt{{github}}}
                     )}
 
                     <div className="flex justify-center ">
-                      <button onClick={addSkill} className="transition duration-300">
+                      <button
+                        onClick={addSkill}
+                        className="transition duration-300"
+                      >
                         <ShimmerButton className="shadow-2xl ">
                           <span className="whitespace-pre-wrap text-center text-xl font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-sm">
                             Add Skills
