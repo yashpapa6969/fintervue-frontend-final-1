@@ -69,9 +69,9 @@ const MeetingPage = () => {
                     </div>
                 </div>
             ) : (
-                <AgoraRTCProvider client={agoraClient}>
+                // <AgoraRTCProvider client={agoraClient}>
                     <VideoCall micOn={micOn} cameraOn={cameraOn} setMic={setMic} setCamera={setCamera} />
-                </AgoraRTCProvider>
+                // </AgoraRTCProvider>
             )}
         </div>
     )
