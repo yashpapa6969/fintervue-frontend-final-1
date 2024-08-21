@@ -18,6 +18,7 @@ import SignupOrg from './pages/signupOrg.jsx';
 const SignupPage = React.lazy(() => import("./pages/SignupPage.jsx"));
 const InterviewerSignupPage = React.lazy(() => import("./pages/InterviewerSignupPage.jsx"));
 const LoginPage = React.lazy(() => import("./pages/LoginPage.jsx"));
+const HomePage = React.lazy(() => import("./pages/HomePage.jsx"));
 const MeetingPage = React.lazy(() => import("./pages/MeetingPage.jsx"));
 const ProductPage = React.lazy(() => import("./pages/ProductPage.jsx"));
 const AiIntervuePage = React.lazy(() => import("./pages/AiIntervuePage.jsx"));
@@ -118,6 +119,11 @@ const router = createBrowserRouter([
     path: "/display/job",
     element: <JobDetailPage />,
   },
+  {
+    path: "/home",
+    element: <HomePage/>,
+  },
+  
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')).render(
