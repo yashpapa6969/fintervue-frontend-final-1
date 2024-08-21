@@ -6,7 +6,8 @@ const Toc = () => {
   const { theme } = useTheme();
 
   return (
-
+    <div>
+    <Navbar />
 
     <div className="container mx-auto p-6">
       {/* Terms and Conditions Heading */}
@@ -168,6 +169,7 @@ const Toc = () => {
           </p>
         </div>
       </div>
+    </div>
     </div>
   );
 };

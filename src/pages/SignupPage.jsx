@@ -3,8 +3,23 @@ import SignupForm from "../components/forms/SignupForm";
 import { useState } from "react";
 import LoadingBar from "react-top-loading-bar";
 import { useNavigate } from "react-router-dom";
-import FrontendIcon from "../assests/avatar-1.png"; // Ensure this path is correct
 import { useAccordion } from "@chakra-ui/react";
+
+import FrontendIcon1 from "../assests/Domain_images/Accounting.png";
+import FrontendIcon2 from "../assests/Domain_images/Asset_Management.png";
+import FrontendIcon3 from "../assests/Domain_images/Banking.png";
+import FrontendIcon4 from "../assests/Domain_images/Cash Management.png";
+import FrontendIcon5 from "../assests/Domain_images/Corporate Finance.png";
+import FrontendIcon6 from "../assests/Domain_images/Financial Advisory.png";
+import FrontendIcon7 from "../assests/Domain_images/Financial Technology.png";
+import FrontendIcon8 from "../assests/Domain_images/insurance.png";
+import FrontendIcon9 from "../assests/Domain_images/Investment Banking.png";
+import FrontendIcon10 from "../assests//Domain_images/quantitative.png";
+import FrontendIcon11 from "../assests/Domain_images/Real Estate Finance.png";
+import FrontendIcon12 from "../assests/Domain_images/Regulatory Roles.png";
+import FrontendIcon13 from "../assests/Domain_images/Research.png";
+import FrontendIcon14 from "../assests/Domain_images/Risk Management.png";
+import FrontendIcon15 from "../assests/Domain_images/taxation.png";
 
 const SignupPage = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -66,88 +81,88 @@ const SignupPage = () => {
     // Add more tech stacks as needed
   ];
 
-  const profiles = [
-    {
-      id: 1,
-      category: "Corporate Finance",
-      name: "Corporate Finance",
-      icon: FrontendIcon,
-    },
-    {
-      id: 2,
-      category: "Investment Banking",
-      name: "Investment Banking",
-      icon: FrontendIcon,
-    },
-    {
-      id: 3,
-      category: "Asset Management and Wealth Management",
-      name: "Asset Management and Wealth Management",
-      icon: FrontendIcon,
-    },
-    {
-      id: 4,
-      category: "Risk Management",
-      name: "Risk Management",
-      icon: FrontendIcon,
-    },
-    {
-      id: 5,
-      category: "Accounting and Auditing",
-      name: "Accounting and Auditing",
-      icon: FrontendIcon,
-    },
-    {
-      id: 6,
-      category: "Financial Advisory",
-      name: "Financial Advisory",
-      icon: FrontendIcon,
-    },
-    {
-      id: 7,
-      category: "Banking and Financial Services",
-      name: "Banking and Financial Services",
-      icon: FrontendIcon,
-    },
-    {
-      id: 8,
-      category: "Financial Technology (FinTech)",
-      name: "Financial Technology (FinTech)",
-      icon: FrontendIcon,
-    },
-    { id: 9, category: "Insurance", name: "Insurance", icon: FrontendIcon },
-    {
-      id: 10,
-      category: "Real Estate Finance",
-      name: "Real Estate Finance",
-      icon: FrontendIcon,
-    },
-    {
-      id: 11,
-      category: "Treasury and Cash Management",
-      name: "Treasury and Cash Management",
-      icon: FrontendIcon,
-    },
-    {
-      id: 12,
-      category: "Quantitative Finance",
-      name: "Quantitative Finance",
-      icon: FrontendIcon,
-    },
-    {
-      id: 13,
-      category: "Compliance and Regulatory Roles",
-      name: "Compliance and Regulatory Roles",
-      icon: FrontendIcon,
-    },
-    {
-      id: 14,
-      category: "Financial Journalism and Research",
-      name: "Financial Journalism and Research",
-      icon: FrontendIcon,
-    },
-    { id: 15, category: "Taxation", name: "Taxation", icon: FrontendIcon },
-  ];
+  // const profiles = [
+  //   {
+  //     id: 1,
+  //     category: "Corporate Finance",
+  //     name: "Corporate Finance",
+  //     icon: FrontendIcon,
+  //   },
+  //   {
+  //     id: 2,
+  //     category: "Investment Banking",
+  //     name: "Investment Banking",
+  //     icon: FrontendIcon,
+  //   },
+  //   {
+  //     id: 3,
+  //     category: "Asset Management and Wealth Management",
+  //     name: "Asset Management and Wealth Management",
+  //     icon: FrontendIcon,
+  //   },
+  //   {
+  //     id: 4,
+  //     category: "Risk Management",
+  //     name: "Risk Management",
+  //     icon: FrontendIcon,
+  //   },
+  //   {
+  //     id: 5,
+  //     category: "Accounting and Auditing",
+  //     name: "Accounting and Auditing",
+  //     icon: FrontendIcon,
+  //   },
+  //   {
+  //     id: 6,
+  //     category: "Financial Advisory",
+  //     name: "Financial Advisory",
+  //     icon: FrontendIcon,
+  //   },
+  //   {
+  //     id: 7,
+  //     category: "Banking and Financial Services",
+  //     name: "Banking and Financial Services",
+  //     icon: FrontendIcon,
+  //   },
+  //   {
+  //     id: 8,
+  //     category: "Financial Technology (FinTech)",
+  //     name: "Financial Technology (FinTech)",
+  //     icon: FrontendIcon,
+  //   },
+  //   { id: 9, category: "Insurance", name: "Insurance", icon: FrontendIcon },
+  //   {
+  //     id: 10,
+  //     category: "Real Estate Finance",
+  //     name: "Real Estate Finance",
+  //     icon: FrontendIcon,
+  //   },
+  //   {
+  //     id: 11,
+  //     category: "Treasury and Cash Management",
+  //     name: "Treasury and Cash Management",
+  //     icon: FrontendIcon,
+  //   },
+  //   {
+  //     id: 12,
+  //     category: "Quantitative Finance",
+  //     name: "Quantitative Finance",
+  //     icon: FrontendIcon,
+  //   },
+  //   {
+  //     id: 13,
+  //     category: "Compliance and Regulatory Roles",
+  //     name: "Compliance and Regulatory Roles",
+  //     icon: FrontendIcon,
+  //   },
+  //   {
+  //     id: 14,
+  //     category: "Financial Journalism and Research",
+  //     name: "Financial Journalism and Research",
+  //     icon: FrontendIcon,
+  //   },
+  //   { id: 15, category: "Taxation", name: "Taxation", icon: FrontendIcon },
+  // ];
 
   const [selectedWorkExperience, setSelectedWorkExperience] = useState(null);
 
@@ -159,9 +174,88 @@ const SignupPage = () => {
     { id: "architect", name: "Architect" },
   ];
 
-  const handleWorkExperienceSelection = (id) => {
-    setSelectedWorkExperience(id);
-  };
+const profiles = [
+  {
+    id: 1,
+    category: "Corporate Finance",
+    name: "Corporate Finance",
+    icon: FrontendIcon1,
+  },
+  {
+    id: 2,
+    category: "Investment Banking",
+    name: "Investment Banking",
+    icon: FrontendIcon2,
+  },
+  {
+    id: 3,
+    category: "Asset Management and Wealth Management",
+    name: "Asset Management and Wealth Management",
+    icon: FrontendIcon3,
+  },
+  {
+    id: 4,
+    category: "Risk Management",
+    name: "Risk Management",
+    icon: FrontendIcon4,
+  },
+  {
+    id: 5,
+    category: "Accounting and Auditing",
+    name: "Accounting and Auditing",
+    icon: FrontendIcon5,
+  },
+  {
+    id: 6,
+    category: "Financial Advisory",
+    name: "Financial Advisory",
+    icon: FrontendIcon6,
+  },
+  {
+    id: 7,
+    category: "Banking and Financial Services",
+    name: "Banking and Financial Services",
+    icon: FrontendIcon7,
+  },
+  {
+    id: 8,
+    category: "Financial Technology (FinTech)",
+    name: "Financial Technology (FinTech)",
+    icon: FrontendIcon8,
+  },
+  { id: 9, category: "Insurance", name: "Insurance", icon: FrontendIcon9 },
+  {
+    id: 10,
+    category: "Real Estate Finance",
+    name: "Real Estate Finance",
+    icon: FrontendIcon10,
+  },
+  {
+    id: 11,
+    category: "Treasury and Cash Management",
+    name: "Treasury and Cash Management",
+    icon: FrontendIcon11,
+  },
+  {
+    id: 12,
+    category: "Quantitative Finance",
+    name: "Quantitative Finance",
+    icon: FrontendIcon12,
+  },
+  {
+    id: 13,
+    category: "Compliance and Regulatory Roles",
+    name: "Compliance and Regulatory Roles",
+    icon: FrontendIcon13,
+  },
+  {
+    id: 14,
+    category: "Financial Journalism and Research",
+    name: "Financial Journalism and Research",
+    icon: FrontendIcon14,
+  },
+  { id: 15, category: "Taxation", name: "Taxation", icon: FrontendIcon15 },
+];
 
   // Sample data for job locations
   const jobLocations = [
