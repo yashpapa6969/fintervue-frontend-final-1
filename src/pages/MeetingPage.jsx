@@ -14,7 +14,7 @@ const MeetingPage = () => {
 
     return (
         <div style={{ height: "100vh" }}>
-            <HMSPrebuilt roomCode="jph-dhjt-weu" />
+            <HMSPrebuilt roomCode="jph-dhjt-weu" logo={"../assests/logo.png"} />
         </div>
     )
 }
