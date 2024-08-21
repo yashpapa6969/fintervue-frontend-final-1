@@ -11,6 +11,7 @@ import { ChakraProvider } from '@chakra-ui/react'
 import SignupPage2 from './pages/signupPage2.jsx';
 import DisplayPage from './pages/DisplayPage.jsx';
 import JobDetailPage from './pages/JobDetailPage.jsx';
+import SignupOrg from './pages/signupOrg.jsx';
 
 
 
@@ -59,6 +60,12 @@ const router = createBrowserRouter([
 
     element: <InterviewerSignupPage />,
   },
+  {
+    path: "/signup/organisation",
+
+    element: <SignupOrg />,
+  },
+
   {
     path: "/login",
     element: <LoginPage />,
@@ -109,7 +116,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/display/job",
-    element: <JobDetailPage/>,
+    element: <JobDetailPage />,
   },
 ]);
 
