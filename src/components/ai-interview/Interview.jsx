@@ -1,11 +1,14 @@
 import { Button, Card, CardBody, useDisclosure } from "@chakra-ui/react";
 import { ChevronRight } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import VideoRecorder from "../common/VideoRecorder";
 import axios from "axios";
 import Loading from "../Loading";
 import SearchBox from "../common/SearchBox";
 // import axiosInstance from "../../config/axios";
+
+import { FFmpeg } from '@ffmpeg/ffmpeg'
+import { toBlobURL, fetchFile } from '@ffmpeg/util'
 
 const synth = window.speechSynthesis;
 
@@ -41,8 +44,11 @@ const Interview = ({ audioOn }) => {
     const [questionNo, setQuestionNo] = useState(0);
     const [textValue, setTextValue] = useState("");
     const [question, setQuestion] = useState({});
-    const [audio, setAudio] = useState(null);
     const [recordedVideo, setRecordedVideo] = useState(null);
+    const [audioFile, setAudioFile] = useState(null);
+    const [loaded, setLoaded] = useState(false);
+    const ffmpegRef = useRef(new FFmpeg());
+    const messageRef = useRef < HTMLParagraphElement | null > (null);
 
     const {
         isOpen: isVideoRecordOpen,
@@ -50,11 +56,47 @@ const Interview = ({ audioOn }) => {
         onClose: onVideoRecordClose,
     } = useDisclosure();
 
+    // function to load ffmpeg
+    const load = async () => {
+        const baseURL = 'https://unpkg.com/@ffmpeg/core-mt@0.12.6/dist/esm'
+        const ffmpeg = ffmpegRef.current
+        ffmpeg.on('log', ({ message }) => {
+            if (messageRef.current) messageRef.current.innerHTML = message
+        })
+        await ffmpeg.load({
+            coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
+            wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
+            workerURL: await toBlobURL(`${baseURL}/ffmpeg-core.worker.js`, 'text/javascript'),
+        })
+        setLoaded(true)
+    }
+
+    const extractAudio = async () => {
+        if (!recordedVideo) {
+            alert('Please select an MP4 file first')
+            return
+        }
+        const ffmpeg = ffmpegRef.current
+        await ffmpeg.writeFile('input.mp4', await fetchFile(recordedVideo))
+        await ffmpeg.exec(['-i', 'input.mp4', '-vn', '-acodec', 'libmp3lame', '-q:a', '2', 'output.mp3'])
+        const data = await ffmpeg.readFile('output.mp3')
+        const audioBlob = new Blob([data], { type: 'audio/mp3' })
+        const audioUrl = URL.createObjectURL(audioBlob)
+        setAudioFile(audioUrl);
+        const link = document.createElement('a')
+        link.href = audioUrl
+        link.download = 'extracted_audio.mp3'
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+    }
+
     const getTextFromAPI = async () => {
         // TODO: implement get question by domain when the domain endpoint is created
         const response = await axios.get("https://x3oh1podsi.execute-api.ap-south-1.amazonaws.com/api/Interviewee/getAllAIQuestion");
-        setQuestion(response.data);
-        console.log(response.data)
+        // filter out the questions which have explanation
+        setQuestion(response.data.filter(data => data.explanation));
+        console.log(response.data.filter(data => data.explanation))
     }
 
     const getAllDomain = async () => {
@@ -85,6 +127,8 @@ const Interview = ({ audioOn }) => {
     }, [audioOn])
 
     const handleSubmit = async () => {
+        await load();
+        extractAudio();
 
         // const formData = new FormData();
         // console.log(audio)
@@ -100,6 +144,10 @@ const Interview = ({ audioOn }) => {
         // formData.append("analysis", "This is a sample analysis");
         // const response = await axios.post("https://x3oh1podsi.execute-api.ap-south-1.amazonaws.com/api/addAiAnalysis", formData);
         // console.log(response.data);
+
+        // transcription
+        const response = await axios.post("http://104.167.17.5:43708/processAudio", { audio_file: audioFile })
+        console.log(response);
 
         setQuestionNo(questionNo + 1);
     }
