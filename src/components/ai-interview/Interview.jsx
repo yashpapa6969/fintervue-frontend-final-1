@@ -45,7 +45,7 @@ const Interview = ({ audioOn }) => {
     const [textValue, setTextValue] = useState("");
     const [question, setQuestion] = useState({});
     const [recordedVideo, setRecordedVideo] = useState(null);
-    const [audioFile, setAudioFile] = useState(null);
+    const [audioFileBlob, setAudioFileBlob] = useState(null);
     const [loaded, setLoaded] = useState(false);
     const ffmpegRef = useRef(new FFmpeg());
     const messageRef = useRef < HTMLParagraphElement | null > (null);
@@ -82,7 +82,7 @@ const Interview = ({ audioOn }) => {
         const data = await ffmpeg.readFile('output.mp3')
         const audioBlob = new Blob([data], { type: 'audio/mp3' })
         const audioUrl = URL.createObjectURL(audioBlob)
-        setAudioFile(audioUrl);
+        setAudioFileBlob(audioUrl);
         const link = document.createElement('a')
         link.href = audioUrl
         link.download = 'extracted_audio.mp3'
@@ -146,7 +146,9 @@ const Interview = ({ audioOn }) => {
         // console.log(response.data);
 
         // transcription
-        const response = await axios.post("http://104.167.17.5:43708/processAudio", { audio_file: audioFile })
+        const audioFile = new File([audioFileBlob], "audio.mp3", { type: "audio/mp3" });
+        const response = await axios.post("http://104.167.17.5:43708/processAudio", { audio_file: audioFile });
+        // console.log(audioFileBlob);
         console.log(response);
 
         setQuestionNo(questionNo + 1);
