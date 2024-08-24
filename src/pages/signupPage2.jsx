@@ -1,5 +1,5 @@
-import React from "react";
 import Navbar from "../components/navbar";
+import { Link } from "react-router-dom";
 
 const SignupPage2 = () => {
   return (
@@ -24,14 +24,14 @@ const SignupPage2 = () => {
               exposure beyond your workspace and exercise the power of your
               knowledge and freedom.
             </p>
-            <button className="bg-yellow-300 text-black py-2 px-6 rounded-md font-semibold hover:bg-gray-800">
+            <Link to="/signup/interviewer" className="bg-yellow-300 text-black py-2 px-6 rounded-md font-semibold hover:bg-gray-800">
               Login
-            </button>
+            </Link>
             <p className="mt-4 text-gray-600">
-              Don't have an account?{" "}
-              <a href="/#" className="text-black font-semibold">
+              Don&apos;t have an account?{" "}
+              <Link to="/signup/interviewer" className="text-black font-semibold">
                 Register
-              </a>
+              </Link>
             </p>
           </div>
 
@@ -48,22 +48,22 @@ const SignupPage2 = () => {
             </h2>
             <p className="text-gray-600 mb-6">
               Conduct interviews asynchronously on Fintervue platform by vetted
-              interviewers. A detailed report of the candidate's performance is
+              interviewers. A detailed report of the candidate&apos;s performance is
               available within 5 minutes.
             </p>
-            <a href="/signup/organisation">
+            <Link to="/signup/organisation">
               <button className="bg-green-500 text-white py-2 px-6 rounded-md font-semibold hover:bg-green-600">
                 Login
               </button>
-            </a>
+            </Link>
             <p className="mt-4 text-gray-600">
-              Don't have an account?{" "}
-              <a
-                href="/signup/organisation"
+              Don&apos;t have an account?{" "}
+              <Link
+                to="/signup/organisation"
                 className="text-green-600 font-semibold"
               >
                 Register
-              </a>
+              </Link>
             </p>
           </div>
 
@@ -81,19 +81,19 @@ const SignupPage2 = () => {
               Get actionable feedback of your interview from industry experts
               and share it with 400+ actively hiring brands.
             </p>
-            <a href="/signup/candidate">
+            <Link to="/signup/candidate">
               <button className="bg-blue-200 text-blue-900 py-2 px-6 rounded-md font-semibold hover:bg-blue-400">
                 Login
               </button>
-            </a>
+            </Link>
             <p className="mt-4 text-gray-600">
-              Don't have an account?{" "}
-              <a
-                href="/signup/candidate"
+              Don&apos;t have an account?{" "}
+              <Link
+                to="/signup/candidate"
                 className="text-blue-900 font-semibold"
               >
                 Register
-              </a>
+              </Link>
             </p>
           </div>
         </div>

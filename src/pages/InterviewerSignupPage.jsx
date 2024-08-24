@@ -160,9 +160,9 @@ const InterviewerSignupPage = () => {
 
 
     return (
-        <div className="h-screen w-full flex">
+        <div className="h-screen w-full flex items-start">
             <LoadingBar color="blue" progress={33.33 * (currentStep - 1)} />
-            <div className="hidden md:flex flex-col gap-8 items-center justify-center w-1/3 bg-gray-50 p-8">
+            <div className="hidden md:flex flex-col h-full gap-8 items-center justify-center w-1/3 bg-gray-50 p-8">
                 <div className="w-full flex flex-col gap-4">
                     <div className="flex items-center">
                         {currentStep > 1 && (
@@ -198,7 +198,7 @@ const InterviewerSignupPage = () => {
                 </div>
             </div>
 
-            <div className="w-full md:w-2/3 h-full px-6 md:px-20 flex items-center justify-center">
+            <div className="w-full md:w-2/3 mt-4 min-h-full px-6 md:px-20 flex items-center justify-center">
                 {currentStep === 1 ? (
                     <div className="flex flex-col items-center w-full max-w-[800px] h-[90vh] overflow-y-auto gap-6">
                         <h1 className="text-xl font-semibold">
