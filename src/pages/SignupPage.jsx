@@ -3,12 +3,30 @@ import SignupForm from "../components/forms/SignupForm";
 import { useState } from "react";
 import LoadingBar from "react-top-loading-bar";
 import { useNavigate } from "react-router-dom";
-import FrontendIcon from "../assests/avatar-1.png"; // Ensure this path is correct
 import { useAccordion } from "@chakra-ui/react";
+
+import FrontendIcon1 from "../assests/Domain_images/Accounting.png";
+import FrontendIcon2 from "../assests/Domain_images/Asset_Management.png";
+import FrontendIcon3 from "../assests/Domain_images/Banking.png";
+import FrontendIcon4 from "../assests/Domain_images/Cash Management.png";
+import FrontendIcon5 from "../assests/Domain_images/Corporate Finance.png";
+import FrontendIcon6 from "../assests/Domain_images/Financial Advisory.png";
+import FrontendIcon7 from "../assests/Domain_images/Financial Technology.png";
+import FrontendIcon8 from "../assests/Domain_images/insurance.png";
+import FrontendIcon9 from "../assests/Domain_images/Investment Banking.png";
+import FrontendIcon10 from "../assests//Domain_images/quantitative.png";
+import FrontendIcon11 from "../assests/Domain_images/Real Estate Finance.png";
+import FrontendIcon12 from "../assests/Domain_images/Regulatory Roles.png";
+import FrontendIcon13 from "../assests/Domain_images/Research.png";
+import FrontendIcon14 from "../assests/Domain_images/Risk Management.png";
+import FrontendIcon15 from "../assests/Domain_images/taxation.png";
 
 const SignupPage = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedProcess, setSelectedProcess] = useState("");
+    const [selectedJobLocations, setSelectedJobLocations] = useState([]);
+    const [selectedYearsOfExperience, setSelectedYearsOfExperience] = useState(null);
+    const [selectedKeySkills, setSelectedKeySkills] = useState([]);
 
   const navigate = useNavigate();
 
@@ -23,24 +41,24 @@ const SignupPage = () => {
   };
 
   const [data, setData] = useState({
-    domain:null,
-    financeProfiles:null
-
+    domain: null,
+    financeProfiles: null,
   });
   const handleDomain = (domain) => {
-      setData((prev) => ({
-        ...prev,
-        domain: domain,
-      }));
-    };
-  const handleRole = ()=>{
-    if (domain!==null) {
-      return financeProfiles.filter((e) =>{e.category === domain});
+    setData((prev) => ({
+      ...prev,
+      domain: domain,
+    }));
+  };
+  const handleRole = () => {
+    if (domain !== null) {
+      return financeProfiles.filter((e) => {
+        e.category === domain;
+      });
     } else {
-      
     }
-  }
-  
+  };
+
   const [selectedTechStacks, setSelectedTechStack] = useState([]);
 
   const handleTechStackSelection = (id) => {
@@ -63,326 +81,246 @@ const SignupPage = () => {
     // Add more tech stacks as needed
   ];
 
-// const financeProfiles = [
-//   {
-//     id: 1, // Corresponds to Corporate Finance
-//     category: "Corporate Finance",
-//     roles: [
-//       { title: "Chief Financial Officer (CFO)" },
-//       { title: "Finance Director" },
-//       { title: "Financial Controller" },
-//       { title: "Treasury Manager" },
-//       { title: "Corporate Treasurer" },
-//       { title: "Financial Analyst" },
-//       { title: "Cost Analyst" },
-//       { title: "Budget Analyst" },
-//       { title: "Mergers and Acquisitions (M&A) Analyst/Manager" },
-//       { title: "Investor Relations Manager" },
-//       { title: "Internal Auditor" },
-//       { title: "Risk Manager" },
-//       { title: "Capital Budgeting Manager" },
-//       { title: "Tax Manager" },
-//       { title: "Finance Business Partner" },
-//       { title: "Strategic Planning Manager" },
-//     ],
-//   },
-//   {
-//     id: 2, // Corresponds to Investment Banking
-//     category: "Investment Banking",
-//     roles: [
-//       { title: "Investment Banker" },
-//       { title: "Mergers & Acquisitions (M&A) Analyst" },
-//       { title: "Equity Research Analyst" },
-//       { title: "Corporate Finance Analyst" },
-//       { title: "Debt Capital Markets Analyst" },
-//       { title: "Leveraged Finance Analyst" },
-//       { title: "Investment Banking Associate/Analyst" },
-//       { title: "Private Equity Analyst" },
-//       { title: "Venture Capital Analyst" },
-//       { title: "Structured Finance Analyst" },
-//       { title: "Syndicated Loans Analyst" },
-//     ],
-//   },
-//   {
-//     id: 3, // Corresponds to Asset Management and Wealth Management
-//     category: "Asset Management and Wealth Management",
-//     roles: [
-//       { title: "Portfolio Manager" },
-//       { title: "Asset Manager" },
-//       { title: "Wealth Manager" },
-//       { title: "Investment Analyst" },
-//       { title: "Fund Manager" },
-//       { title: "Research Analyst" },
-//       { title: "Financial Planner" },
-//       { title: "Private Wealth Advisor" },
-//       { title: "Client Relationship Manager" },
-//       { title: "Performance Analyst" },
-//     ],
-//   },
-//   {
-//     id: 4, // Corresponds to Risk Management
-//     category: "Risk Management",
-//     roles: [
-//       { title: "Risk Analyst" },
-//       { title: "Credit Risk Analyst" },
-//       { title: "Market Risk Analyst" },
-//       { title: "Operational Risk Manager" },
-//       { title: "Enterprise Risk Manager" },
-//       { title: "Quantitative Risk Analyst" },
-//       { title: "Liquidity Risk Manager" },
-//       { title: "Compliance Officer" },
-//       { title: "Fraud Analyst" },
-//     ],
-//   },
-//   {
-//     id: 5, // Corresponds to Accounting and Auditing
-//     category: "Accounting and Auditing",
-//     roles: [
-//       { title: "Certified Public Accountant (CPA)" },
-//       { title: "Management Accountant" },
-//       { title: "Financial Accountant" },
-//       { title: "Tax Accountant" },
-//       { title: "Auditor" },
-//       { title: "Internal Auditor" },
-//       { title: "Forensic Accountant" },
-//       { title: "Accounts Payable/Receivable Clerk" },
-//       { title: "Bookkeeper" },
-//       { title: "Payroll Specialist" },
-//       { title: "Compliance Auditor" },
-//     ],
-//   },
-//   {
-//     id: 6, // Corresponds to Financial Advisory
-//     category: "Financial Advisory",
-//     roles: [
-//       { title: "Financial Advisor" },
-//       { title: "Certified Financial Planner (CFP)" },
-//       { title: "Estate Planner" },
-//       { title: "Retirement Planning Advisor" },
-//       { title: "Insurance Advisor" },
-//       { title: "Tax Advisor" },
-//       { title: "Wealth Management Advisor" },
-//       { title: "Pension Fund Advisor" },
-//     ],
-//   },
-//   {
-//     id: 7, // Corresponds to Banking and Financial Services
-//     category: "Banking and Financial Services",
-//     roles: [
-//       { title: "Commercial Banker" },
-//       { title: "Retail Banker" },
-//       { title: "Credit Analyst" },
-//       { title: "Loan Officer" },
-//       { title: "Mortgage Banker" },
-//       { title: "Branch Manager" },
-//       { title: "Personal Banker" },
-//       { title: "Bank Teller" },
-//       { title: "Relationship Manager" },
-//       { title: "Treasury Analyst" },
-//       { title: "Financial Services Representative" },
-//     ],
-//   },
-//   {
-//     id: 8, // Corresponds to Financial Technology (FinTech)
-//     category: "Financial Technology (FinTech)",
-//     roles: [
-//       { title: "Financial Data Analyst" },
-//       { title: "Quantitative Analyst (Quant)" },
-//       { title: "Blockchain Analyst" },
-//       { title: "FinTech Product Manager" },
-//       { title: "FinTech Developer" },
-//       { title: "Robo-Advisor Specialist" },
-//       { title: "Cryptocurrency Analyst" },
-//       { title: "Payment Solutions Analyst" },
-//     ],
-//   },
-//   {
-//     id: 9, // Corresponds to Insurance
-//     category: "Insurance",
-//     roles: [
-//       { title: "Actuary" },
-//       { title: "Insurance Underwriter" },
-//       { title: "Claims Adjuster" },
-//       { title: "Insurance Broker" },
-//       { title: "Risk Assessor" },
-//       { title: "Insurance Agent" },
-//       { title: "Reinsurance Analyst" },
-//       { title: "Compliance Officer" },
-//     ],
-//   },
-//   {
-//     id: 10, // Corresponds to Real Estate Finance
-//     category: "Real Estate Finance",
-//     roles: [
-//       { title: "Real Estate Analyst" },
-//       { title: "Property Manager" },
-//       { title: "Real Estate Appraiser" },
-//       { title: "Real Estate Investment Analyst" },
-//       { title: "Real Estate Finance Manager" },
-//       { title: "Mortgage Underwriter" },
-//       { title: "Loan Originator" },
-//     ],
-//   },
-//   {
-//     id: 11, // Corresponds to Treasury and Cash Management
-//     category: "Treasury and Cash Management",
-//     roles: [
-//       { title: "Treasury Analyst" },
-//       { title: "Cash Manager" },
-//       { title: "Liquidity Manager" },
-//       { title: "Treasury Operations Manager" },
-//       { title: "Foreign Exchange Manager" },
-//     ],
-//   },
-//   {
-//     id: 12, // Corresponds to Quantitative Finance
-//     category: "Quantitative Finance",
-//     roles: [
-//       { title: "Quantitative Analyst (Quant)" },
-//       { title: "Quantitative Developer" },
-//       { title: "Risk Quant Analyst" },
-//       { title: "Algorithmic Trader" },
-//       { title: "Financial Engineer" },
-//       { title: "Model Validation Analyst" },
-//     ],
-//   },
-//   {
-//     id: 13, // Corresponds to Compliance and Regulatory Roles
-//     category: "Compliance and Regulatory Roles",
-//     roles: [
-//       { title: "Compliance Officer" },
-//       { title: "Regulatory Reporting Analyst" },
-//       { title: "Anti-Money Laundering (AML) Specialist" },
-//       { title: "Know Your Customer (KYC) Analyst" },
-//       { title: "Compliance Manager" },
-//       { title: "Regulatory Risk Manager" },
-//     ],
-//   },
-//   {
-//     id: 14, // Corresponds to Financial Journalism and Research
-//     category: "Financial Journalism and Research",
-//     roles: [
-//       { title: "Financial Journalist" },
-//       { title: "Financial Research Analyst" },
-//       { title: "Economic Analyst" },
-//       { title: "Financial Data Scientist" },
-//       { title: "Equity Research Associate" },
-//     ],
-//   },
-//   {
-//     id: 15, // Corresponds to Taxation
-//     category: "Taxation",
-//     roles: [
-//       { title: "Tax Consultant" },
-//       { title: "Tax Advisor" },
-//       { title: "Tax Manager" },
-//       { title: "Indirect Tax Manager" },
-//       { title: "Transfer Pricing Specialist" },
-//       { title: "International Tax Manager" },
-//       { title: "VAT Specialist" },
-//     ],
-//   },
-// ];
+  // const profiles = [
+  //   {
+  //     id: 1,
+  //     category: "Corporate Finance",
+  //     name: "Corporate Finance",
+  //     icon: FrontendIcon,
+  //   },
+  //   {
+  //     id: 2,
+  //     category: "Investment Banking",
+  //     name: "Investment Banking",
+  //     icon: FrontendIcon,
+  //   },
+  //   {
+  //     id: 3,
+  //     category: "Asset Management and Wealth Management",
+  //     name: "Asset Management and Wealth Management",
+  //     icon: FrontendIcon,
+  //   },
+  //   {
+  //     id: 4,
+  //     category: "Risk Management",
+  //     name: "Risk Management",
+  //     icon: FrontendIcon,
+  //   },
+  //   {
+  //     id: 5,
+  //     category: "Accounting and Auditing",
+  //     name: "Accounting and Auditing",
+  //     icon: FrontendIcon,
+  //   },
+  //   {
+  //     id: 6,
+  //     category: "Financial Advisory",
+  //     name: "Financial Advisory",
+  //     icon: FrontendIcon,
+  //   },
+  //   {
+  //     id: 7,
+  //     category: "Banking and Financial Services",
+  //     name: "Banking and Financial Services",
+  //     icon: FrontendIcon,
+  //   },
+  //   {
+  //     id: 8,
+  //     category: "Financial Technology (FinTech)",
+  //     name: "Financial Technology (FinTech)",
+  //     icon: FrontendIcon,
+  //   },
+  //   { id: 9, category: "Insurance", name: "Insurance", icon: FrontendIcon },
+  //   {
+  //     id: 10,
+  //     category: "Real Estate Finance",
+  //     name: "Real Estate Finance",
+  //     icon: FrontendIcon,
+  //   },
+  //   {
+  //     id: 11,
+  //     category: "Treasury and Cash Management",
+  //     name: "Treasury and Cash Management",
+  //     icon: FrontendIcon,
+  //   },
+  //   {
+  //     id: 12,
+  //     category: "Quantitative Finance",
+  //     name: "Quantitative Finance",
+  //     icon: FrontendIcon,
+  //   },
+  //   {
+  //     id: 13,
+  //     category: "Compliance and Regulatory Roles",
+  //     name: "Compliance and Regulatory Roles",
+  //     icon: FrontendIcon,
+  //   },
+  //   {
+  //     id: 14,
+  //     category: "Financial Journalism and Research",
+  //     name: "Financial Journalism and Research",
+  //     icon: FrontendIcon,
+  //   },
+  //   { id: 15, category: "Taxation", name: "Taxation", icon: FrontendIcon },
+  // ];
 
+  const [selectedWorkExperience, setSelectedWorkExperience] = useState(null);
 
+  const workExperienceLevels = [
+    { id: "junior", name: "Junior" },
+    { id: "mid", name: "Mid-Level" },
+    { id: "senior", name: "Senior" },
+    { id: "lead", name: "Lead" },
+    { id: "architect", name: "Architect" },
+  ];
 
 const profiles = [
   {
     id: 1,
     category: "Corporate Finance",
     name: "Corporate Finance",
-    icon: FrontendIcon,
+    icon: FrontendIcon1,
   },
   {
     id: 2,
     category: "Investment Banking",
     name: "Investment Banking",
-    icon: FrontendIcon,
+    icon: FrontendIcon2,
   },
   {
     id: 3,
     category: "Asset Management and Wealth Management",
     name: "Asset Management and Wealth Management",
-    icon: FrontendIcon,
+    icon: FrontendIcon3,
   },
   {
     id: 4,
     category: "Risk Management",
     name: "Risk Management",
-    icon: FrontendIcon,
+    icon: FrontendIcon4,
   },
   {
     id: 5,
     category: "Accounting and Auditing",
     name: "Accounting and Auditing",
-    icon: FrontendIcon,
+    icon: FrontendIcon5,
   },
   {
     id: 6,
     category: "Financial Advisory",
     name: "Financial Advisory",
-    icon: FrontendIcon,
+    icon: FrontendIcon6,
   },
   {
     id: 7,
     category: "Banking and Financial Services",
     name: "Banking and Financial Services",
-    icon: FrontendIcon,
+    icon: FrontendIcon7,
   },
   {
     id: 8,
     category: "Financial Technology (FinTech)",
     name: "Financial Technology (FinTech)",
-    icon: FrontendIcon,
+    icon: FrontendIcon8,
   },
-  { id: 9, category: "Insurance", name: "Insurance", icon: FrontendIcon },
+  { id: 9, category: "Insurance", name: "Insurance", icon: FrontendIcon9 },
   {
     id: 10,
     category: "Real Estate Finance",
     name: "Real Estate Finance",
-    icon: FrontendIcon,
+    icon: FrontendIcon10,
   },
   {
     id: 11,
     category: "Treasury and Cash Management",
     name: "Treasury and Cash Management",
-    icon: FrontendIcon,
+    icon: FrontendIcon11,
   },
   {
     id: 12,
     category: "Quantitative Finance",
     name: "Quantitative Finance",
-    icon: FrontendIcon,
+    icon: FrontendIcon12,
   },
   {
     id: 13,
     category: "Compliance and Regulatory Roles",
     name: "Compliance and Regulatory Roles",
-    icon: FrontendIcon,
+    icon: FrontendIcon13,
   },
   {
     id: 14,
     category: "Financial Journalism and Research",
     name: "Financial Journalism and Research",
-    icon: FrontendIcon,
+    icon: FrontendIcon14,
   },
-  { id: 15, category: "Taxation", name: "Taxation", icon: FrontendIcon },
+  { id: 15, category: "Taxation", name: "Taxation", icon: FrontendIcon15 },
 ];
 
- const [selectedWorkExperience, setSelectedWorkExperience] = useState(null);
+  // Sample data for job locations
+  const jobLocations = [
+    { id: 1, name: "New York, USA" },
+    { id: 2, name: "London, UK" },
+    { id: 3, name: "Singapore" },
+    { id: 4, name: "Sydney, Australia" },
+    { id: 5, name: "Dubai, UAE" },
+    { id: 6, name: "Hong Kong" },
+    { id: 7, name: "Frankfurt, Germany" },
+  ];
 
- const workExperienceLevels = [
-   { id: "junior", name: "Junior" },
-   { id: "mid", name: "Mid-Level" },
-   { id: "senior", name: "Senior" },
-   { id: "lead", name: "Lead" },
-   { id: "architect", name: "Architect" },
- ];
+  // Sample data for years of experience
+  const yearsOfExperience = [
+    { id: 1, name: "0-2 Years" },
+    { id: 2, name: "3-5 Years" },
+    { id: 3, name: "6-9 Years" },
+    { id: 4, name: "10-15 Years" },
+    { id: 5, name: "15+ Years" },
+  ];
 
- const handleWorkExperienceSelection = (id) => {
-   setSelectedWorkExperience(id);
- };
+  // Sample data for key skills
+  const keySkills = [
+    { id: 1, name: "Financial Analysis" },
+    { id: 2, name: "Investment Banking" },
+    { id: 3, name: "Risk Management" },
+    { id: 4, name: "Portfolio Management" },
+    { id: 5, name: "Data Analysis" },
+    { id: 6, name: "Compliance and Regulation" },
+    { id: 7, name: "Mergers and Acquisitions (M&A)" },
+    { id: 8, name: "Asset Management" },
+    { id: 9, name: "Derivatives Trading" },
+  ];
 
+  
+
+    // Toggle selection for job locations
+    const handleJobLocationSelection = (id) => {
+      setSelectedJobLocations((prevSelected) => {
+        if (prevSelected.includes(id)) {
+          return prevSelected.filter((locationId) => locationId !== id);
+        } else if (prevSelected.length < 5) {
+          // Limit to 5 selections
+          return [...prevSelected, id];
+        } else {
+          return prevSelected; // No more than 5 selections allowed
+        }
+      });
+    };
+
+    // Select years of experience (single selection)
+    const handleYearsOfExperienceSelection = (id) => {
+      setSelectedYearsOfExperience(id);
+    };
+
+    // Toggle selection for key skills
+    const handleKeySkillsSelection = (id) => {
+      setSelectedKeySkills((prevSelected) => {
+        if (prevSelected.includes(id)) {
+          return prevSelected.filter((skillId) => skillId !== id);
+        } else {
+          return [...prevSelected, id];
+        }
+      });
+    };
 
   return (
     <div className="h-screen w-full flex">
@@ -469,63 +407,92 @@ const profiles = [
             </button> */}
           </div>
         ) : currentStep === 2 ? (
-          <div className="flex flex-col items-center w-full max-w-[800px] h-[90vh] overflow-y-auto gap-6">
-            <h1 className="text-xl font-semibold">Select Tech Stacks</h1>
+          <div className="flex flex-col items-center w-full max-w-[800px] h-auto gap-3">
+            <h1 className="text-2xl font-bold">Mention your choices</h1>
             <p className="text-gray-600">
-              Choose the tech stacks you want to be interviewed for:
+              This will help us to easily filter out and give you the best
+              interview experience.
             </p>
-            <div className="grid grid-cols-3 gap-6 w-full overflow-y-auto">
-              {techStacks.map((stack) => (
-                <div
-                  key={stack.id}
-                  onClick={() => handleTechStackSelection(stack.id)}
-                  className={`border-2 ${
-                    selectedTechStacks.includes(stack.id)
-                      ? "border-green-400 bg-green-100"
-                      : "border-gray-300"
-                  } rounded-md cursor-pointer p-4 flex flex-col items-center`}
-                >
-                  <img
-                    src={stack.icon}
-                    alt={stack.name}
-                    className="w-10 h-10 mb-2"
-                  />
-                  <h3 className="text-center">{stack.name}</h3>
-                </div>
-              ))}
-            </div>
 
-            {/* Work Experience Selection Section */}
+            {/* Job Location Preferences Section */}
             <div className="w-full mt-6">
               <h2 className="text-lg font-semibold mb-2">
-                Select Work Experience
+                Select Job Location Preferences
               </h2>
               <p className="text-gray-600 mb-4">
-                Choose your work experience level:
+                Choose up to 5 preferred job locations:
               </p>
-              <div className="flex flex-wrap gap-4 justify-center">
-                {workExperienceLevels.map((level) => (
+              <div className="flex flex-wrap gap-4">
+                {jobLocations.map((location) => (
                   <button
-                    key={level.id}
-                    onClick={() => handleWorkExperienceSelection(level.id)}
+                    key={location.id}
+                    onClick={() => handleJobLocationSelection(location.id)}
                     className={`border-2 ${
-                      selectedWorkExperience === level.id
-                        ? "border-blue-400 bg-blue-100"
+                      selectedJobLocations.includes(location.id)
+                        ? "border-purple-400 bg-purple-100"
                         : "border-gray-300"
                     } rounded-md px-4 py-2 flex items-center justify-center cursor-pointer`}
                   >
-                    {level.name}
+                    {location.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Years of Experience Selection Section */}
+            <div className="w-full mt-6">
+              <h2 className="text-lg font-semibold mb-2">
+                Select Years of Experience
+              </h2>
+              <p className="text-gray-600 mb-4">
+                Choose your years of experience:
+              </p>
+              <div className="flex flex-wrap gap-4">
+                {yearsOfExperience.map((year) => (
+                  <button
+                    key={year.id}
+                    onClick={() => handleYearsOfExperienceSelection(year.id)}
+                    className={`border-2 ${
+                      selectedYearsOfExperience === year.id
+                        ? "border-orange-400 bg-orange-100"
+                        : "border-gray-300"
+                    } rounded-md px-4 py-2 flex items-center justify-center cursor-pointer`}
+                  >
+                    {year.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Key Skills Selection Section */}
+            <div className="w-full mt-6">
+              <h2 className="text-lg font-semibold mb-2">Select Key Skills</h2>
+              <p className="text-gray-600 mb-4">
+                Choose the key skills relevant to the job you are looking for:
+              </p>
+              <div className="flex flex-wrap gap-4">
+                {keySkills.map((skill) => (
+                  <button
+                    key={skill.id}
+                    onClick={() => handleKeySkillsSelection(skill.id)}
+                    className={`border-2 ${
+                      selectedKeySkills.includes(skill.id)
+                        ? "border-green-400 bg-green-100"
+                        : "border-gray-300"
+                    } rounded-md px-4 py-2 flex items-center justify-center cursor-pointer`}
+                  >
+                    {skill.name}
                   </button>
                 ))}
               </div>
             </div>
           </div>
         ) : (
-          <div>
+          <div className="m-10 p-10 ">
             <SignupForm />
             <button
               onClick={handleSubmit}
-              className="py-3 text-white bg-blue-500 font-bold w-full md:w-40 text-lg rounded-2xl"
+              className="py-2 text-white bg-black font-bold w-full md:w-40 text-lg rounded-2xl"
             >
               Sign up
             </button>

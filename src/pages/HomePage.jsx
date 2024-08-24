@@ -13,7 +13,7 @@ const HomePage = () => {
       <Navbar />
       <Hero />
       <Features />
-      <Toc />
+      {/* <Toc /> */}
       <CTA />
       <Footer />
     </>

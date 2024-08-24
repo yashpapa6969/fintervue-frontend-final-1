@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import Logo from "../../assests/logo.png";
+import Logo from "../../assests/logo/logo2.png";
 import {
   FaLinkedin,
   FaPinterest,
@@ -11,11 +11,10 @@ import { AiFillInstagram } from "react-icons/ai";
 import { MdOutlineArrowOutward } from "react-icons/md";
 import Toc from "./TOC";
 
-
 const Footer = () => {
   return (
     <div className="flex flex-col md:flex-row bg-black text-white p-16 gap-8 justify-between md:px-20 xl:px-44">
-      <div className="flex flex-col gap-8 text-gray-300/85 max-w-[300px]">
+      <div className="flex flex-col gap-8 text-gray-300/85 max-w-[300px] items-center">
         <div className="flex gap-4 text-2xl cursor-pointer">
           <FaXTwitter className="hover:scale-125" />
           <AiFillInstagram className="hover:scale-125" />
@@ -24,8 +23,9 @@ const Footer = () => {
           <FaTiktok className="hover:scale-125" />
           <FaYoutube className="hover:scale-125" />
         </div>
+        <img src={Logo} alt="Logo" className="w-150 h-auto" />
       </div>
-      
+
       <div className="flex flex-col gap-4">
         <div className="font-bold text-lg">Product</div>
         <div className="cursor-pointer text-gray-300/85">Features</div>
@@ -70,7 +70,6 @@ const Footer = () => {
         <div className="cursor-pointer text-gray-300/85">Security</div>
       </div>
     </div>
-
   );
 };
 

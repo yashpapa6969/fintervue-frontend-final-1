@@ -51,12 +51,17 @@ const SignupPage2 = () => {
               interviewers. A detailed report of the candidate's performance is
               available within 5 minutes.
             </p>
-            <button className="bg-green-500 text-white py-2 px-6 rounded-md font-semibold hover:bg-green-600">
-              Login
-            </button>
+            <a href="/signup/organisation">
+              <button className="bg-green-500 text-white py-2 px-6 rounded-md font-semibold hover:bg-green-600">
+                Login
+              </button>
+            </a>
             <p className="mt-4 text-gray-600">
               Don't have an account?{" "}
-              <a href="#" className="text-green-600 font-semibold">
+              <a
+                href="/signup/organisation"
+                className="text-green-600 font-semibold"
+              >
                 Register
               </a>
             </p>
@@ -77,7 +82,6 @@ const SignupPage2 = () => {
               and share it with 400+ actively hiring brands.
             </p>
             <a href="/signup/candidate">
-             
               <button className="bg-blue-200 text-blue-900 py-2 px-6 rounded-md font-semibold hover:bg-blue-400">
                 Login
               </button>

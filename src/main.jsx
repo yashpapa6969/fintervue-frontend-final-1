@@ -11,12 +11,14 @@ import { ChakraProvider } from '@chakra-ui/react'
 import SignupPage2 from './pages/signupPage2.jsx';
 import DisplayPage from './pages/DisplayPage.jsx';
 import JobDetailPage from './pages/JobDetailPage.jsx';
+import SignupOrg from './pages/signupOrg.jsx';
 
 
 
 const SignupPage = React.lazy(() => import("./pages/SignupPage.jsx"));
 const InterviewerSignupPage = React.lazy(() => import("./pages/InterviewerSignupPage.jsx"));
 const LoginPage = React.lazy(() => import("./pages/LoginPage.jsx"));
+const HomePage = React.lazy(() => import("./pages/HomePage.jsx"));
 const MeetingPage = React.lazy(() => import("./pages/MeetingPage.jsx"));
 const ProductPage = React.lazy(() => import("./pages/ProductPage.jsx"));
 const AiIntervuePage = React.lazy(() => import("./pages/AiIntervuePage.jsx"));
@@ -59,6 +61,12 @@ const router = createBrowserRouter([
 
     element: <InterviewerSignupPage />,
   },
+  {
+    path: "/signup/organisation",
+
+    element: <SignupOrg />,
+  },
+
   {
     path: "/login",
     element: <LoginPage />,
@@ -109,8 +117,13 @@ const router = createBrowserRouter([
   },
   {
     path: "/display/job",
-    element: <JobDetailPage/>,
+    element: <JobDetailPage />,
   },
+  {
+    path: "/home",
+    element: <HomePage/>,
+  },
+  
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')).render(
