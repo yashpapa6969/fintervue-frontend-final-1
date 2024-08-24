@@ -58,12 +58,10 @@ const router = createBrowserRouter([
   },
   {
     path: "/signup/interviewer",
-
     element: <InterviewerSignupPage />,
   },
   {
     path: "/signup/organisation",
-
     element: <SignupOrg />,
   },
 
