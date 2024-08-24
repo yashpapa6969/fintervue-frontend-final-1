@@ -3,9 +3,9 @@ import { Link } from "react-router-dom";
 
 const SignupPage2 = () => {
   return (
-    <>
+    <div className="h-screen bg-gray-50">
       <Navbar />
-      <div className="flex flex-col justify-center items-center py-12 bg-gray-50">
+      <div className="flex flex-col justify-center items-center py-12">
         <h1>How do you want to join our platform </h1>
         <p>this will help us personalize your experience accordingly </p>
         <div className="max-w-7xl w-full grid grid-cols-1 md:grid-cols-3 gap-6 px-4 md:px-0">
@@ -98,7 +98,7 @@ const SignupPage2 = () => {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
