@@ -5,7 +5,7 @@ import { BsSquareFill } from "react-icons/bs";
 
 const mimeType = "video/webm";
 
-const VideoRecorder = ({ recordedVideo, setRecordedVideo, onClose, isOpen }) => {
+const VideoRecorder = ({ setRecordedVideo, recordedVideo, onClose, isOpen }) => {
     const [permission, setPermission] = useState(false);
     const mediaRecorder = useRef(null);
     const liveVideoFeed = useRef(null);
@@ -22,7 +22,6 @@ const VideoRecorder = ({ recordedVideo, setRecordedVideo, onClose, isOpen }) => 
                     video: true,
                 };
                 const audioConstraints = { audio: true };
-                // create audio and video streams separately
                 const audioStream = await navigator.mediaDevices.getUserMedia(
                     audioConstraints
                 );
@@ -30,13 +29,11 @@ const VideoRecorder = ({ recordedVideo, setRecordedVideo, onClose, isOpen }) => 
                     videoConstraints
                 );
                 setPermission(true);
-                // combine both audio and video streams
                 const combinedStream = new MediaStream([
                     ...videoStream.getVideoTracks(),
                     ...audioStream.getAudioTracks(),
                 ]);
                 setStream(combinedStream);
-                // set video stream to live feed player
                 liveVideoFeed.current.srcObject = videoStream;
             } catch (err) {
                 alert(err.message);
@@ -66,7 +63,7 @@ const VideoRecorder = ({ recordedVideo, setRecordedVideo, onClose, isOpen }) => 
         mediaRecorder.current.onstop = () => {
             const videoBlob = new Blob(videoChunks, { type: mimeType });
             const videoUrl = URL.createObjectURL(videoBlob);
-            setRecordedVideo(videoUrl);
+            setRecordedVideo(videoBlob, videoUrl); 
             setVideoChunks([]);
         };
     };
@@ -80,8 +77,8 @@ const VideoRecorder = ({ recordedVideo, setRecordedVideo, onClose, isOpen }) => 
     };
 
     const onCloseModal = () => {
-        stopMediaTracks(); // Stop all media tracks before closing the modal
-        onClose(); // Call the provided onClose function
+        stopMediaTracks(); 
+        onClose(); 
     };
 
     return (
