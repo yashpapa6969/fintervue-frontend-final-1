@@ -12,6 +12,7 @@ import SignupPage2 from './pages/signupPage2.jsx';
 import DisplayPage from './pages/DisplayPage.jsx';
 import JobDetailPage from './pages/JobDetailPage.jsx';
 import SignupOrg from './pages/signupOrg.jsx';
+import Dashboard from './User_Profile/userDashboard.jsx'
 
 
 
@@ -23,6 +24,7 @@ const MeetingPage = React.lazy(() => import("./pages/MeetingPage.jsx"));
 const ProductPage = React.lazy(() => import("./pages/ProductPage.jsx"));
 const AiIntervuePage = React.lazy(() => import("./pages/AiIntervuePage.jsx"));
 const ResumeBuilder = React.lazy(() => import("./products/resumeBuilder.jsx"));
+//const userDashboard = React.lazy(() => import("./User_Profile/userDashboard.jsx"));
 
 const TocPage = React.lazy(() => import("./pages/TocPage.jsx"));
 const RefundsAndCancellationPage = React.lazy(() => import("./pages/RefundsAndCancellationPage.jsx"));
@@ -120,6 +122,10 @@ const router = createBrowserRouter([
   {
     path: "/home",
     element: <HomePage/>,
+  },
+  {
+    path: "/Dashboard",
+    element: <Dashboard/>,
   },
   
 ]);
