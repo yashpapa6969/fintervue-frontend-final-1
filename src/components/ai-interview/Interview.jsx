@@ -27,10 +27,10 @@ const Interview = ({ audioOn }) => {
     const [recordedVideoURL, setRecordedVideoURL] = useState(null);
     const [transcription, setTranscription] = useState([]);
     const [loaded, setLoaded] = useState(false);
+    const hasSpokenRef = useRef(false);
     const ffmpegRef = useRef(new FFmpeg());
     const [audioBlobs, setAudioBlobs] = useState([]);
     const [videoBlobs, setVideoBlobs] = useState([]);
-    const messageRef = useRef < HTMLParagraphElement | null > (null);
 
     const { isOpen: isVideoRecordOpen, onOpen: onVideoRecordOpen, onClose: onVideoRecordClose } = useDisclosure();
 
@@ -47,7 +47,7 @@ const Interview = ({ audioOn }) => {
         };
 
         load();
-        getTextFromAPI(); 
+        getTextFromAPI();
 
     }, []);
 
@@ -80,7 +80,7 @@ const Interview = ({ audioOn }) => {
             formData.append(`question_${index}`, question.questionText);
             formData.append(`transcription_${index}`, JSON.stringify(transcription));
         });
-        
+
         try {
             const response = await axios.post("https://x3oh1podsi.execute-api.ap-south-1.amazonaws.com/api/interviewee/addAiAnalysis", formData, {
                 headers: {
@@ -131,7 +131,7 @@ const Interview = ({ audioOn }) => {
             localStorage.setItem(videoKey, videoURL);
         } else {
             console.error('Invalid videoBlob:', videoBlob);
-        }        
+        }
     };
 
     const saveTranscriptionToLocalStorage = (transcription) => {
@@ -166,10 +166,15 @@ const Interview = ({ audioOn }) => {
     };
 
     useEffect(() => {
-        if (questions[questionNo]?.questionText) {
+        hasSpokenRef.current = false;
+    }, [questionNo]);
+
+    useEffect(() => {
+        if (questions[questionNo]?.questionText && !hasSpokenRef.current && selectedDomain) {
             speak(questions[questionNo].questionText);
+            hasSpokenRef.current = true;
         }
-    }, [questions, questionNo]);
+    }, [questions, questionNo, selectedDomain]);
 
     useEffect(() => {
         if (!audioOn) synth.pause();
@@ -208,14 +213,26 @@ const Interview = ({ audioOn }) => {
                     </div>
                 </>
             ) : (
-                <div className="p-4 rounded-xl bg-white shadow-md">
-                    <p className="text-xl">{questions[questionNo]?.questionText || <Loading />}</p>
-                    <br />
-                    <div className="flex justify-between">
-                        <div className="flex gap-4">
-                            <Button onClick={onVideoRecordOpen}>Record</Button>
+                <>
+                    <div className="p-4 rounded-xl bg-white shadow-md w-full max-w-md">
+                        <p className="text-xl">{questions[questionNo]?.questionText || <Loading />}</p>
+                        <br />
+                        <div className="flex justify-between">
+                            <div className="flex gap-4">
+                                <Button onClick={onVideoRecordOpen}>Record</Button>
+                            </div>
+                            <Button onClick={extractAudio} colorScheme="purple">Submit <ChevronRight size={20} /></Button>
                         </div>
-                        <Button onClick={extractAudio}>Submit <ChevronRight size={20} /></Button>
+                        {questions.length >= questionNo + 1 && transcription.length > 0 && (
+                            <div className="flex flex-col gap-2 items-end mt-2">
+                                {questions.length === questionNo + 1 && transcription.length > 0 && (
+                                    <Button onClick={submitFinalAnswers} colorScheme="purple">Submit Final Answers</Button>
+                                )}
+                                {questions.length > questionNo + 1 && transcription.length > 0 && (
+                                    <Button onClick={nextQuestion}>Next Question</Button>
+                                )}
+                            </div>
+                        )}
                     </div>
                     {recordedVideoURL && (
                         <div className="mt-4">
@@ -224,31 +241,26 @@ const Interview = ({ audioOn }) => {
                         </div>
                     )}
                     {transcription.length > 0 && (
-                        <div className="mt-4">
+                        <div className="mt-4 w-full max-w-md">
                             <h4 className="text-lg font-semibold">Transcription</h4>
                             <ul>
                                 {transcription.map((item, index) => (
-                                    <li key={index}>
-                                        <strong>{item.Speaker}:</strong> {item.Text} (Start: {item.Start}, End: {item.End})
+                                    <li key={index} className="mt-1">
+                                        <p className="font-semibold text-sm text-purple-600">Start: {item.Start}, End: {item.End}</p>
+                                        <strong className={`${index + 1 % 2 == 0 ? "text-purple-400" : "text-purple-500"}`}>{item.Speaker}:</strong> {item.Text}
                                     </li>
                                 ))}
                             </ul>
                         </div>
                     )}
-                    {questions.length > questionNo + 1 && transcription.length > 0 && (
-                        <Button onClick={nextQuestion} className="mt-4">Next Question</Button>
-                    )}
-                    {questions.length === questionNo + 1 && transcription.length > 0 && (
-                        <Button onClick={submitFinalAnswers} className="mt-4">Submit Final Answers</Button>
-                    )}
-                </div>
+                </>
             )}
 
             <VideoRecorder
                 setRecordedVideo={(blob, url) => {
                     setRecordedVideoBlob(blob);
                     setRecordedVideoURL(url);
-                        setVideoBlobs(prevBlobs => [...prevBlobs, blob]);
+                    setVideoBlobs(prevBlobs => [...prevBlobs, blob]);
                     saveVideoBlobToLocalStorage(blob); //
 
                 }}
