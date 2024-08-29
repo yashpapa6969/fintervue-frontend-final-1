@@ -1,4 +1,4 @@
-import { Button, Card, CardBody, useDisclosure } from "@chakra-ui/react";
+import { Button, Card, CardBody, useDisclosure, useToast } from "@chakra-ui/react";
 import { ChevronRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import VideoRecorder from "../common/VideoRecorder";
@@ -12,6 +12,7 @@ import { toBlobURL, fetchFile } from '@ffmpeg/util';
 const synth = window.speechSynthesis;
 
 const Interview = ({ audioOn }) => {
+    const toast = useToast();
     const [allDomains, setAllDomains] = useState([
         { name: "App Developer", description: "App Development Engineer" },
         { name: "Rust Developer", description: "Rust Programmer" },
@@ -54,7 +55,12 @@ const Interview = ({ audioOn }) => {
 
     const extractAudio = async () => {
         if (!recordedVideoBlob) {
-            alert('Please record a video first');
+            toast({
+                title: "No video recorded",
+                description: "Please record a video before extracting audio",
+                status: "error",
+                duration: 3000,
+            })
             return;
         }
         const ffmpeg = ffmpegRef.current;
@@ -89,7 +95,11 @@ const Interview = ({ audioOn }) => {
             });
 
             if (response.status === 201) {
-                alert('Analysis submitted successfully');
+                toast({
+                    title: "Analysis submitted successfully",
+                    status: "success",
+                    duration: 3000,
+                })
             }
         } catch (error) {
             console.error('Error submitting analysis:', error);
@@ -181,11 +191,12 @@ const Interview = ({ audioOn }) => {
         else synth.resume();
     }, [audioOn]);
 
+    if (!loaded) console.log("Browser error: FFmpeg not loaded");
     if (!synth) return <div>Your browser does not support Speech Synthesis</div>;
     if (questions.length === 0) return <Loading />;
 
     return (
-        <div className="w-full min-h-[calc(100vh-60px)] flex flex-col items-center justify-center transition-all">
+        <div className="w-full min-h-[calc(100vh-60px)] pt-20 flex flex-col items-center justify-center transition-all">
             {!selectedDomain || selectedDomain === "" ? (
                 <>
                     <h3 className="text-xl font-semibold mb-8">Select a Domain</h3>
