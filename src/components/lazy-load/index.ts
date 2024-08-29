@@ -1,7 +1,7 @@
 import React from "react";
 
 export const CandidateSignupPage = React.lazy(() => import("../../pages/SignupPage.jsx"));
-export const InterviewerSignupPage = React.lazy(() => import("../../pages/InterviewerSignupPage.jsx"));
+export const SignupInterviewerPage = React.lazy(() => import("../../pages/InterviewerSignupPage.jsx"));
 export const LoginPage = React.lazy(() => import("../../pages/LoginPage.jsx"));
 export const HomePage = React.lazy(() => import("../../pages/HomePage.jsx"));
 export const MeetingPage = React.lazy(() => import("../../pages/MeetingPage.jsx"));

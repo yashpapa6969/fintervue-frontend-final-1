@@ -24,7 +24,7 @@ const SignupPage2 = () => {
               exposure beyond your workspace and exercise the power of your
               knowledge and freedom.
             </p>
-            <Link to="/signup/interviewer" className="bg-yellow-300 text-black py-2 px-6 rounded-md font-semibold hover:bg-gray-800">
+            <Link to="/signup/interviewer" className="bg-yellow-300 transition-all text-black py-2 px-6 rounded-md font-semibold hover:bg-yellow-200">
               Login
             </Link>
             <p className="mt-4 text-gray-600">

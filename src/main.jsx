@@ -8,28 +8,7 @@ import {
 import "./styles/index.css";
 import App from './App.jsx'
 import { ChakraProvider } from '@chakra-ui/react'
-import {
-  AboutPage,
-  AiIntervuePage,
-  CandidateSignupPage,
-  ContactPage,
-  DisplayPage,
-  EmployeeLoginPage,
-  HomePage,
-  InterviewerSignupPage,
-  JobDetailPage,
-  LoginPage,
-  MeetingPage,
-  PricingPage,
-  PrivacyPolicyPage,
-  ProductPage,
-  RefundsAndCancellationPage,
-  ResumeAnalysisPage,
-  ResumeBuilderPage,
-  SignupOrgPage,
-  SignUpPage,
-  TocPage
-} from './components/lazy-load';
+import * as Lazy from './components/lazy-load';
 import { Loader } from './loader';
 import { NotFoundPage } from './pages/NotFoundPage.jsx';
 
@@ -44,84 +23,88 @@ const router = createBrowserRouter([
   },
   {
     path: "/meeting",
-    element: <MeetingPage />,
+    element: <Lazy.MeetingPage />,
   },
   {
     path: "/signup",
-    element: <SignUpPage />,
+    element: <Lazy.SignUpPage />,
   },
   {
     path: "/signup/candidate",
-    element: <CandidateSignupPage />,
+    element: <Lazy.CandidateSignupPage />,
   },
   {
     path: "/signup/interDashboardviewer",
-    element: <InterviewerSignupPage />,
+    element: <Lazy.InterviewerSignupPage />,
   },
   {
     path: "/signup/organisation",
-    element: <SignupOrgPage />,
+    element: <Lazy.SignupOrgPage />,
+  },
+  {
+    path: "/signup/interviewer",
+    element: <Lazy.SignupInterviewerPage />,
   },
 
   {
     path: "/login",
-    element: <LoginPage />,
+    element: <Lazy.LoginPage />,
   },
   {
     path: "/product",
-    element: <ProductPage />,
+    element: <Lazy.ProductPage />,
   },
   {
     path: "/product/ai_intervue",
-    element: <AiIntervuePage />,
+    element: <Lazy.AiIntervuePage />,
   },
   {
     path: "/product/resumeBuilder",
-    element: <ResumeBuilderPage />,
+    element: <Lazy.ResumeBuilderPage />,
   },
   {
     path: "/product/resumeAnalysis",
-    element: <ResumeAnalysisPage />,
+    element: <Lazy.ResumeAnalysisPage />,
   },
   {
     path: "/TOC",
-    element: <TocPage />,
+    element: <Lazy.TocPage />,
   },
   {
     path: "/Contact",
-    element: <ContactPage />,
+    element: <Lazy.ContactPage />,
   },
   {
     path: "/About",
-    element: <AboutPage />,
+    element: <Lazy.AboutPage />,
   },
   {
     path: "/PrivacyPolicy",
-    element: <PrivacyPolicyPage />,
+    element: <Lazy.PrivacyPolicyPage />,
   },
   {
     path: "/Pricing",
-    element: <PricingPage />,
+    element: <Lazy.PricingPage />,
   },
   {
     path: "/RefundsAndCancellation",
-    element: <RefundsAndCancellationPage />,
+    element: <Lazy.RefundsAndCancellationPage />,
   },
   {
     path: "/display",
-    element: <DisplayPage />,
+    element: <Lazy.DisplayPage />,
   },
   {
     path: "/display/job",
-    element: <JobDetailPage />,
+    element: <Lazy.JobDetailPage />,
   },
   {
     path: "/home",
-    element: <HomePage />,
+    element: <Lazy.HomePage />,
   },
   {
     path: "/Employee-login",
-    element: <EmployeeLoginPage />,
+    element: <Lazy.EmployeeLoginPage />,
   },
 
 ]);
