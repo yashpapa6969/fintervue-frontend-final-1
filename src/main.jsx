@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import ReactDOM from 'react-dom/client'
 import {
   createBrowserRouter,
@@ -8,43 +8,39 @@ import {
 import "./styles/index.css";
 import App from './App.jsx'
 import { ChakraProvider } from '@chakra-ui/react'
-import SignupPage2 from './pages/signupPage2.jsx';
-import DisplayPage from './pages/DisplayPage.jsx';
-import JobDetailPage from './pages/JobDetailPage.jsx';
-import SignupOrg from './pages/signupOrg.jsx';
-import Employee from './User_Profile/Employee-login.jsx'
-
-
-
-const SignupPage = React.lazy(() => import("./pages/SignupPage.jsx"));
-const InterviewerSignupPage = React.lazy(() => import("./pages/InterviewerSignupPage.jsx"));
-const LoginPage = React.lazy(() => import("./pages/LoginPage.jsx"));
-const HomePage = React.lazy(() => import("./pages/HomePage.jsx"));
-const MeetingPage = React.lazy(() => import("./pages/MeetingPage.jsx"));
-const ProductPage = React.lazy(() => import("./pages/ProductPage.jsx"));
-const AiIntervuePage = React.lazy(() => import("./pages/AiIntervuePage.jsx"));
-const ResumeBuilder = React.lazy(() => import("./products/resumeBuilder.jsx"));
-//const userDashboard = React.lazy(() => import("./User_Profile/userDashboard.jsx"));
-
-const TocPage = React.lazy(() => import("./pages/TocPage.jsx"));
-const RefundsAndCancellationPage = React.lazy(() => import("./pages/RefundsAndCancellationPage.jsx"));
-const ContactPage = React.lazy(() => import("./pages/ContactPage.jsx"));
-const AboutPage = React.lazy(() => import("./pages/AboutPage.jsx"));
-const PrivacyPolicyPage = React.lazy(() => import("./pages/PrivacyPolicyPage.jsx"));
-const PricingPage = React.lazy(() => import("./pages/PricingPage.jsx"));
-
-const ResumeAnalysis = React.lazy(() =>
-  import("./products/resumeAnalysis.jsx")
-);
+import {
+  AboutPage,
+  AiIntervuePage,
+  CandidateSignupPage,
+  ContactPage,
+  DisplayPage,
+  EmployeeLoginPage,
+  HomePage,
+  InterviewerSignupPage,
+  JobDetailPage,
+  LoginPage,
+  MeetingPage,
+  PricingPage,
+  PrivacyPolicyPage,
+  ProductPage,
+  RefundsAndCancellationPage,
+  ResumeAnalysisPage,
+  ResumeBuilderPage,
+  SignupOrgPage,
+  SignUpPage,
+  TocPage
+} from './components/lazy-load';
+import { Loader } from './loader';
+import { NotFoundPage } from './pages/NotFoundPage.jsx';
 
 const router = createBrowserRouter([
   {
+    path: "*",
+    element: <NotFoundPage />,
+  },
+  {
     path: "/",
-    element: (
-      <div>
-        <App />
-      </div>
-    ),
+    element: <App />,
   },
   {
     path: "/meeting",
@@ -52,11 +48,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/signup",
-    element: <SignupPage2 />,
+    element: <SignUpPage />,
   },
   {
     path: "/signup/candidate",
-    element: <SignupPage />,
+    element: <CandidateSignupPage />,
   },
   {
     path: "/signup/interDashboardviewer",
@@ -64,7 +60,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/signup/organisation",
-    element: <SignupOrg />,
+    element: <SignupOrgPage />,
   },
 
   {
@@ -81,11 +77,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/product/resumeBuilder",
-    element: <ResumeBuilder />,
+    element: <ResumeBuilderPage />,
   },
   {
     path: "/product/resumeAnalysis",
-    element: <ResumeAnalysis />,
+    element: <ResumeAnalysisPage />,
   },
   {
     path: "/TOC",
@@ -121,19 +117,21 @@ const router = createBrowserRouter([
   },
   {
     path: "/home",
-    element: <HomePage/>,
+    element: <HomePage />,
   },
   {
     path: "/Employee-login",
-    element: <Employee/>,
+    element: <EmployeeLoginPage />,
   },
-  
+
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <ChakraProvider>
-      <RouterProvider router={router} />
+      <Suspense fallback={<Loader />}>
+        <RouterProvider router={router} />
+      </Suspense>
     </ChakraProvider>
   </React.StrictMode>,
 )
