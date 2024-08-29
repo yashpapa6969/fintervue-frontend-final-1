@@ -12,7 +12,7 @@ import SignupPage2 from './pages/signupPage2.jsx';
 import DisplayPage from './pages/DisplayPage.jsx';
 import JobDetailPage from './pages/JobDetailPage.jsx';
 import SignupOrg from './pages/signupOrg.jsx';
-import Dashboard from './User_Profile/userDashboard.jsx'
+import Employee from './User_Profile/Employee-login.jsx'
 
 
 
@@ -59,7 +59,7 @@ const router = createBrowserRouter([
     element: <SignupPage />,
   },
   {
-    path: "/signup/interviewer",
+    path: "/signup/interDashboardviewer",
     element: <InterviewerSignupPage />,
   },
   {
@@ -124,8 +124,8 @@ const router = createBrowserRouter([
     element: <HomePage/>,
   },
   {
-    path: "/Dashboard",
-    element: <Dashboard/>,
+    path: "/Employee-login",
+    element: <Employee/>,
   },
   
 ]);
