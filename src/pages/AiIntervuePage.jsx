@@ -1,7 +1,7 @@
 import { Button } from "@chakra-ui/react"
 import { Mouse } from "lucide-react"
 import HowToVideo from "../assests/videos/1_Practice_answering.mp4"
-import InterviewMockup from "../assests/ai_interview_mockup.png"
+import InterviewMockup from "../assests/ai_interview.jpg"
 import { AnimatePresence, motion } from "framer-motion"
 import { useState } from "react"
 import Interview from "../components/ai-interview/Interview"
@@ -21,22 +21,26 @@ const AiIntervuePage = () => {
             <Interview audioOn={audioOn} />
           }
           {!startInterview && (
-            <motion.div exit={{ opacity: 0, x: 100 }} transition={{ duration: 2 }} className="w-full">
-              <div className="flex flex-col items-center justify-center min-h-screen pt-16 md:pt-24">
-                <div className="rounded-full border-2 border-purple-500 px-4 py-1 bg-white bg-opacity-30 mb-4">
-                  ✨ Unleash the power of AI
-                </div>
-                <motion.h1
-                  animate={{ y: [50, 0], opacity: [0, 1] }}
-                  transition={{ duration: 1 }}
-                  className="text-3xl md:text-5xl font-semibold max-w-[600px] md:leading-[55px] text-center"
-                >
-                  The <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-blue-300">AI-Powered</span> Platform for <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-500">Online Interviews</span>
-                </motion.h1>
-                <p className="max-w-[700px] text-center text-lg mt-6 leading-6">
-                  Transform the way you take interviews with Fintervue. Leverage the power of artificial intelligence ensuring unprecedented accuracy and control.
-                </p>
-                <Button onClick={() => setStartInterview(true)} mt={10} rounded={"full"} px={8} color={"#fff"} bg={"#000"} _hover={{ bg: "#3c3c3c" }}>Start Interview</Button>
+            <>
+              <div className="w-full flex flex-col md:flex-row gap-10 items-center justify-between px-4 md:px-10">
+                <motion.div exit={{ opacity: 0, x: 100 }} transition={{ duration: 2 }} className="w-full">
+                  <div className="flex flex-col justify-center min-h-screen">
+                    {/* <div className="rounded-full border-2 border-purple-500 px-4 py-1 bg-white bg-opacity-30 mb-4">
+                    ✨ Unleash the power of AI
+                  </div> */}
+                    <motion.h1
+                      animate={{ y: [50, 0], opacity: [0, 1] }}
+                      transition={{ duration: 1 }}
+                      className="text-3xl md:text-5xl font-semibold max-w-[600px] md:leading-[55px]"
+                    >
+                      The <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-blue-300">AI-Powered</span> Platform for <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-500">Online Interviews</span>
+                    </motion.h1>
+                    <p className="max-w-[600px] text-lg mt-6 leading-6">
+                      Transform the way you take interviews with Fintervue. Leverage the power of artificial intelligence ensuring unprecedented accuracy and control.
+                    </p>
+                    <Button onClick={() => setStartInterview(true)} mt={10} w={150} rounded={"full"} px={8} color={"#fff"} bg={"#000"} _hover={{ bg: "#3c3c3c" }}>Start Interview</Button>
+                  </div>
+                </motion.div>
                 <img
                   src={InterviewMockup}
                   className="max-w-[800px] w-full my-20"
@@ -49,12 +53,12 @@ const AiIntervuePage = () => {
                   <video src={HowToVideo} controls />
                 </div>
               </div>
-            </motion.div>
+            </>
           )}
         </AnimatePresence>
       </div>
       <Footer />
-    </div>
+    </div >
   )
 }
 

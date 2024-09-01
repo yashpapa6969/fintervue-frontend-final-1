@@ -6,7 +6,9 @@ import Button from "../components/button";
 const Navbar = () => {
   return (
     <header className="flex justify-between items-center px-6 py-4 backdrop-blur-md sticky top-0 z-20 bg-gradient-to-r from-[#E0E7FD] to-[#FDFEFF] shadow-md">
+       <a href="/home">
       <img src={Logo} alt="Logo" className="cursor-pointer w-60 h-auto" />
+      </a>
       <FaBars className="block md:hidden" />
       <nav className="hidden md:block">
         <ul className="flex gap-6 items-center">

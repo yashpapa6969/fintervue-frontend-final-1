@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import ReactDOM from 'react-dom/client'
 import {
   createBrowserRouter,
@@ -8,122 +8,113 @@ import {
 import "./styles/index.css";
 import App from './App.jsx'
 import { ChakraProvider } from '@chakra-ui/react'
-import SignupPage2 from './pages/signupPage2.jsx';
-import DisplayPage from './pages/DisplayPage.jsx';
-import JobDetailPage from './pages/JobDetailPage.jsx';
-import SignupOrg from './pages/signupOrg.jsx';
-
-
-
-const SignupPage = React.lazy(() => import("./pages/SignupPage.jsx"));
-const InterviewerSignupPage = React.lazy(() => import("./pages/InterviewerSignupPage.jsx"));
-const LoginPage = React.lazy(() => import("./pages/LoginPage.jsx"));
-const MeetingPage = React.lazy(() => import("./pages/MeetingPage.jsx"));
-const ProductPage = React.lazy(() => import("./pages/ProductPage.jsx"));
-const AiIntervuePage = React.lazy(() => import("./pages/AiIntervuePage.jsx"));
-const ResumeBuilder = React.lazy(() => import("./products/resumeBuilder.jsx"));
-
-const TocPage = React.lazy(() => import("./pages/TocPage.jsx"));
-const RefundsAndCancellationPage = React.lazy(() => import("./pages/RefundsAndCancellationPage.jsx"));
-const ContactPage = React.lazy(() => import("./pages/ContactPage.jsx"));
-const AboutPage = React.lazy(() => import("./pages/AboutPage.jsx"));
-const PrivacyPolicyPage = React.lazy(() => import("./pages/PrivacyPolicyPage.jsx"));
-const PricingPage = React.lazy(() => import("./pages/PricingPage.jsx"));
-
-const ResumeAnalysis = React.lazy(() =>
-  import("./products/resumeAnalysis.jsx")
-);
+import * as Lazy from './components/lazy-load';
+import { Loader } from './loader';
+import { NotFoundPage } from './pages/NotFoundPage';
 
 const router = createBrowserRouter([
   {
+    path: "*",
+    element: <NotFoundPage />,
+  },
+  {
     path: "/",
-    element: (
-      <div>
-        <App />
-      </div>
-    ),
+    element: <App />,
   },
   {
     path: "/meeting",
-    element: <MeetingPage />,
+    element: <Lazy.MeetingPage />,
   },
   {
     path: "/signup",
-    element: <SignupPage2 />,
+    element: <Lazy.SignUpPage />,
   },
   {
     path: "/signup/candidate",
-    element: <SignupPage />,
+    element: <Lazy.CandidateSignupPage />,
   },
   {
-    path: "/signup/interviewer",
-
-    element: <InterviewerSignupPage />,
+    path: "/signup/interDashboardviewer",
+    element: <Lazy.InterviewerSignupPage />,
   },
   {
     path: "/signup/organisation",
-
-    element: <SignupOrg />,
+    element: <Lazy.SignupOrgPage />,
+  },
+  {
+    path: "/signup/interviewer",
+    element: <Lazy.SignupInterviewerPage />,
   },
 
   {
     path: "/login",
-    element: <LoginPage />,
+    element: <Lazy.LoginPage />,
   },
   {
     path: "/product",
-    element: <ProductPage />,
+    element: <Lazy.ProductPage />,
   },
   {
     path: "/product/ai_intervue",
-    element: <AiIntervuePage />,
+    element: <Lazy.AiIntervuePage />,
   },
   {
     path: "/product/resumeBuilder",
-    element: <ResumeBuilder />,
+    element: <Lazy.ResumeBuilderPage />,
   },
   {
     path: "/product/resumeAnalysis",
-    element: <ResumeAnalysis />,
+    element: <Lazy.ResumeAnalysisPage />,
   },
   {
     path: "/TOC",
-    element: <TocPage />,
+    element: <Lazy.TocPage />,
   },
   {
     path: "/Contact",
-    element: <ContactPage />,
+    element: <Lazy.ContactPage />,
   },
   {
     path: "/About",
-    element: <AboutPage />,
+    element: <Lazy.AboutPage />,
   },
   {
     path: "/PrivacyPolicy",
-    element: <PrivacyPolicyPage />,
+    element: <Lazy.PrivacyPolicyPage />,
   },
   {
     path: "/Pricing",
-    element: <PricingPage />,
+    element: <Lazy.PricingPage />,
   },
   {
     path: "/RefundsAndCancellation",
-    element: <RefundsAndCancellationPage />,
+    element: <Lazy.RefundsAndCancellationPage />,
   },
   {
     path: "/display",
-    element: <DisplayPage />,
+    element: <Lazy.DisplayPage />,
   },
   {
     path: "/display/job",
-    element: <JobDetailPage />,
+    element: <Lazy.JobDetailPage />,
   },
+  {
+    path: "/home",
+    element: <Lazy.HomePage />,
+  },
+  {
+    path: "/Employee-login",
+    element: <Lazy.EmployeeLoginPage />,
+  },
+
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <ChakraProvider>
-      <RouterProvider router={router} />
+      <Suspense fallback={<Loader />}>
+        <RouterProvider router={router} />
+      </Suspense>
     </ChakraProvider>
   </React.StrictMode>,
 )
