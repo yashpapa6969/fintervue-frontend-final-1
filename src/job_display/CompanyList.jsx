@@ -72,7 +72,7 @@ const CompanyCard = ({ company }) => (
         </a>
         <div className="mt-4">
           <a
-            href={company.applyLink}
+            href={company.link}
             className="inline-block px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition-colors duration-200"
           >
             Apply
@@ -182,9 +182,10 @@ const companies = [
     logo: "https://via.placeholder.com/50",
     name: "Galxe",
     employees: "51-200",
-    description: "Galxe is a decentralized super app and web3's largest onchain distribution platform.",
+    description:
+      "Galxe is a decentralized super app and web3's largest onchain distribution platform.",
     openPositions: "19",
-    link: "#",
+    link: "/display/job",
   },
   {
     logo: "https://via.placeholder.com/50",
@@ -192,7 +193,7 @@ const companies = [
     employees: "11-50",
     description: "The in-store engagement platform for CPG brands.",
     openPositions: "3",
-    link: "#",
+    link: "/display/job",
   },
   {
     logo: "https://via.placeholder.com/50",
@@ -214,7 +215,8 @@ const companies = [
     logo: "https://via.placeholder.com/50",
     name: "Finacle",
     employees: "201-500",
-    description: "Leading provider of financial technology solutions for banking and insurance sectors.",
+    description:
+      "Leading provider of financial technology solutions for banking and insurance sectors.",
     openPositions: "8",
     link: "#",
   },
@@ -222,7 +224,8 @@ const companies = [
     logo: "https://via.placeholder.com/50",
     name: "Quantum Finance",
     employees: "51-200",
-    description: "A cutting-edge fintech startup specializing in quantum computing solutions for financial modeling.",
+    description:
+      "A cutting-edge fintech startup specializing in quantum computing solutions for financial modeling.",
     openPositions: "12",
     link: "#",
   },
@@ -230,7 +233,8 @@ const companies = [
     logo: "https://via.placeholder.com/50",
     name: "Ledgerworks",
     employees: "101-250",
-    description: "Innovators in blockchain-based financial ledger systems for secure and transparent transactions.",
+    description:
+      "Innovators in blockchain-based financial ledger systems for secure and transparent transactions.",
     openPositions: "7",
     link: "#",
   },
@@ -238,7 +242,8 @@ const companies = [
     logo: "https://via.placeholder.com/50",
     name: "CreditEase",
     employees: "51-200",
-    description: "A digital lending platform providing personalized loan solutions for individuals and small businesses.",
+    description:
+      "A digital lending platform providing personalized loan solutions for individuals and small businesses.",
     openPositions: "15",
     link: "#",
   },
@@ -246,7 +251,8 @@ const companies = [
     logo: "https://via.placeholder.com/50",
     name: "WealthSpring",
     employees: "51-100",
-    description: "Wealth management firm offering AI-driven investment advice and portfolio management services.",
+    description:
+      "Wealth management firm offering AI-driven investment advice and portfolio management services.",
     openPositions: "5",
     link: "#",
   },
@@ -254,7 +260,8 @@ const companies = [
     logo: "https://via.placeholder.com/50",
     name: "InsureTech",
     employees: "51-200",
-    description: "Innovative insurance solutions provider leveraging AI and big data to personalize insurance products.",
+    description:
+      "Innovative insurance solutions provider leveraging AI and big data to personalize insurance products.",
     openPositions: "10",
     link: "#",
   },
@@ -262,10 +269,12 @@ const companies = [
     logo: "https://via.placeholder.com/50",
     name: "RoboInvest",
     employees: "11-50",
-    description: "Pioneers in robo-advisory services offering automated investment strategies for retail investors.",
+    description:
+      "Pioneers in robo-advisory services offering automated investment strategies for retail investors.",
     openPositions: "6",
     link: "#",
-  }];
+  },
+];
   
 
   return (

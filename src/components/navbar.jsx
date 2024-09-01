@@ -28,7 +28,9 @@ const Navbar = () => {
           <a href="/signup">
             <Button text="Get Started" />
           </a>
-          <Button text="Get for free" />
+          <a href="/display">
+            <Button text="Jobs portal" />
+          </a>
         </ul>
       </nav>
     </header>

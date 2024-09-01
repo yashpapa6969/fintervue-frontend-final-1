@@ -7,14 +7,27 @@ const SignupOrg = () => {
       <div className="md:w-1/2 bg-gray-100 p-8 flex flex-col justify-center">
         <h2 className="text-2xl font-bold mb-4">Our clients</h2>
         <p className="text-gray-600 mb-6">
-         Hire the fresh talents in the field of finance
+          Hire the fresh talents in the field of finance
         </p>
         <div className="flex flex-wrap items-center space-x-6">
-          <img src="client-logo-1.png" alt="HTC" className="h-10" />
+          {/* <img src="client-logo-1.png" alt="HTC" className="h-10" />
           <img src="client-logo-2.png" alt="ANSR" className="h-10" />
           <img src="client-logo-3.png" alt="First Meridian" className="h-10" />
           <img src="client-logo-4.png" alt="Rakuten" className="h-10" />
-          <img src="client-logo-5.png" alt="Allegis Group" className="h-10" />
+          <img src="client-logo-5.png" alt="Allegis Group" className="h-10" /> */}
+
+          <p className="whitespace-pre-wrap text-8xl font-medium tracking-tighter text-black dark:text-white">
+            <NumberTicker value={100} />
+          </p>
+          <p className="whitespace-pre-wrap text-8xl font-medium tracking-tighter text-black dark:text-white">
+            <NumberTicker value={100} />
+          </p>
+          <p className="whitespace-pre-wrap text-8xl font-medium tracking-tighter text-black dark:text-white">
+            <NumberTicker value={100} />
+          </p>
+          <p className="whitespace-pre-wrap text-8xl font-medium tracking-tighter text-black dark:text-white">
+            <NumberTicker value={100} />
+          </p>
         </div>
         <a href="#" className="mt-6 text-blue-500">
           View all success stories →

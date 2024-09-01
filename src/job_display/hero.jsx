@@ -5,10 +5,10 @@ const Hero = () => {
   return (
     <section className="bg-gray-50 py-10">
       <div className="max-w-7xl mx-auto text-center">
-        <h1 className="text-4xl font-bold text-gray-900">
-          Find your dream job now
+        <h1 className="text-4xl font-bold text-blue-800">
+          Explore the Job Opportunities here 
         </h1>
-        <p className="text-gray-600 mt-2">add a subheading to describe the feature contents</p>
+        <p className="text-gray-600 mt-2">Get the right suitable career for you</p>
         <div className="mt-8 flex justify-center space-x-4">
           <input
             type="text"

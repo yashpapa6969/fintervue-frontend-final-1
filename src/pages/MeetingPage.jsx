@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import Logo from "../assests/logo.png"
 import VideoCall from "../components/common/VideoCall"
-import AgoraRTC, { useRTCClient, AgoraRTCProvider } from "agora-rtc-react";
+// import AgoraRTC, { useRTCClient, AgoraRTCProvider } from "agora-rtc-react";
 import { Camera, CameraOff, Mic, MicOff } from 'lucide-react';
 
 const MeetingPage = () => {

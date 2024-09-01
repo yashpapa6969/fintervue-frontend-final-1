@@ -503,7 +503,7 @@ const profiles = [
           {currentStep > 1 && currentStep !== 3 && (
             <button
               onClick={() => setCurrentStep(currentStep - 1)}
-              className="py-3 text-white bg-blue-500 font-bold w-full md:w-40 text-lg rounded-2xl"
+              className="py-3 text-white bg-black font-bold w-full md:w-40 text-lg rounded-xl"
             >
               Back
             </button>
@@ -511,7 +511,7 @@ const profiles = [
           {currentStep < 3 && (
             <button
               onClick={() => setCurrentStep(currentStep + 1)}
-              className="py-3 text-white bg-blue-500 font-bold w-full md:w-40 text-lg rounded-2xl "
+              className="py-3 text-white bg-black font-bold w-full md:w-40 text-lg rounded-xl "
               // className="px-6 py-3 mt-6 text-white bg-blue-600 rounded-md"
             >
               Next
