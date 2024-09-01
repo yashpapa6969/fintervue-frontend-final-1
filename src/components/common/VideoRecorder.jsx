@@ -5,7 +5,7 @@ import { BsSquareFill } from "react-icons/bs";
 
 const mimeType = "video/webm";
 
-const VideoRecorder = ({ setRecordedVideo, recordedVideo, onClose, isOpen }) => {
+const VideoRecorder = ({ setRecordedVideo, onClose, isOpen }) => {
     const [permission, setPermission] = useState(false);
     const mediaRecorder = useRef(null);
     const liveVideoFeed = useRef(null);
@@ -82,13 +82,13 @@ const VideoRecorder = ({ setRecordedVideo, recordedVideo, onClose, isOpen }) => 
     };
 
     return (
-        <Modal onClose={onCloseModal} size={"xxl"} isOpen={isOpen} isCentered>
+        <Modal onClose={onCloseModal} size={"full"} isOpen={isOpen} isCentered>
             <ModalOverlay />
             <ModalContent>
                 <ModalHeader>Record Video</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
-                    <div className="relative flex flex-col items-center justify-center">
+                    <div className="relative h-full flex flex-col items-center justify-center">
                         {!permission && (
                             <Button colorScheme="blue" onClick={getCameraPermission}>Get Camera Permission</Button>
                         )}
@@ -114,16 +114,6 @@ const VideoRecorder = ({ setRecordedVideo, recordedVideo, onClose, isOpen }) => 
                             style={{ height: "100%" }}
                         ></video>
                     </div>
-                    <p className="font-semibold text-lg mt-4">
-                        Recorded Video
-                    </p>
-                    {recordedVideo && (
-                        <video
-                            src={recordedVideo}
-                            controls
-                            style={{ width: "100%" }}
-                        ></video>
-                    )}
                 </ModalBody>
                 <ModalFooter>
                     <Button onClick={onCloseModal}>Close</Button>

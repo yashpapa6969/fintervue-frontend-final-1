@@ -10,7 +10,7 @@ import App from './App.jsx'
 import { ChakraProvider } from '@chakra-ui/react'
 import * as Lazy from './components/lazy-load';
 import { Loader } from './loader';
-import { NotFoundPage } from './pages/NotFoundPage.jsx';
+import { NotFoundPage } from './pages/NotFoundPage';
 
 const router = createBrowserRouter([
   {

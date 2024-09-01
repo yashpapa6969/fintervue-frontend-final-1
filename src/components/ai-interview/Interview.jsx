@@ -196,9 +196,9 @@ const Interview = ({ audioOn }) => {
     if (questions.length === 0) return <Loading />;
 
     return (
-        <div className="w-full min-h-[calc(100vh-60px)] pt-20 flex flex-col items-center justify-center transition-all">
+        <div className="w-full min-h-[calc(100vh-60px)] mt-10 transition-all">
             {!selectedDomain || selectedDomain === "" ? (
-                <>
+                <div className="flex flex-col items-center">
                     <h3 className="text-xl font-semibold mb-8">Select a Domain</h3>
                     <SearchBox value={searchDomainValue} setValue={setSearchDomainValue} className="max-w-[600px] mb-4" />
                     <div className="grid grid-cols-3 max-w-[600px] gap-5">
@@ -222,10 +222,10 @@ const Interview = ({ audioOn }) => {
                                 </Card>
                             ))}
                     </div>
-                </>
+                </div>
             ) : (
                 <>
-                    <div className="p-4 rounded-xl bg-white shadow-md w-full max-w-md">
+                    <div className="p-4 rounded-xl w-full">
                         <p className="text-xl">{questions[questionNo]?.questionText || <Loading />}</p>
                         <br />
                         <div className="flex justify-between">
@@ -246,7 +246,7 @@ const Interview = ({ audioOn }) => {
                         )}
                     </div>
                     {recordedVideoURL && (
-                        <div className="mt-4">
+                        <div className="mt-4 flex flex-col items-center">
                             <h4 className="text-lg font-semibold">Recorded Video</h4>
                             <video src={recordedVideoURL} controls className="w-full max-w-md"></video>
                         </div>
@@ -273,7 +273,6 @@ const Interview = ({ audioOn }) => {
                     setRecordedVideoURL(url);
                     setVideoBlobs(prevBlobs => [...prevBlobs, blob]);
                     saveVideoBlobToLocalStorage(blob); //
-
                 }}
                 onClose={onVideoRecordClose}
                 isOpen={isVideoRecordOpen}
