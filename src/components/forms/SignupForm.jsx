@@ -1,5 +1,4 @@
 import { useToast } from "@chakra-ui/react";
-import { Linkedin } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const SignupForm = () => {
