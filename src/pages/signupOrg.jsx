@@ -1,6 +1,85 @@
-import React from "react";
+import { useState } from "react";
+import NumberTicker from "../components/ui/number-ticker";
+import { useToast } from "@chakra-ui/react";
+import axios from "axios";
 
 const SignupOrg = () => {
+  const toast = useToast();
+
+  const [recruiterData, setRecruiterData] = useState({
+    companyName: "",
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    phoneNumber: "",
+    jobTitle: "",
+    industry: "",
+    location: "",
+    activeJobPostings: [],  // Array of job posting ids
+    subscriptionStatus: "", // Free, Premium, Eterprise
+    accountCreatedAt: null,
+    lastLogin: new Date(),
+  });
+
+  const canRegister = !!recruiterData.email
+    && !!recruiterData.password
+    && !!recruiterData.firstName
+    && !!recruiterData.lastName
+    // && !!recruiterData.linkedInProfile
+    // && !!recruiterData.resume;
+
+  const handleChange = (key, value) => {
+    setRecruiterData((prevData) => ({
+      ...prevData,
+      [key]: value,
+    }));
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    // console.log(recruiterData);
+    if (!canRegister) {
+      toast({
+        title: "Error",
+        description: "Please fill in all the required fields.",
+        variant: "top-accent",
+        status: "error",
+        isClosable: true,
+      });
+      return;
+    }
+    try {
+      const result = await axios.post("https://x3oh1podsi.execute-api.ap-south-1.amazonaws.com/api/recruiter/createRecruiter", recruiterData);
+      if (result.status === 201) {
+        toast({
+          title: "Welcome",
+          description: "Successfully registered recruiter.",
+          variant: "top-accent",
+          status: "success",
+          isClosable: true,
+        });
+        return;
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: `${error.message}`,
+        variant: "top-accent",
+        status: "error",
+        isClosable: true,
+      });
+      return;
+    }
+    toast({
+      title: "Error",
+      description: "Something went wrong. Please try again.",
+      variant: "top-accent",
+      status: "error",
+      isClosable: true,
+    });
+  }
+
   return (
     <div className="flex flex-col md:flex-row min-h-screen">
       {/* Left Section */}
@@ -50,15 +129,28 @@ const SignupOrg = () => {
             <hr className="w-full border-gray-300" />
           </div>
           <form>
-            <input
-              type="text"
-              placeholder="Name"
-              className="w-full mb-4 p-2 border border-gray-300 rounded-md"
-            />
+            <div className="flex gap-4">
+              <input
+                type="text"
+                placeholder="First Name"
+                className="w-full mb-4 p-2 border border-gray-300 rounded-md"
+                value={recruiterData.firstName}
+                onChange={(e) => handleChange("firstName", e.target.value)}
+              />
+              <input
+                type="text"
+                placeholder="Last Name"
+                className="w-full mb-4 p-2 border border-gray-300 rounded-md"
+                value={recruiterData.lastName}
+                onChange={(e) => handleChange("lastName", e.target.value)}
+              />
+            </div>
             <input
               type="email"
               placeholder="Work email"
               className="w-full mb-4 p-2 border border-gray-300 rounded-md"
+              value={recruiterData.email}
+              onChange={(e) => handleChange("email", e.target.value)}
             />
             <div className="flex items-center mb-4">
               <div className="flex items-center border border-gray-300 rounded-md mr-2">
@@ -73,16 +165,21 @@ const SignupOrg = () => {
                 type="tel"
                 placeholder="Phone number"
                 className="w-full p-2 border border-gray-300 rounded-md"
+                value={recruiterData.phoneNumber}
+                onChange={(e) => handleChange("phoneNumber", e.target.value)}
               />
             </div>
             <input
               type="password"
               placeholder="Password"
               className="w-full mb-4 p-2 border border-gray-300 rounded-md"
+              value={recruiterData.password}
+              onChange={(e) => handleChange("password", e.target.value)}
             />
             <button
-              type="submit"
+              type="button"
               className="w-full py-2 bg-black text-white rounded-md"
+              onClick={handleSubmit}
             >
               Create an account
             </button>
