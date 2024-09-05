@@ -2,10 +2,14 @@ import { useState } from "react";
 import NumberTicker from "../components/ui/number-ticker";
 import { useToast } from "@chakra-ui/react";
 import axios from "axios";
+import { Loader2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const SignupOrg = () => {
   const toast = useToast();
+  const navigate = useNavigate();
 
+  const [loading, setLoading] = useState(false);
   const [recruiterData, setRecruiterData] = useState({
     companyName: "",
     firstName: "",
@@ -26,8 +30,8 @@ const SignupOrg = () => {
     && !!recruiterData.password
     && !!recruiterData.firstName
     && !!recruiterData.lastName
-    // && !!recruiterData.linkedInProfile
-    // && !!recruiterData.resume;
+  // && !!recruiterData.linkedInProfile
+  // && !!recruiterData.resume;
 
   const handleChange = (key, value) => {
     setRecruiterData((prevData) => ({
@@ -50,6 +54,7 @@ const SignupOrg = () => {
       return;
     }
     try {
+      setLoading(true);
       const result = await axios.post("https://x3oh1podsi.execute-api.ap-south-1.amazonaws.com/api/recruiter/createRecruiter", recruiterData);
       if (result.status === 201) {
         toast({
@@ -59,6 +64,7 @@ const SignupOrg = () => {
           status: "success",
           isClosable: true,
         });
+        navigate("/");
         return;
       }
     } catch (error) {
@@ -69,8 +75,10 @@ const SignupOrg = () => {
         status: "error",
         isClosable: true,
       });
+      setLoading(false);
       return;
     }
+    setLoading(false);
     toast({
       title: "Error",
       description: "Something went wrong. Please try again.",
@@ -177,11 +185,12 @@ const SignupOrg = () => {
               onChange={(e) => handleChange("password", e.target.value)}
             />
             <button
-              type="button"
-              className="w-full py-2 bg-black text-white rounded-md"
+              type="submit"
+              disabled={loading}
               onClick={handleSubmit}
+              className="w-full py-2 bg-black text-white rounded-md flex items-center justify-center gap-4"
             >
-              Create an account
+              {loading ? <Loader2 size={20} className="animate-spin" /> : "Create an accout"}
             </button>
           </form>
           <p className="mt-4 text-center text-gray-500">

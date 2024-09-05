@@ -1,14 +1,18 @@
 import { useState } from "react";
-import { Check } from "lucide-react";
+import { Check, Loader2 } from "lucide-react";
 import { useToast } from "@chakra-ui/react";
 import LoadingBar from "react-top-loading-bar";
 import InterviewerSignupForm from "../components/forms/InterViewerSignupForm";
-import { FrontendIcon1, FrontendIcon2, FrontendIcon3, FrontendIcon4, FrontendIcon5, FrontendIcon6, FrontendIcon7, FrontendIcon8, FrontendIcon9, FrontendIcon10, FrontendIcon11, FrontendIcon12, FrontendIcon13, FrontendIcon14, FrontendIcon15} from "../assests/Domain_images";
+import { FrontendIcon1, FrontendIcon2, FrontendIcon3, FrontendIcon4, FrontendIcon5, FrontendIcon6, FrontendIcon7, FrontendIcon8, FrontendIcon9, FrontendIcon10, FrontendIcon11, FrontendIcon12, FrontendIcon13, FrontendIcon14, FrontendIcon15 } from "../assests/Domain_images";
 
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const InterviewerSignupPage = () => {
     const toast = useToast();
+    const navigate = useNavigate();
+
+    const [loading, setLoading] = useState(false);
     const [currentStep, setCurrentStep] = useState(1);
     const [selectedProcess, setSelectedProcess] = useState("");
 
@@ -120,13 +124,13 @@ const InterviewerSignupPage = () => {
         { id: 15, category: "Taxation", name: "Taxation", icon: FrontendIcon15 },
     ];
 
-    const canRegister = !!interviewerData.email 
-                        && !!interviewerData.password 
-                        && !!interviewerData.firstName 
-                        && !!interviewerData.lastName 
-                        && !!interviewerData.linkedInProfile
-                        && !!interviewerData.resume;
-    
+    const canRegister = !!interviewerData.email
+        && !!interviewerData.password
+        && !!interviewerData.firstName
+        && !!interviewerData.lastName
+        && !!interviewerData.linkedInProfile
+        && !!interviewerData.resume;
+
     const handleChange = (key, value) => {
         setInterviewerData((prevData) => ({
             ...prevData,
@@ -146,6 +150,7 @@ const InterviewerSignupPage = () => {
             return;
         }
         try {
+            setLoading(true);
             const result = await axios.post("https://x3oh1podsi.execute-api.ap-south-1.amazonaws.com/api/interviewer/AddInterviewer", interviewerData);
             if (result.status === 201) {
                 toast({
@@ -155,9 +160,11 @@ const InterviewerSignupPage = () => {
                     status: "success",
                     isClosable: true,
                 });
+                navigate("/");
                 return;
             }
         } catch (error) {
+            setLoading(false);
             toast({
                 title: "Error",
                 description: `${error.message}`,
@@ -167,6 +174,7 @@ const InterviewerSignupPage = () => {
             });
             return;
         }
+        setLoading(false);
         toast({
             title: "Error",
             description: "Something went wrong. Please try again.",
@@ -300,10 +308,11 @@ const InterviewerSignupPage = () => {
                     <div>
                         <InterviewerSignupForm formData={interviewerData} handleChange={handleChange} />
                         <button
+                            disabled={loading}
                             onClick={handleSubmit}
-                            className="py-3 text-white bg-blue-500 font-bold w-full md:w-40 text-lg rounded-2xl"
+                            className="py-3 text-white bg-blue-500 font-bold w-full md:w-40 text-lg rounded-2xl flex items-center justify-center gap-4"
                         >
-                            Sign up
+                            {loading ? <Loader2 size={20} className="animate-spin" /> : "Sign up"}
                         </button>
                     </div>
                 )}
