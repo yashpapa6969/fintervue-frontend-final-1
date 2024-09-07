@@ -1,37 +1,12 @@
-import { useToast } from "@chakra-ui/react";
-import { Linkedin } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Select } from "@chakra-ui/react";
 
-const SignupForm = () => {
-  const toast = useToast();
-
-  const [fullname, setFullname] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [mobile, setMobile] = useState("");
-  const [linkedin, setLinkedin] = useState("");
-  const [salary, setSalary] = useState(10); // Default to 10 lakhs
-  const [noticePeriod, setNoticePeriod] = useState("no");
-
-
-  const canRegister =
-    !!email && !!password && !!fullname && !!mobile && !!workStatus;
-
-  useEffect(() => {
-    if (!canRegister) {
-      toast({
-        title: "Error",
-        description: "Please fill in all the required fields.",
-        variant: "top-accent",
-        status: "error",
-        isClosable: true,
-      });
-    }
-  }, [canRegister, toast]);
+const SignupForm = ({ formData, handleChange }) => {
 
   const handleResumeUpload = (e) => {
-    setResume(e.target.files[0]);
-    console.log("file added");
+    const resumeFile = e.target.files[0];
+    // TODO: Handle resume upload api integration
+    const resumeURL = "temp resume file url";
+    handleChange("resume", resumeURL);
   };
 
   return (
@@ -50,38 +25,55 @@ const SignupForm = () => {
             htmlFor="fname_input"
             className="text-black font-medium text-lg leading-[24px] pb-2"
           >
-            Full name*
+            First name*
           </label>
           <input
             className="w-full outline-none border border-[rgba(102,102,102,0.35)] rounded-md text-base py-2 px-3 mb-4"
             type="text"
             id="fname_input"
-            name="fullname"
-            placeholder="What is your name?"
-            value={fullname}
-            onChange={(e) => setFullname(e.target.value)}
+            name="firstname"
+            placeholder="What is your first name?"
+            value={formData?.firstName}
+            onChange={(e) => handleChange("firstName", e.target.value)}
           />
         </div>
         <div>
           <label
-            htmlFor="email_input"
+            htmlFor="lname_input"
             className="text-black font-medium text-lg leading-[24px] pb-2"
           >
-            Email ID*
+            Last name*
           </label>
           <input
             className="w-full outline-none border border-[rgba(102,102,102,0.35)] rounded-md text-base py-2 px-3 mb-4"
-            type="email"
-            id="email_input"
-            name="email"
-            placeholder="Tell us your Email ID"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type="text"
+            id="lname_input"
+            name="lastname"
+            placeholder="What is your last name?"
+            value={formData?.lastName}
+            onChange={(e) => handleChange("lastName", e.target.value)}
           />
         </div>
       </div>
+      <div>
+        <label
+          htmlFor="email_input"
+          className="text-black font-medium text-lg leading-[24px] pb-2"
+        >
+          Email ID*
+        </label>
+        <input
+          className="w-full outline-none border border-[rgba(102,102,102,0.35)] rounded-md text-base py-2 px-3 mb-4"
+          type="email"
+          id="email_input"
+          name="email"
+          placeholder="Tell us your Email ID"
+          value={formData?.email}
+          onChange={(e) => handleChange("email", e.target.value)}
+        />
+      </div>
       <div className="flex flex-row gap-5">
-        <div>
+        <div className="w-full">
           <label
             htmlFor="password_input"
             className="text-black font-medium text-lg leading-[24px] pb-2"
@@ -94,26 +86,26 @@ const SignupForm = () => {
             id="password_input"
             name="password"
             placeholder="Enter your password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={formData?.password}
+            onChange={(e) => handleChange("password", e.target.value)}
           />
         </div>
-        <div>
+        <div className="w-full">
           <label
-            htmlFor="mob_input"
+            htmlFor="emp_select"
             className="text-black font-medium text-lg leading-[24px] pb-2"
           >
-            Mobile *
+            Employment Status*
           </label>
-          <input
-            className="w-full outline-none border border-[rgba(102,102,102,0.35)] rounded-md text-base py-2 px-3 mb-4"
-            type="tel"
-            id="mob_input"
-            name="mobile"
-            placeholder="+91 Enter your mobile number"
-            value={mobile}
-            onChange={(e) => setMobile(e.target.value)}
-          />
+          <Select
+            onChange={(e) => handleChange("currentEmploymentStatus", e.target.value)}
+            className="w-full outline-none border border-[rgba(102,102,102,0.35)] rounded-md text-base"
+          >
+            <option value="employed">Employed</option>
+            <option value="unemployed">Unemployed</option>
+            <option value="student">Student</option>
+            <option value="freelancer">Freelancer</option>
+          </Select>
         </div>
       </div>
       <label
@@ -128,8 +120,8 @@ const SignupForm = () => {
         id="linkedin_input"
         name="linkedin_input"
         placeholder="https://linkedin.com/"
-        value={linkedin}
-        onChange={(e) => setLinkedin(e.target.value)}
+        value={formData?.linkedInProfile}
+        onChange={(e) => handleChange("linkedInProfile", e.target.value)}
       />
 
       <div className="flex gap-4 mb-4">
@@ -168,7 +160,7 @@ const SignupForm = () => {
           Expected Salary Range (in Lakhs)*
         </label>
         <div className="text-center mt-2 text-lg font-semibold">
-          ₹{salary} Lakhs
+          ₹{formData?.expectedCompensation} Lakhs
         </div>
         <input
           className="w-full mt-2"
@@ -178,8 +170,8 @@ const SignupForm = () => {
           min="0"
           max="20"
           step="0.5"
-          value={salary}
-          onChange={(e) => setSalary(e.target.value)}
+          value={formData?.expectedCompensation}
+          onChange={(e) => handleChange("expectedCompensation", e.target.value)}
         />
       </div>
 
@@ -188,7 +180,8 @@ const SignupForm = () => {
         <label className="text-black font-medium text-lg leading-[24px] pb-2">
           Are you currently in your notice period?*
         </label>
-        <div className="flex gap-4 mt-2">
+        {/* NOTE: These fields are not present in backend. Look into this. */}
+        {/* <div className="flex gap-4 mt-2">
           <label className="flex items-center">
             <input
               type="radio"
@@ -209,7 +202,7 @@ const SignupForm = () => {
             />
             <span className="ml-2">No</span>
           </label>
-        </div>
+        </div> */}
       </div>
     </div>
   );

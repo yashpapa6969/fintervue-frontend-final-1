@@ -3,176 +3,254 @@ import SignupForm from "../components/forms/SignupForm";
 import { useState } from "react";
 import LoadingBar from "react-top-loading-bar";
 import { useNavigate } from "react-router-dom";
-import { useAccordion } from "@chakra-ui/react";
+import { Loader2 } from "lucide-react";
 
-import FrontendIcon1 from "../assests/Domain_images/Accounting.png";
-import FrontendIcon2 from "../assests/Domain_images/Asset_Management.png";
-import FrontendIcon3 from "../assests/Domain_images/Banking.png";
-import FrontendIcon4 from "../assests/Domain_images/Cash Management.png";
-import FrontendIcon5 from "../assests/Domain_images/Corporate Finance.png";
-import FrontendIcon6 from "../assests/Domain_images/Financial Advisory.png";
-import FrontendIcon7 from "../assests/Domain_images/Financial Technology.png";
-import FrontendIcon8 from "../assests/Domain_images/insurance.png";
-import FrontendIcon9 from "../assests/Domain_images/Investment Banking.png";
-import FrontendIcon10 from "../assests//Domain_images/quantitative.png";
-import FrontendIcon11 from "../assests/Domain_images/Real Estate Finance.png";
-import FrontendIcon12 from "../assests/Domain_images/Regulatory Roles.png";
-import FrontendIcon13 from "../assests/Domain_images/Research.png";
-import FrontendIcon14 from "../assests/Domain_images/Risk Management.png";
-import FrontendIcon15 from "../assests/Domain_images/taxation.png";
+import { FrontendIcon1, FrontendIcon2, FrontendIcon3, FrontendIcon4, FrontendIcon5, FrontendIcon6, FrontendIcon7, FrontendIcon8, FrontendIcon9, FrontendIcon10, FrontendIcon11, FrontendIcon12, FrontendIcon13, FrontendIcon14, FrontendIcon15 } from "../assests/Domain_images";
+import { useToast } from "@chakra-ui/react";
+import axios from "axios";
 
 const SignupPage = () => {
-  const [currentStep, setCurrentStep] = useState(1);
-  const [selectedProcess, setSelectedProcess] = useState("");
-    const [selectedJobLocations, setSelectedJobLocations] = useState([]);
-    const [selectedYearsOfExperience, setSelectedYearsOfExperience] = useState(null);
-    const [selectedKeySkills, setSelectedKeySkills] = useState([]);
-
+  const toast = useToast();
   const navigate = useNavigate();
 
-  const handleSubmit = () => {
-    setCurrentStep(3);
-    console.log("Not implemented but form submitted");
-    navigate("/");
-  };
+  const [loading, setLoading] = useState(false);
+  const [currentStep, setCurrentStep] = useState(1);
+  const [selectedProcess, setSelectedProcess] = useState("");
+  const [selectedYearsOfExperience, setSelectedYearsOfExperience] = useState(null);
+  const [selectedKeySkills, setSelectedKeySkills] = useState([]);
 
-  const handleNextStep = () => {
-    setCurrentStep(currentStep + 1);
-  };
-
-  const [data, setData] = useState({
-    domain: null,
-    financeProfiles: null,
+  const [candidateData, setCandidateData] = useState({
+    firstName: "",
+    lastName: "",
+    profilePic: "",
+    resume: "",
+    email: "",
+    password: "",
+    linkedInProfile: "",
+    city: "",
+    preferredCity: "",
+    currentEmploymentStatus: "",  // enum: ['employed', 'unemployed', 'student', 'freelancer']
+    expectedCompensation: null,   // number
+    skills: [""],
+    preferredJobRoles: [""],
+    industry: "",
+    profileVisibility: true,
+    anonymized: false,
+    interviewScores: []
   });
-  const handleDomain = (domain) => {
-    setData((prev) => ({
-      ...prev,
-      domain: domain,
+
+  // const handleRole = () => {
+  //   if (domain !== null) {
+  //     return financeProfiles.filter((e) => {
+  //       e.category === domain;
+  //     });
+  //   } else {
+  //     // TODO: Handle this case
+  //   }
+  // };
+
+  const handleChange = (key, value) => {
+    setCandidateData((prevData) => ({
+      ...prevData,
+      [key]: value,
     }));
   };
-  const handleRole = () => {
-    if (domain !== null) {
-      return financeProfiles.filter((e) => {
-        e.category === domain;
-      });
-    } else {
-    }
-  };
 
-  const [selectedTechStacks, setSelectedTechStack] = useState([]);
+  // const handleTechStackSelection = (id) => {
+  //   setSelectedTechStack((prevSelected) =>
+  //     prevSelected.includes(id)
+  //       ? prevSelected.filter((stackId) => stackId !== id)
+  //       : [...prevSelected, id]
+  //   );
+  // };
 
-  const handleTechStackSelection = (id) => {
-    setSelectedTechStack((prevSelected) =>
-      prevSelected.includes(id)
-        ? prevSelected.filter((stackId) => stackId !== id)
-        : [...prevSelected, id]
-    );
-  };
+  // const techStacks = [
+  //   { id: "react", name: "React", icon: "react-icon-path" },
+  //   { id: "nodejs", name: "Node.js", icon: "nodejs-icon-path" },
+  //   { id: "python", name: "Python", icon: "python-icon-path" },
+  //   { id: "java", name: "Java", icon: "java-icon-path" },
+  //   { id: "golang", name: "Go", icon: "golang-icon-path" },
+  //   { id: "aws", name: "AWS", icon: "aws-icon-path" },
+  //   { id: "docker", name: "Docker", icon: "docker-icon-path" },
+  //   { id: "kubernetes", name: "Kubernetes", icon: "kubernetes-icon-path" },
+  //   // Add more tech stacks as needed
+  // ];
 
-  const techStacks = [
-    { id: "react", name: "React", icon: "react-icon-path" },
-    { id: "nodejs", name: "Node.js", icon: "nodejs-icon-path" },
-    { id: "python", name: "Python", icon: "python-icon-path" },
-    { id: "java", name: "Java", icon: "java-icon-path" },
-    { id: "golang", name: "Go", icon: "golang-icon-path" },
-    { id: "aws", name: "AWS", icon: "aws-icon-path" },
-    { id: "docker", name: "Docker", icon: "docker-icon-path" },
-    { id: "kubernetes", name: "Kubernetes", icon: "kubernetes-icon-path" },
-    // Add more tech stacks as needed
+  // const profiles = [
+  //   {
+  //     id: 1,
+  //     category: "Corporate Finance",
+  //     name: "Corporate Finance",
+  //     icon: FrontendIcon,
+  //   },
+  //   {
+  //     id: 2,
+  //     category: "Investment Banking",
+  //     name: "Investment Banking",
+  //     icon: FrontendIcon,
+  //   },
+  //   {
+  //     id: 3,
+  //     category: "Asset Management and Wealth Management",
+  //     name: "Asset Management and Wealth Management",
+  //     icon: FrontendIcon,
+  //   },
+  //   {
+  //     id: 4,
+  //     category: "Risk Management",
+  //     name: "Risk Management",
+  //     icon: FrontendIcon,
+  //   },
+  //   {
+  //     id: 5,
+  //     category: "Accounting and Auditing",
+  //     name: "Accounting and Auditing",
+  //     icon: FrontendIcon,
+  //   },
+  //   {
+  //     id: 6,
+  //     category: "Financial Advisory",
+  //     name: "Financial Advisory",
+  //     icon: FrontendIcon,
+  //   },
+  //   {
+  //     id: 7,
+  //     category: "Banking and Financial Services",
+  //     name: "Banking and Financial Services",
+  //     icon: FrontendIcon,
+  //   },
+  //   {
+  //     id: 8,
+  //     category: "Financial Technology (FinTech)",
+  //     name: "Financial Technology (FinTech)",
+  //     icon: FrontendIcon,
+  //   },
+  //   { id: 9, category: "Insurance", name: "Insurance", icon: FrontendIcon },
+  //   {
+  //     id: 10,
+  //     category: "Real Estate Finance",
+  //     name: "Real Estate Finance",
+  //     icon: FrontendIcon,
+  //   },
+  //   {
+  //     id: 11,
+  //     category: "Treasury and Cash Management",
+  //     name: "Treasury and Cash Management",
+  //     icon: FrontendIcon,
+  //   },
+  //   {
+  //     id: 12,
+  //     category: "Quantitative Finance",
+  //     name: "Quantitative Finance",
+  //     icon: FrontendIcon,
+  //   },
+  //   {
+  //     id: 13,
+  //     category: "Compliance and Regulatory Roles",
+  //     name: "Compliance and Regulatory Roles",
+  //     icon: FrontendIcon,
+  //   },
+  //   {
+  //     id: 14,
+  //     category: "Financial Journalism and Research",
+  //     name: "Financial Journalism and Research",
+  //     icon: FrontendIcon,
+  //   },
+  //   { id: 15, category: "Taxation", name: "Taxation", icon: FrontendIcon },
+  // ];
+
+  // const [selectedWorkExperience, setSelectedWorkExperience] = useState(null);
+
+  // const workExperienceLevels = [
+  //   { id: "junior", name: "Junior" },
+  //   { id: "mid", name: "Mid-Level" },
+  //   { id: "senior", name: "Senior" },
+  //   { id: "lead", name: "Lead" },
+  //   { id: "architect", name: "Architect" },
+  // ];
+
+  const profiles = [
+    {
+      id: 1,
+      category: "Corporate Finance",
+      name: "Corporate Finance",
+      icon: FrontendIcon1,
+    },
+    {
+      id: 2,
+      category: "Investment Banking",
+      name: "Investment Banking",
+      icon: FrontendIcon2,
+    },
+    {
+      id: 3,
+      category: "Asset Management and Wealth Management",
+      name: "Asset Management and Wealth Management",
+      icon: FrontendIcon3,
+    },
+    {
+      id: 4,
+      category: "Risk Management",
+      name: "Risk Management",
+      icon: FrontendIcon4,
+    },
+    {
+      id: 5,
+      category: "Accounting and Auditing",
+      name: "Accounting and Auditing",
+      icon: FrontendIcon5,
+    },
+    {
+      id: 6,
+      category: "Financial Advisory",
+      name: "Financial Advisory",
+      icon: FrontendIcon6,
+    },
+    {
+      id: 7,
+      category: "Banking and Financial Services",
+      name: "Banking and Financial Services",
+      icon: FrontendIcon7,
+    },
+    {
+      id: 8,
+      category: "Financial Technology (FinTech)",
+      name: "Financial Technology (FinTech)",
+      icon: FrontendIcon8,
+    },
+    { id: 9, category: "Insurance", name: "Insurance", icon: FrontendIcon9 },
+    {
+      id: 10,
+      category: "Real Estate Finance",
+      name: "Real Estate Finance",
+      icon: FrontendIcon10,
+    },
+    {
+      id: 11,
+      category: "Treasury and Cash Management",
+      name: "Treasury and Cash Management",
+      icon: FrontendIcon11,
+    },
+    {
+      id: 12,
+      category: "Quantitative Finance",
+      name: "Quantitative Finance",
+      icon: FrontendIcon12,
+    },
+    {
+      id: 13,
+      category: "Compliance and Regulatory Roles",
+      name: "Compliance and Regulatory Roles",
+      icon: FrontendIcon13,
+    },
+    {
+      id: 14,
+      category: "Financial Journalism and Research",
+      name: "Financial Journalism and Research",
+      icon: FrontendIcon14,
+    },
+    { id: 15, category: "Taxation", name: "Taxation", icon: FrontendIcon15 },
   ];
-
-  const [selectedWorkExperience, setSelectedWorkExperience] = useState(null);
-
-  const workExperienceLevels = [
-    { id: "junior", name: "Junior" },
-    { id: "mid", name: "Mid-Level" },
-    { id: "senior", name: "Senior" },
-    { id: "lead", name: "Lead" },
-    { id: "architect", name: "Architect" },
-  ];
-
-const profiles = [
-  {
-    id: 1,
-    category: "Corporate Finance",
-    name: "Corporate Finance",
-    icon: FrontendIcon1,
-  },
-  {
-    id: 2,
-    category: "Investment Banking",
-    name: "Investment Banking",
-    icon: FrontendIcon2,
-  },
-  {
-    id: 3,
-    category: "Asset Management and Wealth Management",
-    name: "Asset Management and Wealth Management",
-    icon: FrontendIcon3,
-  },
-  {
-    id: 4,
-    category: "Risk Management",
-    name: "Risk Management",
-    icon: FrontendIcon4,
-  },
-  {
-    id: 5,
-    category: "Accounting and Auditing",
-    name: "Accounting and Auditing",
-    icon: FrontendIcon5,
-  },
-  {
-    id: 6,
-    category: "Financial Advisory",
-    name: "Financial Advisory",
-    icon: FrontendIcon6,
-  },
-  {
-    id: 7,
-    category: "Banking and Financial Services",
-    name: "Banking and Financial Services",
-    icon: FrontendIcon7,
-  },
-  {
-    id: 8,
-    category: "Financial Technology (FinTech)",
-    name: "Financial Technology (FinTech)",
-    icon: FrontendIcon8,
-  },
-  { id: 9, category: "Insurance", name: "Insurance", icon: FrontendIcon9 },
-  {
-    id: 10,
-    category: "Real Estate Finance",
-    name: "Real Estate Finance",
-    icon: FrontendIcon10,
-  },
-  {
-    id: 11,
-    category: "Treasury and Cash Management",
-    name: "Treasury and Cash Management",
-    icon: FrontendIcon11,
-  },
-  {
-    id: 12,
-    category: "Quantitative Finance",
-    name: "Quantitative Finance",
-    icon: FrontendIcon12,
-  },
-  {
-    id: 13,
-    category: "Compliance and Regulatory Roles",
-    name: "Compliance and Regulatory Roles",
-    icon: FrontendIcon13,
-  },
-  {
-    id: 14,
-    category: "Financial Journalism and Research",
-    name: "Financial Journalism and Research",
-    icon: FrontendIcon14,
-  },
-  { id: 15, category: "Taxation", name: "Taxation", icon: FrontendIcon15 },
-];
 
   // Sample data for job locations
   const jobLocations = [
@@ -207,42 +285,82 @@ const profiles = [
     { id: 9, name: "Derivatives Trading" },
   ];
 
-  
+  // Select years of experience (single selection)
+  const handleYearsOfExperienceSelection = (id) => {
+    setSelectedYearsOfExperience(id);
+  };
 
-    // Toggle selection for job locations
-    const handleJobLocationSelection = (id) => {
-      setSelectedJobLocations((prevSelected) => {
-        if (prevSelected.includes(id)) {
-          return prevSelected.filter((locationId) => locationId !== id);
-        } else if (prevSelected.length < 5) {
-          // Limit to 5 selections
-          return [...prevSelected, id];
-        } else {
-          return prevSelected; // No more than 5 selections allowed
-        }
+  // Toggle selection for key skills
+  const handleKeySkillsSelection = (id) => {
+    setSelectedKeySkills((prevSelected) => {
+      if (prevSelected.includes(id)) {
+        return prevSelected.filter((skillId) => skillId !== id);
+      } else {
+        return [...prevSelected, id];
+      }
+    });
+  };
+
+  const canRegister = !!candidateData.email
+    && !!candidateData.password
+    && !!candidateData.firstName
+    && !!candidateData.lastName
+    && !!candidateData.linkedInProfile
+    && !!candidateData.resume;
+
+  const handleSubmit = async () => {
+    if (!canRegister) {
+      toast({
+        title: "Error",
+        description: "Please fill in all the required fields.",
+        variant: "top-accent",
+        status: "error",
+        isClosable: true,
       });
-    };
-
-    // Select years of experience (single selection)
-    const handleYearsOfExperienceSelection = (id) => {
-      setSelectedYearsOfExperience(id);
-    };
-
-    // Toggle selection for key skills
-    const handleKeySkillsSelection = (id) => {
-      setSelectedKeySkills((prevSelected) => {
-        if (prevSelected.includes(id)) {
-          return prevSelected.filter((skillId) => skillId !== id);
-        } else {
-          return [...prevSelected, id];
-        }
+      return;
+    }
+    try {
+      setLoading(true);
+      const result = await axios.post("https://x3oh1podsi.execute-api.ap-south-1.amazonaws.com/api/interviewee/AddInterviewee", {
+        ...candidateData,
+        skills: selectedKeySkills,
       });
-    };
+      if (result.status === 201) {
+        toast({
+          title: "Welcome",
+          description: "Successfully registered interviewee.",
+          variant: "top-accent",
+          status: "success",
+          isClosable: true,
+        });
+        navigate("/");
+        return;
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: `${error.message}`,
+        variant: "top-accent",
+        status: "error",
+        isClosable: true,
+      });
+      setLoading(false);
+      return;
+    }
+    setLoading(false);
+    toast({
+      title: "Error",
+      description: "Something went wrong. Please try again.",
+      variant: "top-accent",
+      status: "error",
+      isClosable: true,
+    });
+  }
 
   return (
-    <div className="h-screen w-full flex">
+    <div className="w-full flex">
       <LoadingBar color="blue" progress={33.33 * (currentStep - 1)} />
-      <div className="hidden md:flex flex-col gap-8 items-center justify-center w-1/3 bg-gray-50 p-8">
+      <div className="hidden md:flex flex-col gap-8 items-center justify-center h-screen w-1/3 bg-gray-50 p-8">
         <div className="w-full flex flex-col gap-4">
           <div className="flex items-center">
             {currentStep > 1 && (
@@ -299,11 +417,10 @@ const profiles = [
                 <div
                   key={profile.id}
                   onClick={() => setSelectedProcess(profile.id)}
-                  className={`border-2 ${
-                    selectedProcess === profile.id
-                      ? "border-blue-600 "
-                      : "border-gray-300"
-                  } rounded-md cursor-pointer p-4 flex flex-col items-center`}
+                  className={`border-2 ${selectedProcess === profile.id
+                    ? "border-blue-600 "
+                    : "border-gray-300"
+                    } rounded-md cursor-pointer p-4 flex flex-col items-center`}
                 >
                   <img
                     src={profile.icon}
@@ -343,12 +460,11 @@ const profiles = [
                 {jobLocations.map((location) => (
                   <button
                     key={location.id}
-                    onClick={() => handleJobLocationSelection(location.id)}
-                    className={`border-2 ${
-                      selectedJobLocations.includes(location.id)
-                        ? "border-purple-400 bg-purple-100"
-                        : "border-gray-300"
-                    } rounded-md px-4 py-2 flex items-center justify-center cursor-pointer`}
+                    onClick={() => handleChange("preferredCity", location.id)}
+                    className={`border-2 ${candidateData.preferredCity === location.id
+                      ? "border-purple-400 bg-purple-100"
+                      : "border-gray-300"
+                      } rounded-md px-4 py-2 flex items-center justify-center cursor-pointer`}
                   >
                     {location.name}
                   </button>
@@ -369,11 +485,10 @@ const profiles = [
                   <button
                     key={year.id}
                     onClick={() => handleYearsOfExperienceSelection(year.id)}
-                    className={`border-2 ${
-                      selectedYearsOfExperience === year.id
-                        ? "border-orange-400 bg-orange-100"
-                        : "border-gray-300"
-                    } rounded-md px-4 py-2 flex items-center justify-center cursor-pointer`}
+                    className={`border-2 ${selectedYearsOfExperience === year.id
+                      ? "border-orange-400 bg-orange-100"
+                      : "border-gray-300"
+                      } rounded-md px-4 py-2 flex items-center justify-center cursor-pointer`}
                   >
                     {year.name}
                   </button>
@@ -392,11 +507,10 @@ const profiles = [
                   <button
                     key={skill.id}
                     onClick={() => handleKeySkillsSelection(skill.id)}
-                    className={`border-2 ${
-                      selectedKeySkills.includes(skill.id)
-                        ? "border-green-400 bg-green-100"
-                        : "border-gray-300"
-                    } rounded-md px-4 py-2 flex items-center justify-center cursor-pointer`}
+                    className={`border-2 ${selectedKeySkills.includes(skill.id)
+                      ? "border-green-400 bg-green-100"
+                      : "border-gray-300"
+                      } rounded-md px-4 py-2 flex items-center justify-center cursor-pointer`}
                   >
                     {skill.name}
                   </button>
@@ -406,12 +520,13 @@ const profiles = [
           </div>
         ) : (
           <div className="m-10 p-10 ">
-            <SignupForm />
+            <SignupForm formData={candidateData} handleChange={handleChange} />
             <button
+              disabled={loading}
               onClick={handleSubmit}
-              className="py-2 text-white bg-black font-bold w-full md:w-40 text-lg rounded-2xl"
+              className="py-2 text-white bg-black font-bold w-full md:w-40 text-lg rounded-2xl flex items-center justify-center gap-4"
             >
-              Sign up
+              { loading ? <Loader2 size={20} className="animate-spin" /> : "Sign up" }
             </button>
           </div>
         )}
@@ -429,7 +544,7 @@ const profiles = [
             <button
               onClick={() => setCurrentStep(currentStep + 1)}
               className="py-3 text-white bg-black font-bold w-full md:w-40 text-lg rounded-xl "
-              // className="px-6 py-3 mt-6 text-white bg-blue-600 rounded-md"
+            // className="px-6 py-3 mt-6 text-white bg-blue-600 rounded-md"
             >
               Next
             </button>

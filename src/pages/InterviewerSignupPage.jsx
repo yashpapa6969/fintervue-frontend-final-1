@@ -1,69 +1,34 @@
-import { Check } from "lucide-react";
-import SignupForm from "../components/forms/SignupForm";
 import { useState } from "react";
+import { Check, Loader2 } from "lucide-react";
+import { useToast } from "@chakra-ui/react";
 import LoadingBar from "react-top-loading-bar";
+import InterviewerSignupForm from "../components/forms/InterViewerSignupForm";
+import { FrontendIcon1, FrontendIcon2, FrontendIcon3, FrontendIcon4, FrontendIcon5, FrontendIcon6, FrontendIcon7, FrontendIcon8, FrontendIcon9, FrontendIcon10, FrontendIcon11, FrontendIcon12, FrontendIcon13, FrontendIcon14, FrontendIcon15 } from "../assests/Domain_images";
+
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-import FrontendIcon1 from "../assests/Domain_images/Accounting.png";
-import FrontendIcon2 from "../assests/Domain_images/Asset_Management.png";
-import FrontendIcon3 from "../assests/Domain_images/Banking.png";
-import FrontendIcon4 from "../assests/Domain_images/Cash Management.png";
-import FrontendIcon5 from "../assests/Domain_images/Corporate Finance.png";
-import FrontendIcon6 from "../assests/Domain_images/Financial Advisory.png";
-import FrontendIcon7 from "../assests/Domain_images/Financial Technology.png";
-import FrontendIcon8 from "../assests/Domain_images/insurance.png";
-import FrontendIcon9 from "../assests/Domain_images/Investment Banking.png";
-import FrontendIcon10 from "../assests//Domain_images/quantitative.png";
-import FrontendIcon11 from "../assests/Domain_images/Real Estate Finance.png";
-import FrontendIcon12 from "../assests/Domain_images/Regulatory Roles.png";
-import FrontendIcon13 from "../assests/Domain_images/Research.png";
-import FrontendIcon14 from "../assests/Domain_images/Risk Management.png";
-import FrontendIcon15 from "../assests/Domain_images/taxation.png";
-
 const InterviewerSignupPage = () => {
+    const toast = useToast();
+    const navigate = useNavigate();
+
+    const [loading, setLoading] = useState(false);
     const [currentStep, setCurrentStep] = useState(1);
     const [selectedProcess, setSelectedProcess] = useState("");
 
-    const navigate = useNavigate();
-
-    const handleSubmit = () => {
-        setCurrentStep(3);
-        console.log("Not implemented but form submitted");
-        navigate("/");
-    };
-
-    const handleNextStep = () => {
-        setCurrentStep(currentStep + 1);
-    };
-
-    const [data, setData] = useState({
-        domain: null,
-        financeProfiles: null
-
+    const [interviewerData, setInterviewerData] = useState({
+        firstName: "",
+        lastName: "",
+        interviewer_id: "",
+        profilePic: "",
+        resume: "",
+        email: "",
+        password: "",
+        linkedInProfile: "",
+        industryExpertise: "",
+        availability: "",
+        interviewsConducted: []
     });
-    const handleDomain = (domain) => {
-        setData((prev) => ({
-            ...prev,
-            domain: domain,
-        }));
-    };
-    const handleRole = () => {
-        if (domain !== null) {
-            return financeProfiles.filter((e) => { e.category === domain });
-        } else {
-            // TODO: Do something
-        }
-    }
-
-    const [selectedTechStacks, setSelectedTechStack] = useState([]);
-
-    const handleTechStackSelection = (id) => {
-        setSelectedTechStack((prevSelected) =>
-            prevSelected.includes(id)
-                ? prevSelected.filter((stackId) => stackId !== id)
-                : [...prevSelected, id]
-        );
-    };
 
     const techStacks = [
         { id: "react", name: "React", icon: "react-icon-path" },
@@ -159,19 +124,65 @@ const InterviewerSignupPage = () => {
         { id: 15, category: "Taxation", name: "Taxation", icon: FrontendIcon15 },
     ];
 
-    const [selectedWorkExperience, setSelectedWorkExperience] = useState(null);
+    const canRegister = !!interviewerData.email
+        && !!interviewerData.password
+        && !!interviewerData.firstName
+        && !!interviewerData.lastName
+        && !!interviewerData.linkedInProfile
+        && !!interviewerData.resume;
 
-    const workExperienceLevels = [
-        { id: "junior", name: "Junior" },
-        { id: "mid", name: "Mid-Level" },
-        { id: "senior", name: "Senior" },
-        { id: "lead", name: "Lead" },
-        { id: "architect", name: "Architect" },
-    ];
+    const handleChange = (key, value) => {
+        setInterviewerData((prevData) => ({
+            ...prevData,
+            [key]: value,
+        }));
+    }
 
-    const handleWorkExperienceSelection = (id) => {
-        setSelectedWorkExperience(id);
-    };
+    const handleSubmit = async () => {
+        if (!canRegister) {
+            toast({
+                title: "Error",
+                description: "Please fill in all the required fields.",
+                variant: "top-accent",
+                status: "error",
+                isClosable: true,
+            });
+            return;
+        }
+        try {
+            setLoading(true);
+            const result = await axios.post("https://x3oh1podsi.execute-api.ap-south-1.amazonaws.com/api/interviewer/AddInterviewer", interviewerData);
+            if (result.status === 201) {
+                toast({
+                    title: "Welcome",
+                    description: "Successfully registered interviewer.",
+                    variant: "top-accent",
+                    status: "success",
+                    isClosable: true,
+                });
+                navigate("/");
+                return;
+            }
+        } catch (error) {
+            setLoading(false);
+            toast({
+                title: "Error",
+                description: `${error.message}`,
+                variant: "top-accent",
+                status: "error",
+                isClosable: true,
+            });
+            return;
+        }
+        setLoading(false);
+        toast({
+            title: "Error",
+            description: "Something went wrong. Please try again.",
+            variant: "top-accent",
+            status: "error",
+            isClosable: true,
+        });
+    }
 
 
     return (
@@ -261,8 +272,8 @@ const InterviewerSignupPage = () => {
                             {techStacks.map((stack) => (
                                 <div
                                     key={stack.id}
-                                    onClick={() => handleTechStackSelection(stack.id)}
-                                    className={`border-2 ${selectedTechStacks.includes(stack.id)
+                                    onClick={() => handleChange("industryExpertise", stack.id)}
+                                    className={`border-2 ${interviewerData.industryExpertise.includes(stack.id)
                                         ? "border-green-400 bg-green-100"
                                         : "border-gray-300"
                                         } rounded-md cursor-pointer p-4 flex flex-col items-center`}
@@ -285,8 +296,8 @@ const InterviewerSignupPage = () => {
                                 Choose when you will be available for work:
                             </p>
                             <input
-                                onChange={(e) => console.log(e)}
-                                // value={edu.startDate || ""}
+                                onChange={(e) => handleChange("availability", e.target.value)}
+                                value={interviewerData.availability}
                                 type="date"
                                 placeholder="Start Date"
                                 className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
@@ -295,12 +306,13 @@ const InterviewerSignupPage = () => {
                     </div>
                 ) : (
                     <div>
-                        <SignupForm />
+                        <InterviewerSignupForm formData={interviewerData} handleChange={handleChange} />
                         <button
+                            disabled={loading}
                             onClick={handleSubmit}
-                            className="py-3 text-white bg-blue-500 font-bold w-full md:w-40 text-lg rounded-2xl"
+                            className="py-3 text-white bg-blue-500 font-bold w-full md:w-40 text-lg rounded-2xl flex items-center justify-center gap-4"
                         >
-                            Sign up
+                            {loading ? <Loader2 size={20} className="animate-spin" /> : "Sign up"}
                         </button>
                     </div>
                 )}

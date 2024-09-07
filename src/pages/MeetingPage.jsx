@@ -1,8 +1,3 @@
-import { useEffect, useState } from 'react'
-import Logo from "../assests/logo.png"
-import VideoCall from "../components/common/VideoCall"
-// import AgoraRTC, { useRTCClient, AgoraRTCProvider } from "agora-rtc-react";
-import { Camera, CameraOff, Mic, MicOff } from 'lucide-react';
 import { HMSPrebuilt } from '@100mslive/roomkit-react';
 
 const MeetingPage = () => {
