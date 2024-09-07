@@ -1,22 +1,40 @@
 import React from "react";
+import { motion } from "framer-motion";
 import Button from "../components/button";
 
 const Hero = () => {
   return (
-    <section className="bg-gray-50 py-10">
+    <section className="bg-gradient-to-r from-blue-50 to-blue-100 py-10">
       <div className="max-w-7xl mx-auto text-center">
-        <h1 className="text-4xl font-bold text-blue-800">
-          Explore the Job Opportunities here 
-        </h1>
-        <p className="text-gray-600 mt-2">Get the right suitable career for you</p>
-        <div className="mt-8 flex justify-center space-x-4">
+        <motion.h1 
+          className="text-5xl font-extrabold text-blue-900"
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          Explore Job Roles to Find Your Perfect Fit
+        </motion.h1>
+        <motion.p 
+          className="text-gray-700 mt-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5, duration: 0.8 }}
+        >
+          Get the career that's right for you
+        </motion.p>
+        <motion.div 
+          className="mt-12 flex justify-center space-x-4"
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8, duration: 0.8 }}
+        >
           <input
             type="text"
-            placeholder="Enter skills / designations / companies"
-            className="w-80 py-3 px-4 rounded-[15px] border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter skills / designations / roles"
+            className="w-80 py-3 px-4 rounded-lg shadow-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600"
           />
           <div className="relative">
-            <select className="appearance-none w-48 py-3 px-4 rounded-[15px] border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <select className="appearance-none w-48 py-3 px-4 rounded-lg shadow-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600">
               <option>Select experience</option>
               <option>Fresher (less than 1 year)</option>
               <option>1 year</option>
@@ -38,14 +56,18 @@ const Hero = () => {
           <input
             type="text"
             placeholder="Enter location"
-            className="w-64 py-3 px-4 rounded-[15px] border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-64 py-3 px-4 rounded-lg shadow-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600"
           />
-          <Button text = "Search">
-            {/* <button className="bg-black text-white py-3 px-8 rounded-[15px] font-bold hover:bg-blue-700"> */}
+          <Button text="Search">
+            <motion.button 
+              className="bg-blue-800 text-white py-3 px-8 rounded-lg font-bold shadow-lg hover:bg-blue-700"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
               Search
-            {/* </button> */}
+            </motion.button>
           </Button>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

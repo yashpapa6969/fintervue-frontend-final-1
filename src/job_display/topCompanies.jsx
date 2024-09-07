@@ -1,98 +1,98 @@
 import React from "react";
+import { motion } from "framer-motion";
 
-const companiesData = [
+const jobRolesData = [
   {
-    title: "Internet",
-    companies: ["Ampere", "Greaves", "OLX", "Flipkart"],
+    role: "Financial Analyst",
+    skills: ["Financial Modeling", "Excel", "Data Analysis"],
     link: "#",
-    activeHiring: 194,
+    activePositions: 100,
   },
   {
-    title: "Manufacturing",
-    companies: ["Triveni", "Turbines", "Goltens", "L&T"],
+    role: "Investment Banker",
+    skills: ["Valuation", "Mergers & Acquisitions", "Corporate Finance"],
     link: "#",
-    activeHiring: 807,
+    activePositions: 60,
   },
   {
-    title: "Fortune 500",
-    companies: ["CAT", "Accenture", "Apple", "Honda"],
+    role: "Portfolio Manager",
+    skills: ["Risk Management", "Asset Allocation", "Financial Planning"],
     link: "#",
-    activeHiring: 108,
+    activePositions: 45,
   },
   {
-    title: "Product",
-    companies: ["Oracle", "Keso", "HostBooks", "GameColony"],
+    role: "Accountant",
+    skills: ["Bookkeeping", "Tax Compliance", "Financial Reporting"],
     link: "#",
-    activeHiring: 950,
+    activePositions: 80,
   },
   {
-    title: "Banking & Fin",
-    companies: ["AXA", "Bonanza", "ICICI", "HDFC"],
+    role: "Auditor",
+    skills: ["Auditing", "Internal Controls", "Compliance"],
     link: "#",
-    activeHiring: 342,
+    activePositions: 50,
   },
-  // Add more categories as needed
+  // Add more finance-related job roles as needed
 ];
 
-const TopCompanies = () => {
+const marqueeVariants = {
+  animate: {
+    x: ["0%", "-100%"],
+    transition: {
+      x: {
+        repeat: Infinity,
+        repeatType: "loop",
+        duration: 25,
+        ease: "linear",
+      },
+    },
+  },
+};
+
+const TopJobRoles = () => {
   return (
     <section className="bg-blue-700 py-10">
-      <div className=" mx-auto text-center">
-        <h2 className="text-2xl font-bold text-white mb-6">
-          Top companies hiring now
+      <div className="container mx-auto text-center">
+        <h2 className="text-3xl font-bold text-white mb-8">
+          Explore Top Finance Job Roles in Demand
         </h2>
-        <div className="relative flex items-center justify-center overflow-hidden">
-          <div
-            className="flex space-x-6 marquee"
-            style={{
-              display: "flex",
-              animation: "marquee 60s linear infinite", // Slow down and repeat indefinitely
-            }}
+        <div className="relative overflow-hidden">
+          <motion.div
+            className="flex space-x-6"
+            variants={marqueeVariants}
+            animate="animate"
           >
-            {companiesData.concat(companiesData).map((category, index) => (
-              <div
+            {jobRolesData.concat(jobRolesData).map((job, index) => (
+              <motion.div
                 key={index}
-                className="min-w-[300px] p-6 bg-white border rounded-lg shadow-md transition-transform transform hover:scale-105 hover:shadow-lg cursor-pointer"
-                onClick={() => (window.location.href = category.link)}
+                className="min-w-[300px] max-w-xs p-6 bg-white border rounded-lg shadow-lg transition-transform transform hover:scale-105 hover:shadow-xl cursor-pointer"
+                onClick={() => (window.location.href = job.link)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
                 <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                  {category.title} &rarr;
+                  {job.role} &rarr;
                 </h3>
                 <p className="text-sm text-gray-600 mb-4">
-                  {category.activeHiring} are actively hiring
+                  {job.activePositions} positions available
                 </p>
-                <div className="flex space-x-4">
-                  {category.companies.map((company, i) => (
-                    <img
+                <div className="flex flex-wrap gap-2">
+                  {job.skills.map((skill, i) => (
+                    <span
                       key={i}
-                      src={`/${company}.png`} // Assume images are named after companies
-                      alt={company}
-                      className="h-10 w-10 object-contain"
-                    />
+                      className="inline-block bg-blue-200 text-blue-700 px-3 py-1 text-xs font-semibold rounded"
+                    >
+                      {skill}
+                    </span>
                   ))}
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes marquee {
-          0% {
-            transform: translateX(0);
-          }
-          100% {
-            transform: translateX(-100%);
-          }
-        }
-
-        .marquee {
-          width: 200%;
-        }
-      `}</style>
     </section>
   );
 };
 
-export default TopCompanies;
+export default TopJobRoles;

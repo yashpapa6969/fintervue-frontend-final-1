@@ -18,5 +18,5 @@ export const SignUpPage = React.lazy(() => import("../../pages/signupPage2.jsx")
 export const DisplayPage = React.lazy(() => import("../../pages/DisplayPage.jsx"));
 export const JobDetailPage = React.lazy(() => import("../../pages/JobDetailPage.jsx"));
 export const SignupOrgPage = React.lazy(() => import("../../pages/signupOrg.jsx"));
-export const EmployeeLoginPage = React.lazy(() => import("../../User_Profile/Employee-login.jsx"));
+export const EmployeeProfilePage = React.lazy(() => import("../../pages/EmployeeProfilePage.jsx"));
 export const ResumeAnalysisPage = React.lazy(() => import("../../products/resumeAnalysis.jsx"));

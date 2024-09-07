@@ -103,8 +103,8 @@ const router = createBrowserRouter([
     element: <Lazy.HomePage />,
   },
   {
-    path: "/Employee-login",
-    element: <Lazy.EmployeeLoginPage />,
+    path: "/employee-profile",
+    element: <Lazy.EmployeeProfilePage />,
   },
 
 ]);
