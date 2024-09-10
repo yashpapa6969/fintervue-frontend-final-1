@@ -11,6 +11,7 @@ import { ChakraProvider } from '@chakra-ui/react'
 import * as Lazy from './components/lazy-load';
 import { Loader } from './loader';
 import { NotFoundPage } from './pages/NotFoundPage';
+import ProductPage from './pages/ProductPage.jsx';
 
 const router = createBrowserRouter([
   {
@@ -52,7 +53,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/product",
-    element: <Lazy.ProductPage />,
+    element: <ProductPage />,
   },
   {
     path: "/product/ai_intervue",
