@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Check, Loader2 } from "lucide-react";
 import { useToast } from "@chakra-ui/react";
 import LoadingBar from "react-top-loading-bar";
-import InterviewerSignupForm from "../components/forms/InterViewerSignupForm";
+//import InterviewerSignupForm from "../components/forms/InterViewerSignupForm";
 import { FrontendIcon1, FrontendIcon2, FrontendIcon3, FrontendIcon4, FrontendIcon5, FrontendIcon6, FrontendIcon7, FrontendIcon8, FrontendIcon9, FrontendIcon10, FrontendIcon11, FrontendIcon12, FrontendIcon13, FrontendIcon14, FrontendIcon15 } from "../assests/Domain_images";
 
 import axios from "axios";
