@@ -18,7 +18,10 @@ const Products = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4 px-10 my-6">
         <div className="md:col-span-3 bg-hellix-img relative overflow-hidden group flex flex-col gap-5 border border-gray-300 rounded-md shadow-sm hover:shadow-lg transition-shadow duration-300 p-10">
-          <img className="hidden md:flex absolute right-10 bottom-10 h-1/2" src={Helix} />
+          <img
+            className="hidden md:flex absolute right-10 bottom-10 h-1/2"
+            src={Helix}
+          />
           <BoxReveal boxColor={"#5046e6"} duration={0.5}>
             <p className="text-4xl font-semibold">
               AI Job Interview<span className="text-[#5046e6]">.</span>
@@ -54,12 +57,15 @@ const Products = () => {
               </p>
             </div>
           </BoxReveal>
-          <a href="/product">
+          <a href="/product/ai_intervue">
             <Button text={"Start Now"} className="" />
           </a>
         </div>
         <div className="md:col-span-2 relative flex group flex-col gap-5 border border-gray-300 rounded-md shadow-sm hover:shadow-lg transition-shadow duration-300 p-10">
-          <img className="hidden md:flex absolute right-10 bottom-10 h-1/2" src={HalfTorus} />
+          <img
+            className="hidden md:flex absolute right-10 bottom-10 h-1/2"
+            src={HalfTorus}
+          />
           <BoxReveal boxColor={"#5046e6"} duration={1.0}>
             <p className="text-4xl font-semibold">Resume Builder</p>
           </BoxReveal>
@@ -97,7 +103,10 @@ const Products = () => {
           </a>
         </div>
         <div className="flex md:col-span-5 relative group flex-col gap-5 border border-gray-300 rounded-md shadow-sm hover:shadow-lg transition-shadow duration-300 p-10">
-        <img className="hidden md:flex absolute right-10 bottom-10 h-1/2" src={CubeHelix} />
+          <img
+            className="hidden md:flex absolute right-10 bottom-10 h-1/2"
+            src={CubeHelix}
+          />
           <BoxReveal boxColor={"#5046e6"} duration={1.5}>
             <p className="text-4xl font-semibold">Resume analysis</p>
           </BoxReveal>
