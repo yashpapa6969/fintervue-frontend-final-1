@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Check, Loader2 } from "lucide-react";
 import { useToast } from "@chakra-ui/react";
 import LoadingBar from "react-top-loading-bar";
-//import InterviewerSignupForm from "../components/forms/InterViewerSignupForm";
+import InterviewerSignupForm from "../components/forms/InterViewerSignupForm";
 import { FrontendIcon1, FrontendIcon2, FrontendIcon3, FrontendIcon4, FrontendIcon5, FrontendIcon6, FrontendIcon7, FrontendIcon8, FrontendIcon9, FrontendIcon10, FrontendIcon11, FrontendIcon12, FrontendIcon13, FrontendIcon14, FrontendIcon15 } from "../assests/Domain_images";
 
 import axios from "axios";
@@ -15,7 +15,6 @@ const InterviewerSignupPage = () => {
     const [loading, setLoading] = useState(false);
     const [currentStep, setCurrentStep] = useState(1);
     const [selectedProcess, setSelectedProcess] = useState("");
-
     const [interviewerData, setInterviewerData] = useState({
         firstName: "",
         lastName: "",
@@ -29,6 +28,35 @@ const InterviewerSignupPage = () => {
         availability: "",
         interviewsConducted: []
     });
+    const [errors, setErrors] = useState({});
+
+    const validateForm = () => {
+        const newErrors = {};
+        let isValid = true;
+
+        if (!interviewerData.email || !/\S+@\S+\.\S+/.test(interviewerData.email)) {
+            newErrors.email = "Please enter a valid email address.";
+            isValid = false;
+        }
+        if (!interviewerData.linkedInProfile || !/^https:\/\/[a-z]{2,3}\.linkedin\.com\/.*$/.test(interviewerData.email)) {
+            newErrors.linkedInProfile = "Please enter a valid email address.";
+            isValid = false;
+        }
+        if (!interviewerData.firstName) {
+            newErrors.firstName = "Please enter your first name.";
+            isValid = false;
+        }
+        if (!interviewerData.lastName) {
+            newErrors.lastName = "Please enter your last name.";
+            isValid = false;
+        }
+        if (!interviewerData.password) {
+            newErrors.password = "Please enter your password.";
+            isValid = false;
+        }
+        setErrors(newErrors);
+        return isValid;
+    };
 
     const techStacks = [
         { id: "react", name: "React", icon: "react-icon-path" },
@@ -124,13 +152,6 @@ const InterviewerSignupPage = () => {
         { id: 15, category: "Taxation", name: "Taxation", icon: FrontendIcon15 },
     ];
 
-    const canRegister = !!interviewerData.email
-        && !!interviewerData.password
-        && !!interviewerData.firstName
-        && !!interviewerData.lastName
-        && !!interviewerData.linkedInProfile
-        && !!interviewerData.resume;
-
     const handleChange = (key, value) => {
         setInterviewerData((prevData) => ({
             ...prevData,
@@ -139,14 +160,8 @@ const InterviewerSignupPage = () => {
     }
 
     const handleSubmit = async () => {
+        const canRegister = validateForm();
         if (!canRegister) {
-            toast({
-                title: "Error",
-                description: "Please fill in all the required fields.",
-                variant: "top-accent",
-                status: "error",
-                isClosable: true,
-            });
             return;
         }
         try {
@@ -213,7 +228,7 @@ const InterviewerSignupPage = () => {
                 </div>
                 <div className="w-full flex flex-col gap-4">
                     <div className="flex items-center">
-                        {currentStep >= 3 && (
+                        {currentStep > 3 && (
                             <Check className="bg-blue-800 p-1 h-6 w-6 rounded-full text-white" />
                         )}
                         <h3 className="ml-2 font-semibold text-2xl text-blue-800">
@@ -305,23 +320,14 @@ const InterviewerSignupPage = () => {
                         </div>
                     </div>
                 ) : (
-                    <div>
-                        <InterviewerSignupForm formData={interviewerData} handleChange={handleChange} />
-                        <button
-                            disabled={loading}
-                            onClick={handleSubmit}
-                            className="py-3 text-white bg-blue-500 font-bold w-full md:w-40 text-lg rounded-2xl flex items-center justify-center gap-4"
-                        >
-                            {loading ? <Loader2 size={20} className="animate-spin" /> : "Sign up"}
-                        </button>
-                    </div>
+                    <InterviewerSignupForm formData={interviewerData} handleChange={handleChange} errors={errors} />
                 )}
 
-                <div className="absolute bottom-6 right-6 flex gap-4">
-                    {currentStep > 1 && currentStep !== 3 && (
+                <div className="fixed bottom-6 right-6 flex gap-4">
+                    {currentStep > 1 && (
                         <button
                             onClick={() => setCurrentStep(currentStep - 1)}
-                            className="py-3 text-white bg-blue-500 font-bold w-full md:w-40 text-lg rounded-2xl"
+                            className="py-3 text-blue-500 border bg-white border-blue-500 w-full md:w-40 text-lg rounded-2xl"
                         >
                             Back
                         </button>
@@ -330,9 +336,17 @@ const InterviewerSignupPage = () => {
                         <button
                             onClick={() => setCurrentStep(currentStep + 1)}
                             className="py-3 text-white bg-blue-500 font-bold w-full md:w-40 text-lg rounded-2xl "
-                        // className="px-6 py-3 mt-6 text-white bg-blue-600 rounded-md"
                         >
                             Next
+                        </button>
+                    )}
+                    {currentStep === 3 && (
+                        <button
+                            disabled={loading}
+                            onClick={handleSubmit}
+                            className="py-3 text-white bg-blue-500 font-bold w-full md:w-40 text-lg rounded-2xl flex items-center justify-center gap-4"
+                        >
+                            {loading ? <Loader2 size={20} className="animate-spin" /> : "Sign up"}
                         </button>
                     )}
                 </div>
