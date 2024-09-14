@@ -20,8 +20,14 @@ export default {
         "border-beam": "border-beam calc(var(--duration)*1s) infinite linear",
         marquee: "marquee var(--duration) linear infinite",
         "marquee-vertical": "marquee-vertical var(--duration) linear infinite",
+         backgroundPositionSpin:
+          "background-position-spin 3000ms infinite alternate",
       },
       keyframes: {
+         "background-position-spin": {
+          "0%": { backgroundPosition: "top center" },
+          "100%": { backgroundPosition: "bottom center" },
+        },
         "spin-around": {
           "0%": {
             transform: "translateZ(0) rotate(0)",

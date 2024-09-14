@@ -107,7 +107,10 @@ const router = createBrowserRouter([
     path: "/employee-profile",
     element: <Lazy.EmployeeProfilePage />,
   },
-
+  {
+    path: "/thank-you",
+    element: <Lazy.ThankYou />,
+  },
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')).render(
