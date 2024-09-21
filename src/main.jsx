@@ -111,6 +111,12 @@ const router = createBrowserRouter([
     path: "/thank-you",
     element: <Lazy.ThankYou />,
   },
+  {
+    path: "product/resumeSelect",
+    element: <Lazy.ResumeSelect/>,
+  },
+
+
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')).render(

@@ -21,3 +21,4 @@ export const SignupOrgPage = React.lazy(() => import("../../pages/signupOrg.jsx"
 export const EmployeeProfilePage = React.lazy(() => import("../../pages/EmployeeProfilePage.jsx"));
 export const ResumeAnalysisPage = React.lazy(() => import("../../products/resumeAnalysis.jsx"));
 export const ThankYou = React.lazy(() => import("../../pages/ThankYou.jsx"));
+export const ResumeSelect = React.lazy(() => import("../chooseResume/resumeSelect.jsx"));

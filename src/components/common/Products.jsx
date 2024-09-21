@@ -98,7 +98,7 @@ const Products = () => {
               </p>
             </div>
           </BoxReveal>
-          <a href="/product/resumeBuilder">
+          <a href="/product/resumeSelect">
             <Button text={"Start Now"} className="w-[300px]" />
           </a>
         </div>
