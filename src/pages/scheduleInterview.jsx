@@ -45,7 +45,7 @@ function ScheduleInterviewForm() {
 
       const response = await axios.post(
         //'https://x3oh1podsi.execute-api.ap-south-1.amazonaws.com/api/interviewee/createInterviewRequest',
-        'http://localhost:2000/api/interviewee/createInterviewRequest',
+        'https://x3oh1podsi.execute-api.ap-south-1.amazonaws.com/api/interviewee/createInterviewRequest',
 
         {
           interviewee_id,

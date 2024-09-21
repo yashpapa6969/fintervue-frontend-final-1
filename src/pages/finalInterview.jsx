@@ -17,7 +17,7 @@ function FinalInterviewPage() {
   useEffect(() => {
     const fetchInterviewDetails = async () => {
       try {
-        const response = await axios.get(`http://localhost:2000/api/interviewee/getByScheduleId/${scheduleId}`);
+        const response = await axios.get(`https://x3oh1podsi.execute-api.ap-south-1.amazonaws.com/api/interviewee/getByScheduleId/${scheduleId}`);
         const interviewData = response.data;
         
         // Set the authToken based on the role (either 'auth_interviewee' or 'auth_interviewer')

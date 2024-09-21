@@ -52,7 +52,7 @@ function UpcomingInterviews() {
   
       console.log('Payload being sent:', payload);  // Debugging: Check the payload
   
-      const endpoint = `http://localhost:2000/api/interviewee/getAcceptedInterviews`;
+      const endpoint = `https://x3oh1podsi.execute-api.ap-south-1.amazonaws.com/api/interviewee/getAcceptedInterviews`;
   
       // Send a POST request with the payload
       const response = await axios.post(endpoint, payload);

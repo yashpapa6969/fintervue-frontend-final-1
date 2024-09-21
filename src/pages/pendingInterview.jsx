@@ -26,7 +26,7 @@ function PendingInterviews() {
   const fetchPendingInterviews = async () => {
     try {
       const response = await axios.get(
-        'http://localhost:2000/api/interviewee/getAllScheduledInterview'
+        'https://x3oh1podsi.execute-api.ap-south-1.amazonaws.com/api/interviewee/getAllScheduledInterview'
       );
       setPendingInterviews(response.data);
       setLoading(false);
@@ -40,7 +40,7 @@ function PendingInterviews() {
   const acceptInterview = async (interviewId) => {
     try {
       await axios.post(
-        'http://localhost:2000/api/interviewee/acceptInterviewRequest',
+        'https://x3oh1podsi.execute-api.ap-south-1.amazonaws.com/api/interviewee/acceptInterviewRequest',
         {
           interviewer_id: interviewerId,
           interviewee_id: interviewId,
