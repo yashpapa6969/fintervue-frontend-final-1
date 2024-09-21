@@ -62,7 +62,7 @@ const ProductSection = () => {
             description="Create or upload a resume, or enter your job title and let our AI generate a professional resume for you in seconds."
             buttonText="Start Now"
             imagePosition="right"
-            link="/product/resumeBuilder"
+            link="/product/resumeSelect"
             imagelink={resumeBuilderImage} // Another imported image
           />
 
