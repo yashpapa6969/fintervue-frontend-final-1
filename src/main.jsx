@@ -27,6 +27,10 @@ const router = createBrowserRouter([
     element: <Lazy.MeetingPage />,
   },
   {
+    path: "/analysis",
+    element: <Lazy.aIAnalysis />,
+  },
+  {
     path: "/signup",
     element: <Lazy.SignUpPage />,
   },
