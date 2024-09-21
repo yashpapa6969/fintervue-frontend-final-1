@@ -64,7 +64,7 @@ const homeObjThree = {
   topLine: "About us",
   headline: "What is Fintervue?",
   description:
-    "Fintervue streamlines your hiring process with AI-driven tools, providing efficient candidate assessments and data-driven decision-making. It also offers a fair and flexible interview experience, ensuring objective evaluation and valuable feedback for your career growth.",
+    "Fintervue helps you ace your finance interviews with confidence. Whether you’re a fresh graduate, an aspiring financial analyst, or an experienced professional aiming for top roles, Fintervue provides mock interviews, expert tips, and personalised career advice to sharpen your skills and boost your chances of success. It enables experienced working professionals to assess candidates over the weekends or after working hours during the week from the comfort of their homes and seamlessly boost their earnings. Ever heard of the proverb - Knowledge never goes to waste!Fintervue also offers corporates a powerful platform to identify top talent in finance through structured mock interviews and detailed candidate assessments, to substantially save their hiring bandwidth and reduce onboarding time by focussing on only the right candidates.",
   buttonLabel: "Know More",
   imgStart: "start",
   img: profile,
