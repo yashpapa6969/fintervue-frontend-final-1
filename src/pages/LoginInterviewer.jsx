@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import logo from "../assets/logo/logo4.jpeg";
+import logo from "../assests/logo/logo4.jpeg";
+
 import Navbar from "../components/navbar";
 import axios from 'axios';
 
@@ -20,7 +21,7 @@ const LoginInterviewer = () => {
 
       const {  user } = response.data;
 
-      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('interviewer', JSON.stringify(user));
 
      //navigate('/dashboard'); // Replace with your desired route
 
