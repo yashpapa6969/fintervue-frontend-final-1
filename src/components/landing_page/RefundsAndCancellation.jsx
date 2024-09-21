@@ -30,13 +30,13 @@ const RefundsAndCancellation = () => {
                     <div className="border-2 w-full py-4 px-3 text-md font-semibold rounded-xl border-slate-300/80">
                         Email Id
                         <p className="w-full text-sm font-normal">
-                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis, totam aspernatur? Ea, facilis qui.
+                            fintervue.dev@gmail.com
                         </p>
                     </div>
                     <div className="border-2 w-full py-4 px-3 text-md font-semibold rounded-xl border-slate-300/80">
-                        Office Adress
+                        Contact no 
                         <p className="w-full text-sm font-normal">
-                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis, totam aspernatur? Ea, facilis qui.
+                           080-123-4567-890
                         </p>
                     </div>
                 </div>

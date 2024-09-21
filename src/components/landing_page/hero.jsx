@@ -6,6 +6,7 @@ import HeroImage from "../../assests/svg-2.svg";
 import HalfTorus from "../../assests/half-torus1.png"; 
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
+import { Link } from "react-router-dom";
 
 const Hero = () => {
   const heroRef = useRef(null);
@@ -28,20 +29,25 @@ const Hero = () => {
       <div className="md:flex items-center justify-center gap-16">
         <div className="md:w-[478px]">
           <div className="text-5xl md:text-7xl font-black my-7 bg-gradient-to-b from-black to-[#002499] text-transparent bg-clip-text tracking-tighter">
-          Ace your next finance interview with Fintervue.
+            Ace your next finance interview with Fintervue.
           </div>
           <div className="text-xl lg:text-2xl tracking-tighter opacity-85">
-          One stop shop for aspiring finance professionals, industry veterans and corporate behemoths to achieve their goals.
+            One stop shop for aspiring finance professionals, industry veterans
+            and corporate behemoths to achieve their goals.
           </div>
 
           <div className="flex items-center gap-3 mt-6 text-lg">
-            <Button text="Join as interviewer" />
-            <Button text="Join as interviewee " />
+            <Link to={"/signup/interviewer"}>
+              <Button text="Join as interviewer" />
+            </Link>
+            <Link to={"/signup/candidate"}>
+              <Button text="Join as interviewee " />
+            </Link>
           </div>
         </div>
         <div className="pt-12 md:pt-0 md:h-[648px] md:w-[648px] relative">
           <motion.img
-            src={HeroImage.src || HeroImage} 
+            src={HeroImage.src || HeroImage}
             alt="Hero Image"
             className="md:absolute md:h-full md:w-auto md:max-w-none"
             animate={{
@@ -55,7 +61,7 @@ const Hero = () => {
             }}
           />
           <motion.img
-            src={HalfTorus.src || HalfTorus} 
+            src={HalfTorus.src || HalfTorus}
             alt="HalfTorus"
             className="hidden lg:block md:absolute left-[400px] top-[500px]"
             style={{

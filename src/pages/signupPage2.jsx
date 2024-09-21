@@ -34,7 +34,7 @@ const SignupPage2 = () => {
               careers.
             </p>
             <Link
-              to="/signup/interviewer"
+              to="/login/interviewer"
               className="bg-yellow-300 transition-all text-black py-2 px-6 rounded-md font-semibold hover:bg-yellow-200"
             >
               Login
@@ -65,7 +65,7 @@ const SignupPage2 = () => {
               companies. Stand out from the competition and land your dream job
               with personalized interview feedback and reports.
             </p>
-            <Link to="/signup/candidate">
+            <Link to="/login/candidate">
               <button className="bg-blue-200 text-blue-900 py-2 px-6 rounded-md font-semibold hover:bg-blue-400">
                 Login
               </button>

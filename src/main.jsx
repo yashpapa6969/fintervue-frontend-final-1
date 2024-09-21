@@ -48,8 +48,12 @@ const router = createBrowserRouter([
   },
 
   {
-    path: "/login",
-    element: <Lazy.LoginPage />,
+    path: "/login/interviewer",
+    element: <Lazy.LoginInterviewer />,
+  },
+  {
+    path: "/login/candidate",
+    element: <Lazy.LoginInterviewe />,
   },
   {
     path: "/product",
