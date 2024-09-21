@@ -11,7 +11,7 @@ const SignupPage2 = () => {
         {/* <p>This will help us personalize your experience accordingly.</p> */}
         <FlipText
           className="text-2xl font-bold tracking-[-0.1em] bg-clip-text md:text-7xl md:leading-[5rem]"
-          word="Join our platform"
+          word="Join Fintervue Today"
         />
         <h3 className="mt-[.5rem] text-[1.5rem] p-5">
           This will help us personalize your experience accordingly.
@@ -58,7 +58,7 @@ const SignupPage2 = () => {
               </span>
             </div>
             <h2 className="text-2xl font-bold mb-4">
-              Join as a <span className="text-black">Interviewee</span>
+              Join as an <span className="text-black">Interviewee</span>
             </h2>
             <p className="text-gray-600 mb-6">
               Prepare for interviews, get expert feedback, and apply to 400+ top
