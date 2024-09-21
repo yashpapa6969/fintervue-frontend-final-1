@@ -4,6 +4,7 @@ import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
+import { HMSRoomProvider } from "@100mslive/react-sdk";
 
 import "./styles/index.css";
 import App from './App.jsx'
@@ -12,6 +13,7 @@ import * as Lazy from './components/lazy-load';
 import { Loader } from './loader';
 import { NotFoundPage } from './pages/NotFoundPage';
 import ProductPage from './pages/ProductPage.jsx';
+import FinalInterviewPage from './pages/finalInterview.jsx';
 
 const router = createBrowserRouter([
   {
@@ -120,6 +122,15 @@ const router = createBrowserRouter([
     element: <Lazy.ThankYou />,
   },
   {
+    path: "/scheduleInterview",
+    element: <Lazy.ScheduleInterviewForm />,
+  },
+  {
+    path: "/pendingInterviews",
+    element: <Lazy.PendingInterviews />,
+  },
+  
+  {
     path: "product/resumeSelect",
     element: <Lazy.ResumeSelect />,
   },
@@ -127,14 +138,28 @@ const router = createBrowserRouter([
     path: "/jobAssign",
     element: <Lazy.JobSchedule />,
   },
+  {
+    path: "/upcomingInterviews",
+    element: <Lazy.UpcomingInterviews />,
+  },
+  
+{
+  // In the route definition
+  path: "/finalInterviewPage",
+  element: <FinalInterviewPage />,
+}
 ]);
+
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <ChakraProvider>
-      <Suspense fallback={<Loader />}>
-        <RouterProvider router={router} />
-      </Suspense>
+      <HMSRoomProvider>
+        <Suspense fallback={<Loader />}>
+          <RouterProvider router={router} />
+        </Suspense>
+      </HMSRoomProvider>
     </ChakraProvider>
-  </React.StrictMode>,
-)
+  </React.StrictMode>
+);
+

@@ -45,7 +45,8 @@ const JobSchedulePage = () => {
     console.log(formData); // Log the form data
 
     // Redirect to thank you page after submission
-    navigate("/thank-you");
+   // navigate("/thank-you");
+   navigate("/scheduleInterview");
   };
 
   return (

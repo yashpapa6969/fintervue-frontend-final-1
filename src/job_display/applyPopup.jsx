@@ -29,7 +29,7 @@ const ApplyPopup = ({ job, onClose }) => {
     console.log("Applicant data:", JSON.stringify({ email, phone, resume }));
 
     
-    navigate("/thank-you");
+    navigate("/");
 
     
     onClose();

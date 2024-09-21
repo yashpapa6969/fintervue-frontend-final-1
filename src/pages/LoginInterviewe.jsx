@@ -24,7 +24,7 @@ const LoginInterviewee = () => {
 
       localStorage.setItem('interviewee', JSON.stringify(user));
 
-      //navigate('/dashboard'); // Replace with your desired route
+      navigate('/display'); // Replace with your desired route
 
     } catch (error) {
       console.error('Login error:', error);

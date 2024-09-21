@@ -27,7 +27,7 @@ const Navbar = () => {
 
       <div className="relative group">
         <motion.a
-          href="/employee-profile"
+          href="/upcomingInterviews"
           className="bg-blue-500 text-white py-2 px-4 rounded-full font-bold hover:bg-blue-600"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}

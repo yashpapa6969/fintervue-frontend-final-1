@@ -7,6 +7,8 @@ export default defineConfig({
   plugins: [react()],
   optimizeDeps: {
     exclude: ['@ffmpeg/ffmpeg', '@ffmpeg/util'],
+    include: ['@100mslive/hms-video-react'],
+
   },
   server: {
     headers: {

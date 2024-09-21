@@ -23,7 +23,7 @@ const LoginInterviewer = () => {
 
       localStorage.setItem('interviewer', JSON.stringify(user));
 
-     //navigate('/dashboard'); // Replace with your desired route
+     navigate('/pendingInterviews'); // Replace with your desired route
 
     } catch (error) {
       // Handle login error

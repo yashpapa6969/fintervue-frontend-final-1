@@ -27,4 +27,12 @@ export const ResumeSelect = React.lazy(() => import("../chooseResume/resumeSelec
 export const LoginInterviewer = React.lazy(() => import("../../pages/LoginInterviewer.jsx"));
 export const LoginInterviewe = React.lazy(() => import("../../pages/LoginInterviewe.jsx"));
 export const JobSchedule = React.lazy(() => import("../../pages/JobSchedulePage.jsx"));
+export const ScheduleInterviewForm = React.lazy(() => import("../../pages/scheduleInterview.jsx"));
+
+
+
+export const PendingInterviews = React.lazy(() => import("../../pages/pendingInterview.jsx"));
+
+export const UpcomingInterviews = React.lazy(() => import("../../pages/upcomingInterviews.jsx"));
+export const FinalInterviewPage = React.lazy(() => import("../../pages/finalInterview.jsx"));
 
