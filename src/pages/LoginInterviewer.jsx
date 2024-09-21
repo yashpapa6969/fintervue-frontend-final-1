@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../assests/logo/logo4.jpeg"
+import Navbar from "../components/navbar";
 
 const LoginInterviewer = () => {
   const [email, setEmail] = useState("");
@@ -20,7 +21,9 @@ const LoginInterviewer = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-blue-800">
+    <>
+    <Navbar/>
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="flex w-full max-w-4xl rounded-lg shadow-lg overflow-hidden">
         {/* Left side */}
         <div className="w-1/2 bg-white p-8">
@@ -111,6 +114,7 @@ const LoginInterviewer = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 
