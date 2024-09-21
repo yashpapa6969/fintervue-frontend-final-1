@@ -34,7 +34,6 @@ const InterviewerSignupPage = () => {
   const [interviewerData, setInterviewerData] = useState({
     firstName: "",
     lastName: "",
-    interviewer_id: "",
     profilePic: "",
     resume: "",
     email: "",
@@ -42,7 +41,6 @@ const InterviewerSignupPage = () => {
     linkedInProfile: "",
     industryExpertise: "",
     availability: "",
-    interviewsConducted: [],
   });
   const [errors, setErrors] = useState({});
 
@@ -55,9 +53,7 @@ const InterviewerSignupPage = () => {
       isValid = false;
     }
     if (
-      !interviewerData.linkedInProfile ||
-      !/^https:\/\/[a-z]{2,3}\.linkedin\.com\/.*$/.test(interviewerData.email)
-    ) {
+      !interviewerData.linkedInProfile     ) {
       newErrors.linkedInProfile = "Please enter a valid LinkedIn profile.";
       isValid = false;
     }

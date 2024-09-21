@@ -2,27 +2,46 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../assests/logo/logo4.jpeg";
 import Navbar from "../components/navbar";
+import axios from 'axios';
 
-const LoginInterviewe = () => {
+const LoginInterviewee = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Simulate login process (you can replace this with actual login logic)
-    if (email === "test@interviewer.com" && password === "password123") {
-      // Navigate to the jobs portal page after successful login
-      navigate("/display");
-    } else {
-      alert("Invalid credentials");
+    try {
+      // Make a POST request to the interviewee login API
+      const response = await axios.post('https://x3oh1podsi.execute-api.ap-south-1.amazonaws.com/api/interviewee/intervieweelogin', {
+        email,
+        password,
+      });
+
+      const {  user } = response.data;
+
+      localStorage.setItem('interviewee', JSON.stringify(user));
+
+      //navigate('/dashboard'); // Replace with your desired route
+
+    } catch (error) {
+      console.error('Login error:', error);
+
+      if (error.response && error.response.data && error.response.data.msg) {
+        setErrorMessage(error.response.data.msg);
+      } else if (error.message) {
+        setErrorMessage(error.message);
+      } else {
+        setErrorMessage('An error occurred during login');
+      }
     }
   };
 
   return (
     <>
-    <Navbar/>
+      <Navbar />
       <div className="flex items-center justify-center min-h-screen bg-gray-200">
         <div className="flex w-full max-w-4xl rounded-lg shadow-lg overflow-hidden">
           {/* Left side */}
@@ -31,6 +50,9 @@ const LoginInterviewe = () => {
               Hello, welcome!
             </h2>
             <form onSubmit={handleSubmit} className="space-y-6">
+              {errorMessage && (
+                <div className="text-red-500">{errorMessage}</div>
+              )}
               <div>
                 <label
                   htmlFor="email"
@@ -117,4 +139,4 @@ const LoginInterviewe = () => {
   );
 };
 
-export default LoginInterviewe;
+export default LoginInterviewee;
