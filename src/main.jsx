@@ -121,10 +121,12 @@ const router = createBrowserRouter([
   },
   {
     path: "product/resumeSelect",
-    element: <Lazy.ResumeSelect/>,
+    element: <Lazy.ResumeSelect />,
   },
-
-
+  {
+    path: "/jobAssign",
+    element: <Lazy.JobSchedule />,
+  },
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')).render(

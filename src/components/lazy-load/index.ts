@@ -26,4 +26,5 @@ export const aIAnalysis = React.lazy(() => import("../../pages/AiAnalysis.jsx"))
 export const ResumeSelect = React.lazy(() => import("../chooseResume/resumeSelect.jsx"));
 export const LoginInterviewer = React.lazy(() => import("../../pages/LoginInterviewer.jsx"));
 export const LoginInterviewe = React.lazy(() => import("../../pages/LoginInterviewe.jsx"));
+export const JobSchedule = React.lazy(() => import("../../pages/JobSchedulePage.jsx"));
 

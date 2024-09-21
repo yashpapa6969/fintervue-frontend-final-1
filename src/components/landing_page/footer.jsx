@@ -17,10 +17,14 @@ const Footer = () => {
       <div className="flex flex-col gap-8 text-gray-300/85 max-w-[300px] items-center">
         <div className="flex gap-4 text-2xl cursor-pointer">
           <FaXTwitter className="hover:scale-125" />
-          <AiFillInstagram className="hover:scale-125" />
-          <FaPinterest className="hover:scale-125" />
-          <FaLinkedin className="hover:scale-125" />
-          <FaTiktok className="hover:scale-125" />
+          <Link to={"https://www.instagram.com/fintervue/"}>
+            <AiFillInstagram className="hover:scale-125" />
+          </Link>
+
+          <Link to={"https://www.instagram.com/fintervue/"}>
+            <FaLinkedin className="hover:scale-125" />
+          </Link>
+
           <FaYoutube className="hover:scale-125" />
         </div>
         <img src={Logo} alt="Logo" className="w-150 h-auto" />
@@ -62,10 +66,14 @@ const Footer = () => {
           <div className="cursor-pointer text-gray-300/85">Privacy Policy</div>
         </a>
         <a href="/TOC">
-          <div className="cursor-pointer text-gray-300/85">Terms and Conditions</div>
+          <div className="cursor-pointer text-gray-300/85">
+            Terms and Conditions
+          </div>
         </a>
         <a href="/RefundsAndCancellation">
-          <div className="cursor-pointer text-gray-300/85">Refunds And Cancellation</div>
+          <div className="cursor-pointer text-gray-300/85">
+            Refunds And Cancellation
+          </div>
         </a>
         <div className="cursor-pointer text-gray-300/85">Security</div>
       </div>

@@ -12,6 +12,7 @@ import {
   FaChartLine,
   FaBalanceScale,
 } from "react-icons/fa";
+import Navbar from "../components/navbar";
 
 const jobRoles = [
   { title: "Financial Analyst", status: "Pending", icon: <FaMoneyBillWave /> },
@@ -61,20 +62,8 @@ const ProfileCard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6 font-sans"> {/* Added font-sans class */}
-      {/* Navbar */}
-      <header className="w-full flex justify-between items-center p-4 bg-white text-black shadow-md">
-        <img src={Logo} alt="Logo" className="w-30 h-12" />
-        <div className="space-x-4">
-          <button className="bg-blue-600 py-2 px-4 rounded-full text-sm hover:bg-blue-500 transition duration-300">
-            Profile
-          </button>
-          <button className="bg-blue-600 py-2 px-4 rounded-full text-sm hover:bg-blue-500 transition duration-300">
-            Analytics
-          </button>
-        </div>
-      </header>
-
+    <div> {/* Added font-sans class */}
+      <Navbar/>
       <div className="pt-10">
         <motion.div
           initial={{ opacity: 0, y: -20 }}

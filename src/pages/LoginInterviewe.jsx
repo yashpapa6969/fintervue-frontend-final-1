@@ -14,7 +14,7 @@ const LoginInterviewe = () => {
     // Simulate login process (you can replace this with actual login logic)
     if (email === "test@interviewer.com" && password === "password123") {
       // Navigate to the jobs portal page after successful login
-      navigate("/product");
+      navigate("/display");
     } else {
       alert("Invalid credentials");
     }
