@@ -11,7 +11,7 @@ const SignupPage2 = () => {
         {/* <p>This will help us personalize your experience accordingly.</p> */}
         <FlipText
           className="text-2xl font-bold tracking-[-0.1em] bg-clip-text md:text-7xl md:leading-[5rem]"
-          word="Join our platform"
+          word="Join Fintervue Today"
         />
         <h3 className="mt-[.5rem] text-[1.5rem] p-5">
           This will help us personalize your experience accordingly.
@@ -34,7 +34,7 @@ const SignupPage2 = () => {
               careers.
             </p>
             <Link
-              to="/signup/interviewer"
+              to="/login/interviewer"
               className="bg-yellow-300 transition-all text-black py-2 px-6 rounded-md font-semibold hover:bg-yellow-200"
             >
               Login
@@ -58,14 +58,14 @@ const SignupPage2 = () => {
               </span>
             </div>
             <h2 className="text-2xl font-bold mb-4">
-              Join as a <span className="text-black">Interviewee</span>
+              Join as an <span className="text-black">Interviewee</span>
             </h2>
             <p className="text-gray-600 mb-6">
               Prepare for interviews, get expert feedback, and apply to 400+ top
               companies. Stand out from the competition and land your dream job
               with personalized interview feedback and reports.
             </p>
-            <Link to="/signup/candidate">
+            <Link to="/login/candidate">
               <button className="bg-blue-200 text-blue-900 py-2 px-6 rounded-md font-semibold hover:bg-blue-400">
                 Login
               </button>
