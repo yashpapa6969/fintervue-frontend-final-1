@@ -51,9 +51,13 @@ const Interview = ({ audioOn }) => {
       setLoaded(true);
     };
     loadFFmpeg();
-    getTextFromAPI();
-    // Removed getCameraPermission();
   }, []);
+
+  useEffect(() => {
+    if (selectedDomain) {
+      getTextFromAPI(selectedDomain);
+    }
+  }, [selectedDomain]);
 
   const submitFinalAnswers = async () => {
     const formData = new FormData();
@@ -238,9 +242,11 @@ const Interview = ({ audioOn }) => {
     setQuestionNo((prev) => prev + 1);
   };
 
-  const getTextFromAPI = async () => {
+  const getTextFromAPI = async (domain) => {
     try {
-      const response = await axios.get("https://x3oh1podsi.execute-api.ap-south-1.amazonaws.com/api/Interviewee/getAllAIQuestion");
+      const response = await axios.get(
+        `https://x3oh1podsi.execute-api.ap-south-1.amazonaws.com/api/Interviewee/getAIQuestionByDomain/${domain}`
+      );
       if (Array.isArray(response.data)) {
         setQuestions(response.data);
       }
