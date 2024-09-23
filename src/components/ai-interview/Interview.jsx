@@ -245,7 +245,7 @@ const Interview = ({ audioOn }) => {
   const getTextFromAPI = async (domain) => {
     try {
       const response = await axios.get(
-        `https://x3oh1podsi.execute-api.ap-south-1.amazonaws.com/api/Interviewee/getAIQuestionByDomain/${domain}`
+        `https://x3oh1podsi.execute-api.ap-south-1.amazonaws.com/api/Interviewee//getAIQuestionByDomain/:domain`
       );
       if (Array.isArray(response.data)) {
         setQuestions(response.data);
