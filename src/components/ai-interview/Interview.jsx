@@ -7,6 +7,7 @@ import SearchBox from "../common/SearchBox";
 import { FFmpeg } from '@ffmpeg/ffmpeg';
 import { toBlobURL, fetchFile } from '@ffmpeg/util';
 import { useNavigate } from "react-router-dom";
+
 const mimeType = "video/webm";
 
 const Interview = ({ audioOn }) => {
@@ -53,11 +54,18 @@ const Interview = ({ audioOn }) => {
     loadFFmpeg();
   }, []);
 
-  useEffect(() => {
-    if (selectedDomain) {
-      getTextFromAPI(selectedDomain);
+  const getQuestionsByDomain = async (domain) => {
+    try {
+      const response = await axios.get(
+        `https://x3oh1podsi.execute-api.ap-south-1.amazonaws.com/api/Interviewee/getAIQuestionByDomain/${domain}`
+      );
+      if (Array.isArray(response.data)) {
+        setQuestions(response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching questions:", error);
     }
-  }, [selectedDomain]);
+  };
 
   const submitFinalAnswers = async () => {
     const formData = new FormData();
@@ -93,7 +101,7 @@ const Interview = ({ audioOn }) => {
       );
 
       if (response.status === 201) {
-        const { ai_analysis_id } = response.data; // Assuming the response contains the analysis_id
+        const { ai_analysis_id } = response.data;
         localStorage.setItem('ai_analysis_id', ai_analysis_id);
         await toast({
           title: "Analysis submitted successfully",
@@ -112,7 +120,6 @@ const Interview = ({ audioOn }) => {
       const videoConstraints = { video: true };
       const audioConstraints = { audio: true };
 
-      // Combine video and audio streams
       const videoStream = await navigator.mediaDevices.getUserMedia(videoConstraints);
       const audioStream = await navigator.mediaDevices.getUserMedia(audioConstraints);
 
@@ -121,9 +128,8 @@ const Interview = ({ audioOn }) => {
         ...audioStream.getAudioTracks(),
       ]);
 
-      setStream(combinedStream); // Set combined stream
+      setStream(combinedStream);
 
-      // Set video feed for live video
       if (liveVideoFeed.current) {
         liveVideoFeed.current.srcObject = videoStream;
       } else {
@@ -131,17 +137,14 @@ const Interview = ({ audioOn }) => {
       }
 
       setPermission(true);
-
-      // Automatically start recording
-      startRecording(combinedStream);
     } catch (err) {
       alert("Camera and microphone permission denied: " + err.message);
     }
   };
 
-  const startRecording = async (combinedStream) => {
-    if ("MediaRecorder" in window && combinedStream) {
-      const media = new MediaRecorder(combinedStream, { mimeType });
+  const startRecording = async () => {
+    if ("MediaRecorder" in window && stream) {
+      const media = new MediaRecorder(stream, { mimeType });
       mediaRecorder.current = media;
       setRecordingStatus("recording");
       mediaRecorder.current.start();
@@ -206,7 +209,6 @@ const Interview = ({ audioOn }) => {
         },
       });
 
-      // Update transcriptions array
       setTranscriptions((prevTranscriptions) => {
         const newTranscriptions = [...prevTranscriptions];
         newTranscriptions[questionNo] = response.data.result;
@@ -238,36 +240,7 @@ const Interview = ({ audioOn }) => {
   const nextQuestion = () => {
     setRecordedVideoBlob(null);
     setRecordedVideoURL(null);
-    // No need to reset transcription
     setQuestionNo((prev) => prev + 1);
-  };
-
-  const getTextFromAPI = async (domain) => {
-    try {
-      const response = await axios.get(
-        `https://x3oh1podsi.execute-api.ap-south-1.amazonaws.com/api/Interviewee//getAIQuestionByDomain/:domain`
-      );
-      if (Array.isArray(response.data)) {
-        setQuestions(response.data);
-      }
-    } catch (error) {
-      console.error("Error fetching questions:", error);
-    }
-  };
-
-  const speak = (text) => {
-    const synth = window.speechSynthesis;
-    if (!synth) {
-      console.error("Speech synthesis not supported in this browser");
-      return;
-    }
-
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.onend = () => {
-      console.log("AI finished speaking. Start recording now.");
-      startRecording(stream);
-    };
-    synth.speak(utterance);
   };
 
   useEffect(() => {
@@ -276,19 +249,20 @@ const Interview = ({ audioOn }) => {
 
   useEffect(() => {
     if (questions[questionNo]?.questionText && !hasSpokenRef.current && selectedDomain) {
-      speak(questions[questionNo].questionText);
-      hasSpokenRef.current = true;
+      const synth = window.speechSynthesis;
+      if (synth) {
+        const utterance = new SpeechSynthesisUtterance(questions[questionNo].questionText);
+        utterance.onend = () => {
+          console.log("AI finished speaking. Start recording now.");
+          startRecording();
+        };
+        synth.speak(utterance);
+        hasSpokenRef.current = true;
+      }
     }
   }, [questions, questionNo, selectedDomain]);
 
-  useEffect(() => {
-    const synth = window.speechSynthesis;
-    if (synth && !audioOn) synth.pause();
-    else if (synth) synth.resume();
-  }, [audioOn]);
-
   if (!loaded) console.log("Browser error: FFmpeg not loaded");
-  if (questions.length === 0) return <Loading />;
 
   return (
     <div className="w-full min-h-[calc(100vh-60px)] mt-10 transition-all">
@@ -301,7 +275,11 @@ const Interview = ({ audioOn }) => {
               ? allDomains
                   .filter(domain => domain.name.toLowerCase().includes(searchDomainValue.toLowerCase()))
                   .map((domain, index) => (
-                    <Card key={`domain-${index}`} className="h-auto cursor-pointer hover:border-2 hover:border-blue-400" onClick={() => setSelectedDomain(domain.name)}>
+                    <Card key={`domain-${index}`} className="h-auto cursor-pointer hover:border-2 hover:border-blue-400" onClick={() => {
+                      setSelectedDomain(domain.name);
+                      getQuestionsByDomain(domain.name);
+                      getCameraPermission();
+                    }}>
                       <CardBody>
                         <h3 className="text-lg font-semibold">{domain.name}</h3>
                         <p className="font-md">{domain.description}</p>
@@ -309,7 +287,11 @@ const Interview = ({ audioOn }) => {
                     </Card>
                   ))
               : allDomains.map((domain, index) => (
-                  <Card key={`domain-${index}`} className="h-auto cursor-pointer hover:border-2 hover-border-blue-400" onClick={() => setSelectedDomain(domain.name)}>
+                  <Card key={`domain-${index}`} className="h-auto cursor-pointer hover:border-2 hover-border-blue-400" onClick={() => {
+                    setSelectedDomain(domain.name);
+                    getQuestionsByDomain(domain.name);
+                    getCameraPermission();
+                  }}>
                     <CardBody>
                       <h3 className="text-lg font-semibold">{domain.name}</h3>
                       <p className="font-md">{domain.description}</p>
@@ -325,7 +307,8 @@ const Interview = ({ audioOn }) => {
             <br />
             <div className="flex justify-between">
               <div className="flex gap-4">
-                <Button onClick={stopRecording}>Stop Recording</Button>
+                <Button onClick={startRecording} colorScheme="green">Start Recording</Button>
+                <Button onClick={stopRecording} colorScheme="red">Stop Recording</Button>
               </div>
               <Button onClick={extractAudio} colorScheme="purple">Submit <ChevronRight size={20} /></Button>
             </div>
@@ -367,7 +350,6 @@ const Interview = ({ audioOn }) => {
           ref={(ref) => {
             if (ref && !cameraPermissionCalledRef.current) {
               liveVideoFeed.current = ref;
-              getCameraPermission();
               cameraPermissionCalledRef.current = true;
             }
           }}
