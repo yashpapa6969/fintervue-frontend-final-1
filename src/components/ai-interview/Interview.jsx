@@ -1,19 +1,35 @@
-import { Button, Card, CardBody, useToast } from "@chakra-ui/react";
+// src/components/ai-interview/Interview.jsx
+
+import {
+  Button,
+  Card,
+  CardBody,
+  useToast,
+  Grid,
+  GridItem,
+  Box,
+  Text,
+  Flex,
+  Spinner,
+  Badge,
+} from "@chakra-ui/react";
 import { ChevronRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import Loading from "../Loading";
 import SearchBox from "../common/SearchBox";
-import { FFmpeg } from '@ffmpeg/ffmpeg';
-import { toBlobURL, fetchFile } from '@ffmpeg/util';
+import { FFmpeg } from "@ffmpeg/ffmpeg";
+import { toBlobURL, fetchFile } from "@ffmpeg/util";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const mimeType = "video/webm";
+const MotionBox = motion(Box);
 
 const Interview = ({ audioOn }) => {
   const navigate = useNavigate();
   const toast = useToast();
-  const [allDomains, setAllDomains] = useState([
+  const [allDomains] = useState([
     { name: "App Developer", description: "App Development Engineer" },
     { name: "Rust Developer", description: "Rust Programmer" },
     { name: "Marketing", description: "Marketing Programme" },
@@ -37,23 +53,44 @@ const Interview = ({ audioOn }) => {
   const [recordingStatus, setRecordingStatus] = useState("inactive");
   const liveVideoFeed = useRef(null);
   const [stream, setStream] = useState(null);
-  const [permission, setPermission] = useState(false);
   const cameraPermissionCalledRef = useRef(false);
+  const [recordingTime, setRecordingTime] = useState(0);
+  const timerRef = useRef(null);
 
+  // Load FFmpeg
   useEffect(() => {
     const loadFFmpeg = async () => {
-      const baseURL = 'https://unpkg.com/@ffmpeg/core-mt@0.12.6/dist/esm';
+      const baseURL = "https://unpkg.com/@ffmpeg/core-mt@0.12.6/dist/esm";
       const ffmpeg = ffmpegRef.current;
-      await ffmpeg.load({
-        coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
-        wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
-        workerURL: await toBlobURL(`${baseURL}/ffmpeg-core.worker.js`, 'text/javascript'),
-      });
-      setLoaded(true);
+      try {
+        await ffmpeg.load({
+          coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, "text/javascript"),
+          wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, "application/wasm"),
+          workerURL: await toBlobURL(`${baseURL}/ffmpeg-core.worker.js`, "text/javascript"),
+        });
+        setLoaded(true);
+      } catch (error) {
+        console.error("Error loading FFmpeg:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load video processing library.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
     };
     loadFFmpeg();
+    return () => {
+      // Cleanup on unmount
+      if (stream) {
+        stream.getTracks().forEach((track) => track.stop());
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Fetch questions based on selected domain
   const getQuestionsByDomain = async (domain) => {
     try {
       const response = await axios.get(
@@ -61,27 +98,38 @@ const Interview = ({ audioOn }) => {
       );
       if (Array.isArray(response.data)) {
         setQuestions(response.data);
+      } else {
+        setQuestions([]);
+        toast({
+          title: "No Questions",
+          description: "No questions found for the selected domain.",
+          status: "info",
+          duration: 3000,
+          isClosable: true,
+        });
       }
     } catch (error) {
       console.error("Error fetching questions:", error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch questions.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
+  // Submit final answers
   const submitFinalAnswers = async () => {
     const formData = new FormData();
 
     audioBlobs.forEach((audioBlob, index) => {
-      formData.append(
-        "audio",
-        new File([audioBlob], `audio_${index}.mp3`, { type: "audio/mp3" })
-      );
+      formData.append("audio", new File([audioBlob], `audio_${index}.mp3`, { type: "audio/mp3" }));
     });
 
     videoBlobs.forEach((videoBlob, index) => {
-      formData.append(
-        "video",
-        new File([videoBlob], `video_${index}.mp4`, { type: "video/mp4" })
-      );
+      formData.append("video", new File([videoBlob], `video_${index}.mp4`, { type: "video/mp4" }));
     });
 
     questions.forEach((question, index) => {
@@ -101,25 +149,36 @@ const Interview = ({ audioOn }) => {
       );
 
       if (response.status === 201) {
-        const { ai_analysis_id } = response.data;
-        localStorage.setItem('ai_analysis_id', ai_analysis_id);
-        await toast({
-          title: "Analysis submitted successfully",
+        const { ai_analysis_id } = response.data; // Assuming the response contains the analysis_id
+        localStorage.setItem("ai_analysis_id", ai_analysis_id);
+        toast({
+          title: "Success",
+          description: "Analysis submitted successfully.",
           status: "success",
           duration: 3000,
+          isClosable: true,
         });
-        await navigate("/analysis");
+        navigate("/analysis");
       }
     } catch (error) {
       console.error("Error submitting analysis:", error);
+      toast({
+        title: "Submission Error",
+        description: "Failed to submit analysis.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
+  // Request camera and microphone permissions
   const getCameraPermission = async () => {
     try {
       const videoConstraints = { video: true };
       const audioConstraints = { audio: true };
 
+      // Combine video and audio streams
       const videoStream = await navigator.mediaDevices.getUserMedia(videoConstraints);
       const audioStream = await navigator.mediaDevices.getUserMedia(audioConstraints);
 
@@ -130,73 +189,150 @@ const Interview = ({ audioOn }) => {
 
       setStream(combinedStream);
 
+      // Set video feed for live video
       if (liveVideoFeed.current) {
         liveVideoFeed.current.srcObject = videoStream;
       } else {
-        console.error('liveVideoFeed.current is null');
+        console.error("liveVideoFeed.current is null");
       }
 
-      setPermission(true);
+      toast({
+        title: "Permissions Granted",
+        description: "Camera and microphone access granted.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
     } catch (err) {
-      alert("Camera and microphone permission denied: " + err.message);
+      console.error("Permission denied:", err);
+      toast({
+        title: "Permissions Denied",
+        description: "Camera and microphone access are required for the interview.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
+  // Start Recording
   const startRecording = async () => {
     if ("MediaRecorder" in window && stream) {
-      const media = new MediaRecorder(stream, { mimeType });
-      mediaRecorder.current = media;
-      setRecordingStatus("recording");
-      mediaRecorder.current.start();
+      try {
+        const media = new MediaRecorder(stream, { mimeType });
+        mediaRecorder.current = media;
+        setRecordingStatus("recording");
+        media.start();
 
-      let localVideoChunks = [];
-      mediaRecorder.current.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          localVideoChunks.push(event.data);
-        }
-      };
+        // Initialize recording time
+        setRecordingTime(0);
+        timerRef.current = setInterval(() => {
+          setRecordingTime((prev) => prev + 1);
+        }, 1000);
 
-      mediaRecorder.current.onstop = () => {
-        const videoBlob = new Blob(localVideoChunks, { type: mimeType });
-        const videoUrl = URL.createObjectURL(videoBlob);
-        setRecordedVideoBlob(videoBlob);
-        setRecordedVideoURL(videoUrl);
-        setVideoBlobs((prevBlobs) => [...prevBlobs, videoBlob]);
-        saveVideoBlobToLocalStorage(videoBlob);
-      };
+        toast({
+          title: "Recording Started",
+          description: "Your responses are being recorded.",
+          status: "info",
+          duration: 2000,
+          isClosable: true,
+        });
+
+        let localVideoChunks = [];
+        media.ondataavailable = (event) => {
+          if (event.data.size > 0) {
+            localVideoChunks.push(event.data);
+          }
+        };
+
+        media.onstop = () => {
+          clearInterval(timerRef.current);
+          const videoBlob = new Blob(localVideoChunks, { type: mimeType });
+          const videoUrl = URL.createObjectURL(videoBlob);
+          setRecordedVideoBlob(videoBlob);
+          setRecordedVideoURL(videoUrl);
+          setVideoBlobs((prevBlobs) => [...prevBlobs, videoBlob]);
+          saveVideoBlobToLocalStorage(videoBlob);
+          toast({
+            title: "Recording Stopped",
+            description: "Your response has been recorded.",
+            status: "success",
+            duration: 2000,
+            isClosable: true,
+          });
+        };
+      } catch (error) {
+        console.error("Error starting recording:", error);
+        toast({
+          title: "Recording Error",
+          description: "Failed to start recording.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
+    } else {
+      toast({
+        title: "Unsupported",
+        description: "MediaRecorder not supported in this browser.",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 
+  // Stop Recording
   const stopRecording = () => {
     if (mediaRecorder.current && recordingStatus === "recording") {
-      setRecordingStatus("inactive");
       mediaRecorder.current.stop();
+      setRecordingStatus("inactive");
     }
   };
 
+  // Extract Audio from Video
   const extractAudio = async () => {
     if (!recordedVideoBlob) {
       toast({
-        title: "No video recorded",
-        description: "Please record a video before extracting audio",
+        title: "No Video Recorded",
+        description: "Please record a video before extracting audio.",
         status: "error",
         duration: 3000,
+        isClosable: true,
       });
       return;
     }
-    const ffmpeg = ffmpegRef.current;
-    await ffmpeg.writeFile('input.mp4', await fetchFile(recordedVideoBlob));
-    await ffmpeg.exec(['-i', 'input.mp4', '-vn', '-acodec', 'libmp3lame', '-q:a', '2', 'output.mp3']);
-    const data = await ffmpeg.readFile('output.mp3');
-    const audioBlob = new Blob([data], { type: 'audio/mp3' });
-    saveAudioBlobToLocalStorage(audioBlob);
-    setAudioBlobs([...audioBlobs, audioBlob]);
-    await handleSubmit(audioBlob);
+    try {
+      const ffmpeg = ffmpegRef.current;
+      await ffmpeg.writeFile("input.webm", await fetchFile(recordedVideoBlob));
+      await ffmpeg.exec(["-i", "input.webm", "-vn", "-acodec", "libmp3lame", "-q:a", "2", "output.mp3"]);
+      const data = await ffmpeg.readFile("output.mp3");
+      const audioBlob = new Blob([data.buffer], { type: "audio/mp3" });
+      saveAudioBlobToLocalStorage(audioBlob);
+      setAudioBlobs((prevBlobs) => [...prevBlobs, audioBlob]);
+      await handleSubmit(audioBlob);
+    } catch (error) {
+      console.error("Error extracting audio:", error);
+      toast({
+        title: "Extraction Error",
+        description: "Failed to extract audio from the video.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
   };
 
+  // Submit Audio for Transcription
   const handleSubmit = async (audioBlob) => {
     if (!audioBlob) {
-      alert('Please record and extract audio before submitting.');
+      toast({
+        title: "No Audio Extracted",
+        description: "Please record and extract audio before submitting.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
       return;
     }
     const formData = new FormData();
@@ -205,159 +341,308 @@ const Interview = ({ audioOn }) => {
     try {
       const response = await axios.post("http://104.244.242.65:31246/processAudio", formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       });
 
-      setTranscriptions((prevTranscriptions) => {
-        const newTranscriptions = [...prevTranscriptions];
-        newTranscriptions[questionNo] = response.data.result;
-        return newTranscriptions;
-      });
-
-      saveTranscriptionToLocalStorage(response.data.result);
+      if (response.data && response.data.result) {
+        setTranscriptions((prevTranscriptions) => {
+          const newTranscriptions = [...prevTranscriptions];
+          newTranscriptions[questionNo] = response.data.result;
+          return newTranscriptions;
+        });
+        saveTranscriptionToLocalStorage(response.data.result);
+        toast({
+          title: "Transcription Completed",
+          description: "Your response has been transcribed.",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      } else {
+        throw new Error("Invalid transcription response");
+      }
     } catch (error) {
-      console.error('Error submitting audio file:', error);
+      console.error("Error submitting audio file:", error);
+      toast({
+        title: "Transcription Error",
+        description: "Failed to transcribe your response.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
+  // Save Audio Blob to Local Storage
   const saveAudioBlobToLocalStorage = (audioBlob) => {
     const questionKey = `audioBlob_question_${questionNo}`;
     localStorage.setItem(questionKey, URL.createObjectURL(audioBlob));
   };
 
+  // Save Video Blob to Local Storage
   const saveVideoBlobToLocalStorage = (videoBlob) => {
     const videoKey = `videoBlob_question_${questionNo}`;
     const videoURL = URL.createObjectURL(videoBlob);
     localStorage.setItem(videoKey, videoURL);
   };
 
+  // Save Transcription to Local Storage
   const saveTranscriptionToLocalStorage = (transcription) => {
     const transcriptionKey = `transcription_question_${questionNo}`;
     localStorage.setItem(transcriptionKey, JSON.stringify(transcription));
   };
 
+  // Move to Next Question
   const nextQuestion = () => {
     setRecordedVideoBlob(null);
     setRecordedVideoURL(null);
     setQuestionNo((prev) => prev + 1);
   };
 
+  // Handle Speech Synthesis
+  const speak = (text) => {
+    const synth = window.speechSynthesis;
+    if (!synth) {
+      console.error("Speech synthesis not supported in this browser");
+      return;
+    }
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.onend = () => {
+      console.log("AI finished speaking.");
+      // Optionally, you can auto-start recording here
+    };
+    synth.speak(utterance);
+  };
+
+  // Manage speaking state
   useEffect(() => {
     hasSpokenRef.current = false;
   }, [questionNo]);
 
   useEffect(() => {
     if (questions[questionNo]?.questionText && !hasSpokenRef.current && selectedDomain) {
-      const synth = window.speechSynthesis;
-      if (synth) {
-        const utterance = new SpeechSynthesisUtterance(questions[questionNo].questionText);
-        utterance.onend = () => {
-          console.log("AI finished speaking. Start recording now.");
-          startRecording();
-        };
-        synth.speak(utterance);
-        hasSpokenRef.current = true;
-      }
+      speak(questions[questionNo].questionText);
+      hasSpokenRef.current = true;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [questions, questionNo, selectedDomain]);
 
-  if (!loaded) console.log("Browser error: FFmpeg not loaded");
+  // Manage Speech Synthesis Pause/Resume based on audioOn prop
+  useEffect(() => {
+    const synth = window.speechSynthesis;
+    if (synth) {
+      if (!audioOn) {
+        synth.pause();
+      } else {
+        synth.resume();
+      }
+    }
+  }, [audioOn]);
+
+  if (!loaded) {
+    return (
+      <Flex justify="center" align="center" height="100vh">
+        <Spinner size="xl" />
+      </Flex>
+    );
+  }
 
   return (
-    <div className="w-full min-h-[calc(100vh-60px)] mt-10 transition-all">
-      {!selectedDomain || selectedDomain === "" ? (
-        <div className="flex flex-col items-center">
-          <h3 className="text-xl font-semibold mb-8">Select a Domain</h3>
-          <SearchBox value={searchDomainValue} setValue={setSearchDomainValue} className="max-w-[600px] mb-4" />
-          <div className="grid grid-cols-3 max-w-[600px] gap-5">
-            {searchDomainValue
-              ? allDomains
-                  .filter(domain => domain.name.toLowerCase().includes(searchDomainValue.toLowerCase()))
-                  .map((domain, index) => (
-                    <Card key={`domain-${index}`} className="h-auto cursor-pointer hover:border-2 hover:border-blue-400" onClick={() => {
-                      setSelectedDomain(domain.name);
-                      getQuestionsByDomain(domain.name);
-                      getCameraPermission();
-                    }}>
+    <MotionBox
+      className="w-full min-h-[calc(100vh-60px)] mt-10"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      {!selectedDomain ? (
+        <MotionBox
+          className="flex flex-col items-center"
+          initial={{ scale: 0.8 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <Text fontSize="2xl" fontWeight="bold" mb={6}>
+            Select a Domain
+          </Text>
+          <SearchBox
+            value={searchDomainValue}
+            setValue={setSearchDomainValue}
+            className="max-w-md mb-6"
+          />
+          <Grid templateColumns="repeat(auto-fit, minmax(250px, 1fr))" gap={6} maxW="800px">
+            {allDomains
+              .filter((domain) =>
+                domain.name.toLowerCase().includes(searchDomainValue.toLowerCase())
+              )
+              .map((domain, index) => (
+                <GridItem key={`domain-${index}`}>
+                  <MotionBox
+                    whileHover={{ scale: 1.05, boxShadow: "lg" }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Card
+                      cursor="pointer"
+                      onClick={() => {
+                        setSelectedDomain(domain.name);
+                        getQuestionsByDomain(domain.name);
+                        getCameraPermission();
+                      }}
+                      _hover={{ borderColor: "blue.400", borderWidth: "2px" }}
+                      transition="border-color 0.3s"
+                      borderWidth="1px"
+                      borderColor="gray.200"
+                      borderRadius="lg"
+                      overflow="hidden"
+                      height="100%"
+                    >
                       <CardBody>
-                        <h3 className="text-lg font-semibold">{domain.name}</h3>
-                        <p className="font-md">{domain.description}</p>
+                        <Flex direction="column" align="start">
+                          <Text fontSize="xl" fontWeight="semibold" mb={2}>
+                            {domain.name}
+                          </Text>
+                          <Text color="gray.600">{domain.description}</Text>
+                        </Flex>
                       </CardBody>
                     </Card>
-                  ))
-              : allDomains.map((domain, index) => (
-                  <Card key={`domain-${index}`} className="h-auto cursor-pointer hover:border-2 hover-border-blue-400" onClick={() => {
-                    setSelectedDomain(domain.name);
-                    getQuestionsByDomain(domain.name);
-                    getCameraPermission();
-                  }}>
-                    <CardBody>
-                      <h3 className="text-lg font-semibold">{domain.name}</h3>
-                      <p className="font-md">{domain.description}</p>
-                    </CardBody>
-                  </Card>
-                ))}
-          </div>
-        </div>
+                  </MotionBox>
+                </GridItem>
+              ))}
+          </Grid>
+        </MotionBox>
       ) : (
-        <>
-          <div className="p-4 rounded-xl w-full">
-            <p className="text-xl">{questions[questionNo]?.questionText || <Loading />}</p>
-            <br />
-            <div className="flex justify-between">
-              <div className="flex gap-4">
-                <Button onClick={startRecording} colorScheme="green">Start Recording</Button>
-                <Button onClick={stopRecording} colorScheme="red">Stop Recording</Button>
-              </div>
-              <Button onClick={extractAudio} colorScheme="purple">Submit <ChevronRight size={20} /></Button>
-            </div>
-            {questions.length >= questionNo + 1 && transcriptions[questionNo]?.length > 0 && (
-              <div className="flex flex-col gap-2 items-end mt-2">
-                {questions.length === questionNo + 1 && transcriptions[questionNo].length > 0 && (
-                  <Button onClick={submitFinalAnswers} colorScheme="purple">Submit Final Answers</Button>
-                )}
-                {questions.length > questionNo + 1 && transcriptions[questionNo].length > 0 && (
-                  <Button onClick={nextQuestion}>Next Question</Button>
-                )}
-              </div>
-            )}
-          </div>
+        <MotionBox
+          className="p-6 rounded-xl w-full max-w-4xl mx-auto"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <Flex justify="space-between" align="center" mb={4}>
+            <Text fontSize="2xl" fontWeight="bold">
+              {selectedDomain} Interview
+            </Text>
+            <Button
+              colorScheme="red"
+              onClick={() => {
+                // Reset permissions and state
+                if (stream) {
+                  stream.getTracks().forEach((track) => track.stop());
+                }
+                navigate("/"); // Redirect to home or another appropriate route
+              }}
+            >
+              Exit Interview
+            </Button>
+          </Flex>
+          <Box mb={4}>
+            <Text fontSize="xl" mb={2}>
+              {questions[questionNo]?.questionText || <Loading />}
+            </Text>
+            <Badge colorScheme="purple" variant="subtle">
+              Question {questionNo + 1} of {questions.length}
+            </Badge>
+          </Box>
+          <Flex justify="space-between" align="center" mb={4}>
+            <Flex gap={4}>
+              <Button
+                onClick={startRecording}
+                colorScheme="green"
+                isDisabled={recordingStatus === "recording"}
+              >
+                Start Recording
+              </Button>
+              <Button
+                onClick={stopRecording}
+                colorScheme="red"
+                isDisabled={recordingStatus !== "recording"}
+              >
+                Stop Recording
+              </Button>
+            </Flex>
+            <Flex align="center" gap={2}>
+              {recordingStatus === "recording" && (
+                <>
+                  <Spinner size="sm" color="red.500" />
+                  <Text color="red.500">Recording: {recordingTime}s</Text>
+                </>
+              )}
+            </Flex>
+            <Button
+              onClick={extractAudio}
+              colorScheme="purple"
+              rightIcon={<ChevronRight />}
+              isDisabled={!recordedVideoBlob}
+            >
+              Submit
+            </Button>
+          </Flex>
+          {recordingStatus === "recording" && (
+            <Box mb={4}>
+              <Text color="red.500">Recording in progress...</Text>
+            </Box>
+          )}
           {recordedVideoURL && (
-            <div className="mt-4 flex flex-col items-center">
-              <h4 className="text-lg font-semibold">Recorded Video</h4>
-              <video src={recordedVideoURL} controls className="w-full max-w-md"></video>
-            </div>
+            <Box mb={4}>
+              <Text fontSize="lg" fontWeight="semibold" mb={2}>
+                Recorded Video
+              </Text>
+              <video src={recordedVideoURL} controls className="w-full max-w-md rounded-md shadow-lg" />
+            </Box>
           )}
           {transcriptions[questionNo]?.length > 0 && (
-            <div className="mt-4 w-full max-w-md">
-              <h4 className="text-lg font-semibold">Transcription</h4>
-              <ul>
+            <Box mb={4}>
+              <Text fontSize="lg" fontWeight="semibold" mb={2}>
+                Transcription
+              </Text>
+              <Box maxH="200px" overflowY="auto" p={4} bg="gray.50" borderRadius="md" boxShadow="sm">
                 {transcriptions[questionNo].map((item, index) => (
-                  <li key={index} className="mt-1">
-                    <p className="font-semibold text-sm text-purple-600">Start: {item.Start}, End: {item.End}</p>
-                    <strong className={`${(index + 1) % 2 === 0 ? "text-purple-400" : "text-purple-500"}`}>{item.Speaker}:</strong> {item.Text}
-                  </li>
+                  <Box key={index} mb={2}>
+                    <Text fontSize="sm" color="purple.600">
+                      Start: {item.Start}, End: {item.End}
+                    </Text>
+                    <Text>
+                      <strong
+                        className={`${
+                          (index + 1) % 2 === 0 ? "text-purple-400" : "text-purple-500"
+                        }`}
+                      >
+                        {item.Speaker}:
+                      </strong>{" "}
+                      {item.Text}
+                    </Text>
+                  </Box>
                 ))}
-              </ul>
-            </div>
+              </Box>
+            </Box>
           )}
-        </>
+          <Flex justify="flex-end" mt={4}>
+            {questions.length === questionNo + 1 ? (
+              <Button colorScheme="purple" onClick={submitFinalAnswers}>
+                Submit Final Answers
+              </Button>
+            ) : transcriptions[questionNo]?.length > 0 ? (
+              <Button colorScheme="blue" onClick={nextQuestion}>
+                Next Question
+              </Button>
+            ) : null}
+          </Flex>
+          {/* Live Video Feed */}
+          <Box mt={6}>
+            <Text fontSize="lg" fontWeight="semibold" mb={2}>
+              Live Video Feed
+            </Text>
+            <video
+              ref={liveVideoFeed}
+              autoPlay
+              muted
+              className="w-full max-w-md rounded-md shadow-lg"
+              style={{ border: "2px solid #E2E8F0" }}
+            ></video>
+          </Box>
+        </MotionBox>
       )}
-
-      <div className="relative h-full flex flex-col items-center justify-center">
-        <video
-          ref={(ref) => {
-            if (ref && !cameraPermissionCalledRef.current) {
-              liveVideoFeed.current = ref;
-              cameraPermissionCalledRef.current = true;
-            }
-          }}
-          autoPlay
-          style={{ height: "100%" }}
-        ></video>
-      </div>
-    </div>
+    </MotionBox>
   );
 };
 
