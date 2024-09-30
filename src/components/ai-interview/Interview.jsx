@@ -30,7 +30,7 @@ const Interview = ({ audioOn }) => {
   const navigate = useNavigate();
   const toast = useToast();
   const [allDomains] = useState([
-    { name: "App Developer", description: "App Development Engineer" },
+    { name: "finance", description: "Finance Engineer" },
     { name: "Rust Developer", description: "Rust Programmer" },
     { name: "Marketing", description: "Marketing Programme" },
     { name: "Business", description: "Business Programme" },
@@ -62,6 +62,7 @@ const Interview = ({ audioOn }) => {
     const loadFFmpeg = async () => {
       const baseURL = "https://unpkg.com/@ffmpeg/core-mt@0.12.6/dist/esm";
       const ffmpeg = ffmpegRef.current;
+    
       try {
         await ffmpeg.load({
           coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, "text/javascript"),
@@ -80,6 +81,7 @@ const Interview = ({ audioOn }) => {
         });
       }
     };
+    
     loadFFmpeg();
     return () => {
       // Cleanup on unmount
@@ -90,13 +92,17 @@ const Interview = ({ audioOn }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Fetch questions based on selected domain
-  const getQuestionsByDomain = async (domain) => {
+
+  const getQuestionsByDomain = async (domainName) => {
     try {
+      const encodedDomain = encodeURIComponent(domainName);
       const response = await axios.get(
-        `https://x3oh1podsi.execute-api.ap-south-1.amazonaws.com/api/Interviewee/getAIQuestionByDomain/${domain}`
+        `https://x3oh1podsi.execute-api.ap-south-1.amazonaws.com/api/Interviewee/getAIQuestionByDomain/${encodedDomain}`
       );
-      if (Array.isArray(response.data)) {
+  
+      console.log('API response:', response.data); // Log the API response for debugging
+  
+      if (response.data && Array.isArray(response.data) && response.data.length > 0) {
         setQuestions(response.data);
       } else {
         setQuestions([]);
@@ -112,13 +118,15 @@ const Interview = ({ audioOn }) => {
       console.error("Error fetching questions:", error);
       toast({
         title: "Error",
-        description: "Failed to fetch questions.",
+        description: "Failed to fetch questions. Please try again later.",
         status: "error",
         duration: 5000,
         isClosable: true,
       });
     }
   };
+
+
 
   // Submit final answers
   const submitFinalAnswers = async () => {
@@ -324,55 +332,59 @@ const Interview = ({ audioOn }) => {
   };
 
   // Submit Audio for Transcription
-  const handleSubmit = async (audioBlob) => {
-    if (!audioBlob) {
+const handleSubmit = async (audioBlob) => {
+  if (!audioBlob) {
+    toast({
+      title: "No Audio Extracted",
+      description: "Please record and extract audio before submitting.",
+      status: "error",
+      duration: 3000,
+      isClosable: true,
+    });
+    return;
+  }
+  
+  const formData = new FormData();
+  formData.append("audio_file", new File([audioBlob], "audio.mp3", { type: "audio/mp3" }));
+  
+  try {
+    const response = await axios.post("http://104.244.242.65:31246/processAudio", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    console.log('Transcription API response:', response.data); // Log the response from the transcription API
+
+    if (response.data && response.data.result) {
+      setTranscriptions((prevTranscriptions) => {
+        const newTranscriptions = [...prevTranscriptions];
+        newTranscriptions[questionNo] = response.data.result;
+        return newTranscriptions;
+      });
+      saveTranscriptionToLocalStorage(response.data.result);
       toast({
-        title: "No Audio Extracted",
-        description: "Please record and extract audio before submitting.",
-        status: "error",
+        title: "Transcription Completed",
+        description: "Your response has been transcribed.",
+        status: "success",
         duration: 3000,
         isClosable: true,
       });
-      return;
+    } else {
+      throw new Error("Invalid transcription response"); // Handle cases where the response is not what we expect
     }
-    const formData = new FormData();
-    formData.append("audio_file", new File([audioBlob], "audio.mp3", { type: "audio/mp3" }));
+  } catch (error) {
+    console.error("Error submitting audio file:", error);
+    toast({
+      title: "Transcription Error",
+      description: "Failed to transcribe your response.",
+      status: "error",
+      duration: 5000,
+      isClosable: true,
+    });
+  }
+};
 
-    try {
-      const response = await axios.post("http://104.244.242.65:31246/processAudio", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      if (response.data && response.data.result) {
-        setTranscriptions((prevTranscriptions) => {
-          const newTranscriptions = [...prevTranscriptions];
-          newTranscriptions[questionNo] = response.data.result;
-          return newTranscriptions;
-        });
-        saveTranscriptionToLocalStorage(response.data.result);
-        toast({
-          title: "Transcription Completed",
-          description: "Your response has been transcribed.",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
-      } else {
-        throw new Error("Invalid transcription response");
-      }
-    } catch (error) {
-      console.error("Error submitting audio file:", error);
-      toast({
-        title: "Transcription Error",
-        description: "Failed to transcribe your response.",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    }
-  };
 
   // Save Audio Blob to Local Storage
   const saveAudioBlobToLocalStorage = (audioBlob) => {
@@ -587,7 +599,7 @@ const Interview = ({ audioOn }) => {
               <Text fontSize="lg" fontWeight="semibold" mb={2}>
                 Recorded Video
               </Text>
-              <video src={recordedVideoURL} controls className="w-full max-w-md rounded-md shadow-lg" />
+              <video src={recordedVideoURL} controls className="w-full max-w-xl rounded-md shadow-lg" />
             </Box>
           )}
           {transcriptions[questionNo]?.length > 0 && (
@@ -636,7 +648,7 @@ const Interview = ({ audioOn }) => {
               ref={liveVideoFeed}
               autoPlay
               muted
-              className="w-full max-w-md rounded-md shadow-lg"
+              className="w-full max-w-xl rounded-md shadow-lg"
               style={{ border: "2px solid #E2E8F0" }}
             ></video>
           </Box>
