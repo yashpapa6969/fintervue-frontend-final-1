@@ -17,29 +17,41 @@ import ReactMarkdown from "react-markdown";
 const AIAnalysis = () => {
   const [analysisData, setAnalysisData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState(null); // Updated error handling
   const analysisId = localStorage.getItem("ai_analysis_id");
 
   useEffect(() => {
     const fetchAnalysis = async () => {
+      if (!analysisId) {
+        setError("No analysis ID found. Please submit an analysis first.");
+        setLoading(false);
+        return;
+      }
+
       try {
         const response = await axios.get(
           `https://x3oh1podsi.execute-api.ap-south-1.amazonaws.com/api/interviewee/fetchAiInterviewAnalysis/${analysisId}`
         );
-        setAnalysisData(response.data.postanalysis);
+        
+        if (response.data && response.data.postanalysis) {
+          setAnalysisData(response.data.postanalysis);
+        } else {
+          setError("No analysis data available. Please try again later.");
+        }
       } catch (error) {
         console.error("Error fetching analysis:", error);
-        setError(true);
+        setError("Failed to fetch analysis. Please check your connection or try again later.");
       } finally {
         setLoading(false);
       }
     };
 
-    if (analysisId) {
-      fetchAnalysis();
-    } else {
-      setLoading(false);
-    }
+    fetchAnalysis();
+  }, [analysisId]);
+
+  // Debugging: Log the analysisId
+  useEffect(() => {
+    console.log("Analysis ID:", analysisId);
   }, [analysisId]);
 
   if (loading) {
@@ -51,23 +63,12 @@ const AIAnalysis = () => {
     );
   }
 
-  if (!analysisId) {
-    return (
-      <Container centerContent>
-        <Alert status="info" borderRadius="md" mt={4}>
-          <AlertIcon />
-          No analysis found. Please submit an analysis first.
-        </Alert>
-      </Container>
-    );
-  }
-
   if (error) {
     return (
       <Container centerContent>
         <Alert status="error" borderRadius="md" mt={4}>
           <AlertIcon />
-          Error fetching analysis. Please try again later.
+          {error}
         </Alert>
       </Container>
     );
@@ -78,7 +79,7 @@ const AIAnalysis = () => {
       <Container centerContent>
         <Alert status="warning" borderRadius="md" mt={4}>
           <AlertIcon />
-          No analysis data available.
+          No analysis data found. Please submit an analysis first.
         </Alert>
       </Container>
     );

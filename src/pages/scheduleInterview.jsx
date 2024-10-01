@@ -6,51 +6,84 @@ import {
   Box,
   Text,
   VStack,
-  useToast,
-  Alert,
-  AlertIcon,
-  AlertTitle,
-  AlertDescription,
-  Flex,
   Grid,
-  Center,
-  Badge,
+  Flex,
+  Container,
+  Heading,
+  IconButton,
+  useToast,
+  HStack,
+  Icon,
 } from "@chakra-ui/react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ChevronRightIcon, ChevronLeftIcon } from '@chakra-ui/icons';
-import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addDays } from 'date-fns';
+import { ChevronLeftIcon, ChevronRightIcon, TimeIcon } from '@chakra-ui/icons';
+import { MdOutlineAccessTime, MdPersonOutline, MdCalendarToday, MdOutlineVideoCall } from 'react-icons/md';
+import { motion } from 'framer-motion';
+import { 
+  format, 
+  addMonths, 
+  subMonths, 
+  startOfMonth, 
+  endOfMonth, 
+  eachDayOfInterval, 
+  isSameDay 
+} from 'date-fns';
+import Logo from "../assests/logo/logo.png";
 
 const MotionBox = motion(Box);
+const MotionButton = motion(Button);
 const MotionFlex = motion(Flex);
-const MotionText = motion(Text);
 
-const timeSlots = ['9:00 AM', '12:00 PM', '3:00 PM', '6:00 PM', '9:00 PM'];
+const BLUE_700 = "#1d4ed8";
+
+const Navbar = () => (
+  <Box bg="white" py={4} borderBottom="1px" borderColor="gray.100" position="fixed" top={0} width="100%" zIndex={10}>
+    <Container maxW="container.xl">
+      <Flex justify="space-between" align="center">
+      <a href="/home">
+        <img src={Logo} alt="Logo" className="cursor-pointer w-60 h-auto" />
+      </a>
+        <Button color={BLUE_700} variant="ghost">
+        <a href="/home">
+          Home
+        </a>
+        </Button>
+      </Flex>
+    </Container>
+  </Box>
+);
+
+const Footer = () => (
+  <Box bg="gray.50" py={8} borderTop="1px" borderColor="gray.200">
+    <Container maxW="container.xl">
+      <VStack spacing={4}>
+        <HStack spacing={4} color={BLUE_700}>
+          <Icon as={MdOutlineVideoCall} w={6} h={6} />
+        </HStack>
+        <Text color="gray.600">&copy; {new Date().getFullYear()} Fintervue. All rights reserved.</Text>
+      </VStack>
+    </Container>
+  </Box>
+);
 
 function ScheduleInterviewForm() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [message, setMessage] = useState('');
-  const [severity, setSeverity] = useState('success');
-  const [loading, setLoading] = useState(false);
-  const [interviewee_id, setIntervieweeId] = useState(null);
   const [availableDates, setAvailableDates] = useState([]);
   const [availableTimes, setAvailableTimes] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const navigate = useNavigate();
   const toast = useToast();
+  const navigate = useNavigate();
+
+  // Define timeSlots array
+  const timeSlots = ['9:00 AM', '10:00 AM', '11:00 AM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM'];
 
   useEffect(() => {
-    const intervieweeData = localStorage.getItem('interviewee');
-    const interviewee = intervieweeData ? JSON.parse(intervieweeData) : null;
-    const id = interviewee ? interviewee.interviewee_id : null;
-    setIntervieweeId(id);
-
     fetchAvailableDates();
   }, []);
 
   const fetchAvailableDates = async () => {
-    // Replace this with actual API call
     const dummyAvailableDates = [
       new Date(2024, 8, 15),
       new Date(2024, 8, 16),
@@ -62,7 +95,7 @@ function ScheduleInterviewForm() {
   };
 
   const fetchAvailableTimes = async (date) => {
-    // Replace this with actual API call
+    // Simulate API call to get available times
     const dummyAvailableTimes = ['9:00 AM', '3:00 PM', '6:00 PM'];
     setAvailableTimes(dummyAvailableTimes);
   };
@@ -70,7 +103,7 @@ function ScheduleInterviewForm() {
   const handleDateClick = (date) => {
     setSelectedDate(date);
     fetchAvailableTimes(date);
-    setSelectedTime(null); // Reset selected time when date changes
+    setSelectedTime(null);
   };
 
   const handleTimeClick = (time) => {
@@ -78,384 +111,222 @@ function ScheduleInterviewForm() {
   };
 
   const handleSubmit = async () => {
-    // ... (rest of the handleSubmit function remains the same)
+    if (!selectedDate || !selectedTime) {
+      toast({
+        title: "Error",
+        description: "Please select both date and time.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const dateTimeString = `${format(selectedDate, 'yyyy-MM-dd')}T${selectedTime}`;
+      const response = await axios.post(
+        'https://x3oh1podsi.execute-api.ap-south-1.amazonaws.com/api/interviewee/createInterviewRequest',
+        {
+          date: format(selectedDate, 'yyyy-MM-dd'),
+          time: selectedTime,
+        }
+      );
+
+      toast({
+        title: "Interview Scheduled",
+        description: response.data.message,
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+
+      navigate('/display');
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Something went wrong. Try again later.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const renderCalendar = () => {
     const monthStart = startOfMonth(currentMonth);
     const monthEnd = endOfMonth(monthStart);
-    const startDate = addDays(monthStart, -1);
-    const endDate = addDays(monthEnd, 7);
+    const days = eachDayOfInterval({ start: monthStart, end: monthEnd });
 
-    const dateFormat = "d";
-    const rows = [];
+    return (
+      <Grid templateColumns="repeat(7, 1fr)" gap={3}>
+        {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(day => (
+          <Text key={day} textAlign="center" fontWeight="bold" color="gray.500" fontSize="sm">
+            {day}
+          </Text>
+        ))}
+        {days.map((day) => {
+          const isAvailable = availableDates.some(d => isSameDay(d, day));
+          const isSelected = selectedDate && isSameDay(day, selectedDate);
 
-    let days = [];
-    let day = startDate;
-
-    while (day <= endDate) {
-      for (let i = 0; i < 7; i++) {
-        const cloneDay = day;
-        const formattedDate = format(cloneDay, dateFormat);
-        const isAvailable = availableDates.some(d => isSameDay(d, cloneDay));
-        const isSelected = selectedDate && isSameDay(day, selectedDate);
-        days.push(
-          <MotionBox
-            key={day}
-            onClick={() => isAvailable && handleDateClick(cloneDay)}
-            style={{
-              opacity: !isSameMonth(day, monthStart) || !isAvailable ? 0.3 : 1,
-              borderRadius: "full",
-              width: "40px",
-              height: "40px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              cursor: isAvailable ? "pointer" : "default",
-              position: "relative",
-            }}
-            whileHover={isAvailable ? { scale: 1.1 } : {}}
-            whileTap={isAvailable ? { scale: 0.95 } : {}}
-          >
-            <Box
-              position="absolute"
-              top="0"
-              left="0"
-              right="0"
-              bottom="0"
-              borderRadius="full"
-              border={isSelected ? "2px solid" : "none"}
-              borderColor="blue.700"
-            />
-            <Text
-              color={isSelected ? "blue.700" : "inherit"}
-              fontWeight={isSelected ? "bold" : "normal"}
+          return (
+            <MotionBox
+              key={day}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              p={4}
+              borderRadius="xl"
+              bg={isSelected ? "blue.700" : isAvailable ? "blue.50" : "gray.50"}
+              cursor={isAvailable ? "pointer" : "not-allowed"}
+              onClick={() => isAvailable && handleDateClick(day)}
+              textAlign="center"
+              boxShadow={isSelected ? "lg" : "none"}
+              transition="all 0.2s"
             >
-              {formattedDate}
-            </Text>
-          </MotionBox>
-        );
-        day = addDays(day, 1);
-      }
-      rows.push(
-        <Flex key={day} justify="space-between">
-          {days}
-        </Flex>
-      );
-      days = [];
-    }
-    return <VStack spacing={2}>{rows}</VStack>;
+              <Text 
+                color={isSelected ? "white" : isAvailable ? "blue.700" : "gray.400"}
+                fontWeight={isSelected || isAvailable ? "bold" : "normal"}
+              >
+                {format(day, "d")}
+              </Text>
+            </MotionBox>
+          );
+        })}
+      </Grid>
+    );
   };
 
   return (
-    <MotionBox
-      initial={{ opacity: 0, y: 50 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      maxWidth="800px"
-      width="90%"
-      mx="auto"
-      my={20}
-      p={8}
-      bg="white"
-      boxShadow="xl"
-      borderRadius="xl"
-      border="2px solid"
-      borderColor="blue.700"
-    >
-      <MotionText
-        as="h2"
-        fontSize="3xl"
-        fontWeight="bold"
-        textAlign="center"
-        mb={8}
-        color="blue.700"
-        initial={{ y: -20 }}
-        animate={{ y: 0 }}
-        transition={{ delay: 0.2, type: "spring", stiffness: 120 }}
-      >
-        Schedule an Interview
-      </MotionText>
+    <Box minH="100vh" bg="gray.50" pt={32} pb={20}>
+      <Container maxW="container.xl">
+        <MotionFlex
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          direction={{ base: "column", lg: "row" }}
+          gap={10}
+        >
+          {/* Description Section */}
+          <VStack flex="1" align="flex-start" spacing={6}>
+            <Heading size="2xl" color={BLUE_700}>Schedule Your Interview</Heading>
+            <Text fontSize="xl" color="gray.600" lineHeight="tall">
+              Get ready for a seamless interview experience with our AI-powered platform.
+            </Text>
+            <Box bg="blue.50" p={6} borderRadius="xl" width="full">
+              <VStack align="flex-start" spacing={4}>
+                <HStack spacing={4}>
+                  <Icon as={MdOutlineVideoCall} w={8} h={8} color={BLUE_700} />
+                  <Text fontSize="lg" color={BLUE_700}>AI-Powered Video Interview</Text>
+                </HStack>
+                <HStack spacing={4}>
+                  <Icon as={MdOutlineAccessTime} w={8} h={8} color={BLUE_700} />
+                  <Text fontSize="lg" color={BLUE_700}>30-Minute Session</Text>
+                </HStack>
+                <HStack spacing={4}>
+                  <Icon as={MdPersonOutline} w={8} h={8} color={BLUE_700} />
+                  <Text fontSize="lg" color={BLUE_700}>One-on-One Format</Text>
+                </HStack>
+              </VStack>
+            </Box>
+          </VStack>
 
-      <Grid templateColumns="1fr 1fr" gap={8}>
-        <Box>
-          <Text fontSize="xl" fontWeight="semibold" mb={4} color="blue.700">Select Date</Text>
-          <Flex justify="space-between" align="center" mb={4}>
-            <MotionBox
-              as={ChevronLeftIcon}
-              cursor="pointer"
-              onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-              whileHover={{ scale: 1.2 }}
-              whileTap={{ scale: 0.8 }}
-            />
-            <Text fontWeight="bold" color="blue.700">{format(currentMonth, 'MMMM yyyy')}</Text>
-            <MotionBox
-              as={ChevronRightIcon}
-              cursor="pointer"
-              onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-              whileHover={{ scale: 1.2 }}
-              whileTap={{ scale: 0.8 }}
-            />
-          </Flex>
-          {renderCalendar()}
-        </Box>
+          {/* Calendar Section */}
+          <Box flex="1.2" bg="white" p={8} borderRadius="2xl" boxShadow="xl">
+            <VStack spacing={8} align="stretch">
+              {/* Date Selection */}
+              <Box>
+                <HStack justify="space-between" mb={6}>
+                  <Heading size="md" color={BLUE_700}>Select Date</Heading>
+                  <HStack>
+                    <IconButton
+                      aria-label="Previous Month"
+                      icon={<ChevronLeftIcon />}
+                      onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
+                      size="lg"
+                      color={BLUE_700}
+                      variant="ghost"
+                    />
+                    <Text fontSize="lg" fontWeight="bold" color={BLUE_700}>
+                      {format(currentMonth, 'MMMM yyyy')}
+                    </Text>
+                    <IconButton
+                      aria-label="Next Month"
+                      icon={<ChevronRightIcon />}
+                      onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
+                      size="lg"
+                      color={BLUE_700}
+                      variant="ghost"
+                    />
+                  </HStack>
+                </HStack>
+                {renderCalendar()}
+              </Box>
 
-        <Box>
-          <Text fontSize="xl" fontWeight="semibold" mb={4} color="blue.700">Select Time</Text>
-          <Grid templateColumns="repeat(2, 1fr)" gap={4}>
-            {timeSlots.map((time) => (
-              <MotionBox
-                key={time}
+              {/* Time Selection */}
+              <Box>
+                <Heading size="md" mb={6} color={BLUE_700}>Select Time</Heading>
+                <Grid templateColumns="repeat(3, 1fr)" gap={4}>
+                  {timeSlots.map((time) => (
+                    <MotionButton
+                      key={time}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      size="lg"
+                      variant={selectedTime === time ? "solid" : "outline"}
+                      bg={selectedTime === time ? BLUE_700 : "transparent"}
+                      color={selectedTime === time ? "white" : BLUE_700}
+                      borderColor={BLUE_700}
+                      onClick={() => availableTimes.includes(time) && handleTimeClick(time)}
+                      isDisabled={!availableTimes.includes(time)}
+                      leftIcon={<TimeIcon />}
+                      _hover={{
+                        bg: selectedTime === time ? BLUE_700 : `${BLUE_700}10`,
+                      }}
+                    >
+                      {time}
+                    </MotionButton>
+                  ))}
+                </Grid>
+              </Box>
+
+              {/* Schedule Button */}
+              <MotionButton
+                size="lg"
+                bg={BLUE_700}
+                color="white"
+                isLoading={loading}
+                onClick={handleSubmit}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => availableTimes.includes(time) && handleTimeClick(time)}
-                bg={selectedTime === time ? "blue.700" : "gray.100"}
-                color={selectedTime === time ? "white" : "black"}
-                p={3}
-                borderRadius="md"
-                textAlign="center"
-                cursor={availableTimes.includes(time) ? "pointer" : "not-allowed"}
-                opacity={availableTimes.includes(time) ? 1 : 0.5}
-                transition="all 0.2s"
+                height="60px"
+                fontSize="lg"
+                borderRadius="xl"
+                boxShadow="lg"
+                _hover={{
+                  bg: "#1e40af",
+                  boxShadow: "xl",
+                }}
               >
-                {time}
-              </MotionBox>
-            ))}
-          </Grid>
-        </Box>
-      </Grid>
-
-      <AnimatePresence>
-        {(selectedDate || selectedTime) && (
-          <MotionBox
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-            mt={6}
-            p={4}
-            bg="blue.50"
-            borderRadius="md"
-          >
-            <Text fontWeight="bold" color="blue.700">Selected:</Text>
-            {selectedDate && (
-              <Text>Date: {format(selectedDate, 'MMMM d, yyyy')}</Text>
-            )}
-            {selectedTime && (
-              <Text>Time: {selectedTime}</Text>
-            )}
-          </MotionBox>
-        )}
-      </AnimatePresence>
-
-      <Center mt={8}>
-        <MotionBox
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <Button
-            onClick={handleSubmit}
-            isLoading={loading}
-            loadingText="Scheduling..."
-            size="lg"
-            bg="blue.700"
-            color="white"
-            _hover={{ bg: "blue.600" }}
-            _active={{ bg: "blue.800" }}
-            rightIcon={<ChevronRightIcon />}
-          >
-            Schedule Interview
-          </Button>
-        </MotionBox>
-      </Center>
-
-      {message && (
-        <MotionFlex
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-          mt={6}
-        >
-          <Alert status={severity} borderRadius="md">
-            <AlertIcon />
-            <Box flex="1">
-              <AlertTitle>{severity === 'success' ? 'Success' : 'Error'}</AlertTitle>
-              <AlertDescription>{message}</AlertDescription>
-            </Box>
-          </Alert>
+                Schedule Interview
+              </MotionButton>
+            </VStack>
+          </Box>
         </MotionFlex>
-      )}
-    </MotionBox>
-  );
-}
-
-function Footer() {
-  return (
-    <Box as="footer" mt={12} py={6} bg="blue.700" color="white" textAlign="center">
-      <Text>&copy; 2024 Interview Scheduler. All rights reserved.</Text>
+      </Container>
     </Box>
   );
 }
 
-function ScheduleInterviewPage() {
+export default function ScheduleInterviewPage() {
   return (
-    <Box minHeight="100vh" display="flex" flexDirection="column" bg="gray.50">
-      <Box flex={1}>
+    <Box>
+      <Navbar />
+      <Box as="main" pt={10}>
         <ScheduleInterviewForm />
       </Box>
       <Footer />
     </Box>
   );
 }
-
-export default ScheduleInterviewPage;
-
-
-
-/*// ScheduleInterviewForm.jsx
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-
-function ScheduleInterviewForm() {
-  const [date, setDate] = useState('');
-  const [time, setTime] = useState('');
-  const [message, setMessage] = useState('');
-  const [severity, setSeverity] = useState('success');
-  const [loading, setLoading] = useState(false);
-  const [interviewee_id, setIntervieweeId] = useState(null);
-
-  const navigate = useNavigate();
-
-  // Fetch interviewee_id from local storage when the component mounts
-  useEffect(() => {
-    const intervieweeData = localStorage.getItem('interviewee');
-    const interviewee = intervieweeData ? JSON.parse(intervieweeData) : null;
-    const id = interviewee ? interviewee.interviewee_id : null;
-    setIntervieweeId(id);
-  }, []);
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    // Check if interviewee_id is available
-    if (!interviewee_id) {
-      setSeverity('error');
-      setMessage('Please log in to schedule an interview.');
-      return;
-    }
-
-    if (!date || !time) {
-      setSeverity('warning');
-      setMessage('Please select both date and time.');
-      return;
-    }
-
-    try {
-      setLoading(true);
-      // Combine date and time into a single DateTime string
-      const dateTimeString = `${date}T${time}`;
-      const dateTime = new Date(dateTimeString);
-
-      const response = await axios.post(
-        //'https://x3oh1podsi.execute-api.ap-south-1.amazonaws.com/api/interviewee/createInterviewRequest',
-        'https://x3oh1podsi.execute-api.ap-south-1.amazonaws.com/api/interviewee/createInterviewRequest',
-
-        {
-          interviewee_id,
-          date,
-          time,
-
-        }
-      );
-
-      setSeverity('success');
-      setMessage(response.data.message);
-      // Reset form fields
-      setDate('');
-      setTime('');
-
-      // Navigate to the display page after successful scheduling
-      navigate('/display'); // Replace '/display' with your actual route
-    } catch (error) {
-      console.error('Error scheduling interview:', error);
-      setSeverity('error');
-      if (error.response && error.response.data && error.response.data.error) {
-        setMessage(`Error: ${error.response.data.error}`);
-      } else {
-        setMessage('An error occurred while scheduling the interview.');
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-md shadow-md">
-      <h2 className="text-2xl font-semibold text-center mb-6">
-        Schedule an Interview
-      </h2>
-      <form onSubmit={handleSubmit} noValidate>
-        <div className="mb-4">
-          <label htmlFor="date" className="block text-gray-700 font-medium mb-2">
-            Select Date:
-          </label>
-          <input
-            type="date"
-            id="date"
-            name="date"
-            value={date}
-            min={new Date().toISOString().split('T')[0]}
-            onChange={(e) => {
-              setDate(e.target.value);
-              setMessage('');
-            }}
-            required
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-        <div className="mb-4">
-          <label htmlFor="time" className="block text-gray-700 font-medium mb-2">
-            Select Time:
-          </label>
-          <input
-            type="time"
-            id="time"
-            name="time"
-            value={time}
-            onChange={(e) => {
-              setTime(e.target.value);
-              setMessage('');
-            }}
-            required
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-        <button
-          type="submit"
-          disabled={loading}
-          className={`w-full py-2 px-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-            loading ? 'opacity-50 cursor-not-allowed' : ''
-          }`}
-        >
-          {loading ? 'Scheduling...' : 'Schedule Interview'}
-        </button>
-      </form>
-      {message && (
-        <div
-          className={`mt-4 p-4 rounded-md text-center ${
-            severity === 'success'
-              ? 'bg-green-100 text-green-800'
-              : severity === 'error'
-              ? 'bg-red-100 text-red-800'
-              : 'bg-yellow-100 text-yellow-800'
-          }`}
-        >
-          {message}
-        </div>
-      )}
-    </div>
-  );
-}
-
-export default ScheduleInterviewForm;*/
