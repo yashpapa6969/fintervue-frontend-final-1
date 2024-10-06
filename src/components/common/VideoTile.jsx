@@ -7,16 +7,16 @@ function VideoTile({ peer }) {
   });
 
   return (
-    <div className="peer-tile bg-gray-700 rounded-md overflow-hidden">
+    <div className="peer-container">
       <video
         ref={videoRef}
-        className="w-full h-64 object-cover"
+        className={`peer-video ${peer.isLocal ? "local" : ""}`}
         autoPlay
-        muted={peer.isLocal} // Mute local video to avoid feedback
+        muted
         playsInline
       />
-      <div className="peer-name absolute bottom-0 left-0 bg-black bg-opacity-50 text-white px-2 py-1">
-        {peer.name}
+      <div className="peer-name">
+        {peer.name} {peer.isLocal ? "(You)" : ""}
       </div>
     </div>
   );

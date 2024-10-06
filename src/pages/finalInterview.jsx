@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import VideoConferenceWrapper from '../components/common/VideoConference';
 import axios from 'axios';
+import Conference from './Conference';
 
 function FinalInterviewPage() {
   const [searchParams] = useSearchParams();
@@ -13,18 +14,16 @@ function FinalInterviewPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch interview details based on scheduleId
   useEffect(() => {
     const fetchInterviewDetails = async () => {
       try {
-        const response = await axios.get(`https://x3oh1podsi.execute-api.ap-south-1.amazonaws.com/api/interviewee/getByScheduleId/${scheduleId}`);
+        const response = await axios.get(`https://tm374xkq-2000.inc1.devtunnels.ms/api/interviewee/getByScheduleId/${scheduleId}`);
         const interviewData = response.data;
         
-        // Set the authToken based on the role (either 'auth_interviewee' or 'auth_interviewer')
         if (role === 'interviewee') {
-          setAuthToken(interviewData.auth_interviewee);
+          setAuthToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2ZXJzaW9uIjoyLCJ0eXBlIjoiYXBwIiwiYXBwX2RhdGEiOm51bGwsImFjY2Vzc19rZXkiOiI2NmZhM2EyZTQ5NDRmMDY3MzEzYTdhZTgiLCJyb2xlIjoiZ3Vlc3QiLCJyb29tX2lkIjoiNjZmYTY4MDIwYWZjZDdjNDk3M2MxMWE3IiwidXNlcl9pZCI6IjUyNjYzN2NmLTc5ZWUtNGJkZC1iMWY2LTQ3YjEwMjI3YmExYSIsImV4cCI6MTcyNzc3NTg1NywianRpIjoiODVjNGQyODktOTQ0Yy00NTg1LWI2Y2UtM2NhMGUwOTZjNjMzIiwiaWF0IjoxNzI3Njg5NDU3LCJpc3MiOiI2NmZhM2EyZTQ5NDRmMDY3MzEzYTdhZTYiLCJuYmYiOjE3Mjc2ODk0NTcsInN1YiI6ImFwaSJ9.JKpnzp43r7gDTDehCERpRo4G6DHxXnGTj7qzmPij06Y");
         } else if (role === 'interviewer') {
-          setAuthToken(interviewData.auth_interviewer);
+          setAuthToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2ZXJzaW9uIjoyLCJ0eXBlIjoiYXBwIiwiYXBwX2RhdGEiOm51bGwsImFjY2Vzc19rZXkiOiI2NmZhM2EyZTQ5NDRmMDY3MzEzYTdhZTgiLCJyb2xlIjoiaG9zdCIsInJvb21faWQiOiI2NmZhNjgwMjBhZmNkN2M0OTczYzExYTciLCJ1c2VyX2lkIjoiMTZkNTBhN2YtZDUyNi00MzRiLTkwOTAtZTBkMjJjNTViNWU0IiwiZXhwIjoxNzI3Nzc1OTA3LCJqdGkiOiI3N2EwNzZjMS1hMDUxLTQwMGUtODZhYi00MDJlM2FhNDY1MTIiLCJpYXQiOjE3Mjc2ODk1MDcsImlzcyI6IjY2ZmEzYTJlNDk0NGYwNjczMTNhN2FlNiIsIm5iZiI6MTcyNzY4OTUwNywic3ViIjoiYXBpIn0.fm-2KtqLQAUrkIBEPNk__z9wrawjcAQ2DOvpJQbDhRQ");
         }
         
         setLoading(false);
@@ -57,7 +56,7 @@ function FinalInterviewPage() {
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Pass the authToken, role, and userName to the VideoConferenceWrapper */}
-      <VideoConferenceWrapper authToken={authToken} role={role} userName={userName} />
+      <Conference/>
     </div>
   );
 }

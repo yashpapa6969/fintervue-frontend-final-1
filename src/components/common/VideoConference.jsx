@@ -9,71 +9,39 @@ import {
   selectIsLocalVideoEnabled
 } from '@100mslive/hms-video-react';
 import VideoTile from './VideoTile';
+import Peer from '../../pages/Peer';
+import Conference from '../../pages/Conference';
 
-function VideoConference({ authToken, userName }) {
+function VideoConference({ authToken, userName, roomId }) {
   const hmsActions = useHMSActions();
   const isConnected = useHMSStore(selectIsConnectedToRoom);
   const peers = useHMSStore(selectPeers);
-  const isAudioEnabled = useHMSStore(selectIsLocalAudioEnabled);
-  const isVideoEnabled = useHMSStore(selectIsLocalVideoEnabled);
 
+  console.log(authToken)
   useEffect(() => {
     // Join the room if not connected and authToken is available
     if (!isConnected && authToken) {
       hmsActions.join({
         userName: userName,
-        authToken: authToken,
+        authToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2ZXJzaW9uIjoyLCJ0eXBlIjoiYXBwIiwiYXBwX2RhdGEiOm51bGwsImFjY2Vzc19rZXkiOiI2NmZhM2EyZTQ5NDRmMDY3MzEzYTdhZTgiLCJyb2xlIjoiaG9zdCIsInJvb21faWQiOiI2NmZhNjgwMjBhZmNkN2M0OTczYzExYTciLCJ1c2VyX2lkIjoiMTZkNTBhN2YtZDUyNi00MzRiLTkwOTAtZTBkMjJjNTViNWU0IiwiZXhwIjoxNzI3Nzc1OTA3LCJqdGkiOiI3N2EwNzZjMS1hMDUxLTQwMGUtODZhYi00MDJlM2FhNDY1MTIiLCJpYXQiOjE3Mjc2ODk1MDcsImlzcyI6IjY2ZmEzYTJlNDk0NGYwNjczMTNhN2FlNiIsIm5iZiI6MTcyNzY4OTUwNywic3ViIjoiYXBpIn0.fm-2KtqLQAUrkIBEPNk__z9wrawjcAQ2DOvpJQbDhRQ",
       });
     }
 
-    // Leave the room when the component is unmounted
     return () => {
-      if (isConnected) {
-        hmsActions.leave();
-      }
+      // if (isConnected) {
+      //   hmsActions.leave();
+      //   console.log("left")
+      // }
     };
   }, [isConnected, hmsActions, authToken, userName]);
 
-  // Toggle Audio (Mute/Unmute)
-  const handleToggleAudio = async () => {
-    await hmsActions.setLocalAudioEnabled(!isAudioEnabled);
-  };
 
-  // Toggle Video (Show/Hide)
-  const handleToggleVideo = async () => {
-    await hmsActions.setLocalVideoEnabled(!isVideoEnabled);
-  };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900">
+    <div className="min-h-screen flex flex-col items-center justify-center ">
       {isConnected ? (
-        <div className="w-full max-w-4xl p-4 bg-gray-800 rounded-md">
-          <h2 className="text-2xl font-semibold text-center text-white mb-4">Interview Room</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {peers.map((peer) => (
-              <VideoTile key={peer.id} peer={peer} />
-            ))}
-          </div>
-          <div className="mt-6 flex justify-center space-x-4">
-            <button
-              onClick={handleToggleAudio}
-              className="py-2 px-4 bg-green-500 text-white rounded-md hover:bg-green-600"
-            >
-              {isAudioEnabled ? 'Mute Audio' : 'Unmute Audio'}
-            </button>
-            <button
-              onClick={handleToggleVideo}
-              className="py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-            >
-              {isVideoEnabled ? 'Hide Video' : 'Show Video'}
-            </button>
-            <button
-              onClick={() => hmsActions.leave()}
-              className="py-2 px-4 bg-red-500 text-white rounded-md hover:bg-red-600"
-            >
-              Leave Room
-            </button>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Conference/>
         </div>
       ) : (
         <div className="text-white">Connecting to the interview room...</div>
@@ -82,10 +50,10 @@ function VideoConference({ authToken, userName }) {
   );
 }
 
-export default function VideoConferenceWrapper({ authToken, userName }) {
+export default function VideoConferenceWrapper({ authToken, userName, roomId }) {
   return (
     <HMSRoomProvider>
-      <VideoConference authToken={authToken} userName={userName} />
+      <VideoConference authToken={authToken} userName={userName} roomId={roomId} />
     </HMSRoomProvider>
   );
 }

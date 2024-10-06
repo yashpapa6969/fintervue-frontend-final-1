@@ -1,32 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
+import useAuthHeader from 'react-auth-kit/hooks/useAuthHeader';
+import useAuthUser from 'react-auth-kit/hooks/useAuthUser';
 function PendingInterviews() {
   const [pendingInterviews, setPendingInterviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [acceptError, setAcceptError] = useState('');
-  const [interviewerId, setInterviewerId] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const interviewerData = localStorage.getItem('interviewer');
-    const interviewer = interviewerData ? JSON.parse(interviewerData) : null;
-    const id = interviewer ? interviewer.interviewer_id : null;
-    setInterviewerId(id);
+  const authHeader = useAuthHeader()
+  const interviewerId = useAuthUser().uid;
 
-    if (!id) {
-      navigate('/login');
-    } else {
-      fetchPendingInterviews();
-    }
-  }, [navigate]);
-
+  useEffect(()=>{
+    fetchPendingInterviews()
+  },[interviewerId])
+  
   const fetchPendingInterviews = async () => {
     try {
       const response = await axios.get(
-        'https://x3oh1podsi.execute-api.ap-south-1.amazonaws.com/api/interviewee/getAllScheduledInterview'
+        'https://tm374xkq-2000.inc1.devtunnels.ms/api/interviewee/getAllScheduledInterview',{
+          headers: {
+            Authorization: authHeader, 
+          },
+        }
       );
       setPendingInterviews(response.data);
       setLoading(false);
@@ -40,7 +38,7 @@ function PendingInterviews() {
   const acceptInterview = async (interviewId) => {
     try {
       await axios.post(
-        'https://x3oh1podsi.execute-api.ap-south-1.amazonaws.com/api/interviewee/acceptInterviewRequest',
+        'https://tm374xkq-2000.inc1.devtunnels.ms/api/interviewee/acceptInterviewRequest',
         {
           interviewer_id: interviewerId,
           interviewee_id: interviewId,

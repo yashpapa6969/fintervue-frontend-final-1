@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import logo from "../assests/logo/logo4.jpeg";
 import Navbar from "../components/navbar";
 import axios from 'axios';
+import useSignIn from 'react-auth-kit/hooks/useSignIn'
+
 
 const LoginInterviewee = () => {
   const [email, setEmail] = useState("");
@@ -10,17 +12,33 @@ const LoginInterviewee = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
 
+  const signIn = useSignIn();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
       // Make a POST request to the interviewee login API
-      const response = await axios.post('https://x3oh1podsi.execute-api.ap-south-1.amazonaws.com/api/interviewee/intervieweelogin', {
+      const response = await axios.post('https://tm374xkq-2000.inc1.devtunnels.ms/api/interviewee/intervieweelogin', {
         email,
         password,
       });
 
-      const {  user } = response.data;
+      const { user } = response.data;
+
+      signIn({
+        auth: {
+          token: response.data.token,
+          type: 'Bearer'
+        },
+        refresh: '',
+        userState: {
+          name: user.firstName,
+          uid: user.interviewee_id,
+          email: user.email,
+          role: "interviewee"
+        }
+      })
 
       localStorage.setItem('interviewee', JSON.stringify(user));
 

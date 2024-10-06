@@ -4,6 +4,7 @@ import logo from "../assests/logo/logo4.jpeg";
 
 import Navbar from "../components/navbar";
 import axios from 'axios';
+import useSignIn from "react-auth-kit/hooks/useSignIn";
 
 const LoginInterviewer = () => {
   const [email, setEmail] = useState("");
@@ -11,15 +12,31 @@ const LoginInterviewer = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
 
+  const signIn = useSignIn();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('https://x3oh1podsi.execute-api.ap-south-1.amazonaws.com/api/interviewer/Interviewerlogin', {
+      const response = await axios.post('https://tm374xkq-2000.inc1.devtunnels.ms/api/interviewer/Interviewerlogin', {
         email,
         password,
       });
 
       const {  user } = response.data;
+
+      signIn({
+        auth: {
+          token: response.data.token,
+          type: 'Bearer'
+        },
+        refresh: '',
+        userState: {
+          name: user.firstName,
+          uid: user.interviewer_id,
+          email: user.email ,
+          role : "interviewer"
+        }
+      })
 
       localStorage.setItem('interviewer', JSON.stringify(user));
 

@@ -1,40 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
+import useAuthUser from 'react-auth-kit/hooks/useAuthUser';
+import Peer from './Peer';
+import { useHMSActions, useHMSStore, selectPeers, selectIsConnectedToRoom } from '@100mslive/react-sdk';
 function UpcomingInterviews() {
   const [upcomingInterviews, setUpcomingInterviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [userRole, setUserRole] = useState(null); // State for user role
   const [userId, setUserId] = useState(null);     // State for user ID
-
+  const isConnected = useHMSStore(selectIsConnectedToRoom);
   const navigate = useNavigate();
+  const hmsActions = useHMSActions();
+  const peers = useHMSStore(selectPeers);
+  const userData = useAuthUser();
+  const userRole = userData.role;
 
   useEffect(() => {
-    // Fetch user data from local storage
-    const intervieweeData = localStorage.getItem('interviewee');
-    const interviewerData = localStorage.getItem('interviewer');
-    
-    if (intervieweeData) {
-      const interviewee = JSON.parse(intervieweeData);
-      setUserRole('interviewee');
-      setUserId(interviewee.interviewee_id);  // Ensure you're accessing correct keys
-      console.log('Interviewee data:', interviewee);
-    } else if (interviewerData) {
-      const interviewer = JSON.parse(interviewerData);
-      setUserRole('interviewer');
-      setUserId(interviewer.interviewer_id);  // Ensure you're accessing correct keys
-      console.log('Interviewer data:', interviewer);
+    if (userData.role === "interviewee") {
+      setUserId(userData.uid);
+      console.log('Interviewee data:', userData);
+    } else if (userData.role === "interviewer") {
+      setUserId(userData.uid);
+      console.log('Interviewer data:', userData);
     } else {
-      // If neither, redirect to login
-      navigate('/login');
       return;
     }
   }, [navigate]);
 
   useEffect(() => {
-    // Call fetchUpcomingInterviews only after userRole and userId are set
     if (userRole && userId) {
       fetchUpcomingInterviews();
     }
@@ -49,12 +43,11 @@ function UpcomingInterviews() {
         interviewer_id: userRole === 'interviewer' ? userId : null,
         interviewee_id: userRole === 'interviewee' ? userId : null,
       };
-  
-      console.log('Payload being sent:', payload);  // Debugging: Check the payload
-  
-      const endpoint = `https://x3oh1podsi.execute-api.ap-south-1.amazonaws.com/api/interviewee/getAcceptedInterviews`;
-  
-      // Send a POST request with the payload
+
+      console.log('Payload being sent:', payload);
+
+      const endpoint = `https://tm374xkq-2000.inc1.devtunnels.ms/api/interviewee/getAcceptedInterviews`;
+
       const response = await axios.post(endpoint, payload);
       setUpcomingInterviews(response.data);
       setLoading(false);
@@ -65,23 +58,34 @@ function UpcomingInterviews() {
     }
   };
 
-  const joinInterview = (interview) => {
+  const joinInterview = async (interview) => {
+    console.log(interview)
     let userName = '';
-    let role = userRole;  // Get the role from the current userRole
-  
+    let authToken;
+    let role = userRole;
     if (role === 'interviewee') {
-      userName = 'Interviewee'; // Fetch actual name if available
+      userName = 'Interviewee';
+      authToken = interview.auth_interviewee;
     } else if (role === 'interviewer') {
-      userName = 'Interviewer'; // Fetch actual name if available
+      userName = 'Interviewer';
+      authToken = interview.auth_interviewer;
     }
-  
-    // Construct the URL with role and scheduleId as query parameters
-    const interviewUrl = `/finalInterviewPage?role=${role}&scheduleId=${interview.schedule_id}&userName=${userName}`;
-  
-    // Navigate to the InterviewPage with role and scheduleId in the URL
-    navigate(interviewUrl);
+    console.log(interview)
+    try {
+      await hmsActions.join({ userName, authToken});
+    } catch (e) {
+      console.error(e)
+    }
   };
-  
+
+  useEffect(() => {
+    window.onunload = () => {
+      if (isConnected) {
+        hmsActions.leave();
+      }
+    };
+  }, [hmsActions, isConnected]);
+
 
   if (loading) {
     return <div className="text-center mt-10">Loading upcoming interviews...</div>;
@@ -98,34 +102,44 @@ function UpcomingInterviews() {
         {upcomingInterviews.length === 0 ? (
           <p className="text-center">No upcoming interviews scheduled.</p>
         ) : (
-          <ul>
-            {upcomingInterviews.map((interview) => (
-              <li
-                key={interview._id}
-                className="mb-6 p-4 border rounded-md hover:bg-gray-50 transition"
-              >
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
-                  <div className="mb-4 md:mb-0">
-                    <p>
-                      <strong>Interviewee ID:</strong> {interview.interviewee_id}
-                    </p>
-                    <p>
-                      <strong>Date:</strong> {interview.date}
-                    </p>
-                    <p>
-                      <strong>Time:</strong> {interview.time}
-                    </p>
+          isConnected ? (
+            <div>
+              <div className="peers-container">
+                {peers.map((peer) => (
+                  <Peer key={peer.id} peer={peer} />
+                ))}
+              </div>
+            </div>
+          ) : (
+            <ul>
+              {upcomingInterviews.map((interview) => (
+                <li
+                  key={interview._id}
+                  className="mb-6 p-4 border rounded-md hover:bg-gray-50 transition"
+                >
+                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+                    <div className="mb-4 md:mb-0">
+                      <p>
+                        <strong>Interviewee ID:</strong> {interview.interviewee_id}
+                      </p>
+                      <p>
+                        <strong>Date:</strong> {interview.date}
+                      </p>
+                      <p>
+                        <strong>Time:</strong> {interview.time}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => joinInterview(interview)}
+                      className="py-2 px-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition duration-200"
+                    >
+                      Join Call
+                    </button>
                   </div>
-                  <button
-                    onClick={() => joinInterview(interview)}
-                    className="py-2 px-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition duration-200"
-                  >
-                    Join Call
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
+                </li>
+              ))}
+            </ul>
+          )
         )}
       </div>
     </div>
