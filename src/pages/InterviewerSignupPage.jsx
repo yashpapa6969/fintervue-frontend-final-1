@@ -30,7 +30,11 @@ const InterviewerSignupPage = () => {
 
   const [loading, setLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
-  const [selectedProcess, setSelectedProcess] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  // const [selectedProcess, setSelectedProcess] = useState("");
+  const [selectedProcesses, setSelectedProcesses] = useState([]);
+  const [selectedDays, setSelectedDays] = useState([]);
+  const [selectedTimeSlots, setSelectedTimeSlots] = useState([]);
   const [interviewerData, setInterviewerData] = useState({
     firstName: "",
     lastName: "",
@@ -39,10 +43,43 @@ const InterviewerSignupPage = () => {
     email: "",
     password: "",
     linkedInProfile: "",
-    industryExpertise: "",
-    availability: "",
+    industryExpertise: [],
+    availability:
+    // "",
+     {
+      availableDays: [],
+      availableTimeSlots: [],
+    },
   });
   const [errors, setErrors] = useState({});
+
+  const handleDomainSelection = (profileId) => {
+    setSelectedProcesses((prevSelected) => {
+      if (prevSelected.includes(profileId)) {
+        // If already selected, remove it
+        const updatedSelections = prevSelected.filter((id) => id !== profileId);
+        updateIndustryExpertise(updatedSelections);
+        return updatedSelections;
+      } else {
+        // If not selected, add it
+        const updatedSelections = [...prevSelected, profileId];
+        updateIndustryExpertise(updatedSelections);
+        return updatedSelections;
+      }
+    });
+  };
+
+  // Update interviewer data with selected domains
+  const updateIndustryExpertise = (updatedSelections) => {
+    const selectedDomains = profiles
+      .filter((profile) => updatedSelections.includes(profile.id))
+      .map((profile) => profile.name);
+
+    setInterviewerData((prevData) => ({
+      ...prevData,
+      industryExpertise: selectedDomains,
+    }));
+  };
 
   const validateForm = () => {
     const newErrors = {};
@@ -52,8 +89,7 @@ const InterviewerSignupPage = () => {
       newErrors.email = "Please enter a valid email address.";
       isValid = false;
     }
-    if (
-      !interviewerData.linkedInProfile     ) {
+    if (!interviewerData.linkedInProfile) {
       newErrors.linkedInProfile = "Please enter a valid LinkedIn profile.";
       isValid = false;
     }
@@ -71,6 +107,114 @@ const InterviewerSignupPage = () => {
     }
     setErrors(newErrors);
     return isValid;
+  };
+
+  const AvailabilitySelector = () => {
+    const daysOfWeek = [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday",
+    ];
+    const timeSlots = [
+      "12:00 AM",
+      "3:00 AM",
+      "6:00 AM",
+      "9:00 AM",
+      "12:00 PM",
+      "3:00 PM",
+      "6:00 PM",
+      "9:00 PM",
+    ];
+
+    const toggleDaySelection = (day) => {
+      setSelectedDays((prev) => {
+        const newSelection = prev.includes(day)
+          ? prev.filter((d) => d !== day)
+          : [...prev, day];
+
+        
+        setInterviewerData((prevData) => ({
+          ...prevData,
+          availability: {
+            ...prevData.availability,
+            availableDays: newSelection,
+          },
+        }));
+
+        return newSelection;
+      });
+    };
+
+    const toggleTimeSlotSelection = (timeSlot) => {
+      setSelectedTimeSlots((prev) => {
+        const newSelection = prev.includes(timeSlot)
+          ? prev.filter((t) => t !== timeSlot)
+          : [...prev, timeSlot];
+
+        
+        setInterviewerData((prevData) => ({
+          ...prevData,
+          availability: {
+            ...prevData.availability,
+            availableTimeSlots: newSelection,
+          },
+        }));
+
+        return newSelection;
+      });
+    };
+
+    return (
+      <div className="flex flex-row items-center gap-8">
+        {/* Select Days */}
+        <div className="w-full">
+          <h2 className="text-lg font-semibold mb-4">
+            Choose your available days
+          </h2>
+          <div className="grid grid-cols-3 gap-4">
+            {daysOfWeek.map((day) => (
+              <button
+                key={day}
+                onClick={() => toggleDaySelection(day)}
+                className={`py-2 px-4 rounded-md border ${
+                  selectedDays.includes(day)
+                    ? "bg-blue-700 text-white border-blue-700"
+                    : "bg-white text-black border-gray-300"
+                }`}
+              >
+                {day}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Select Time Slots */}
+        <div className="w-full max-w-md">
+          <h2 className="text-lg font-semibold mb-4">
+            Choose your available time slots
+          </h2>
+          <div className="grid grid-cols-3 gap-4">
+            {timeSlots.map((slot) => (
+              <button
+                key={slot}
+                onClick={() => toggleTimeSlotSelection(slot)}
+                className={`py-2 px-4 rounded-md border ${
+                  selectedTimeSlots.includes(slot)
+                    ? "bg-green-700 text-white border-green-700"
+                    : "bg-white text-black border-gray-300"
+                }`}
+              >
+                {slot}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
   };
 
   const profiles = [
@@ -156,6 +300,10 @@ const InterviewerSignupPage = () => {
     { id: 15, category: "Taxation", name: "Taxation", icon: FrontendIcon15 },
   ];
 
+  const filteredProfiles = profiles.filter((profile) =>
+    profile.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   const handleChange = (key, value) => {
     setInterviewerData((prevData) => ({
       ...prevData,
@@ -182,7 +330,8 @@ const InterviewerSignupPage = () => {
           status: "success",
           isClosable: true,
         });
-        navigate("/");
+        console.log(interviewerData);
+        navigate("/product");
         return;
       }
     } catch (error) {
@@ -207,11 +356,11 @@ const InterviewerSignupPage = () => {
   };
 
   return (
-    <div className="h-screen w-full flex items-start">
+    <div className="h-full overflow-auto w-full flex items-start">
       <LoadingBar color="blue" progress={33.33 * (currentStep - 1)} />
-      <div className="hidden md:flex flex-col h-full gap-8 items-center justify-center w-1/3 bg-gray-50 p-8">
-        <div className="w-full flex flex-col gap-4">
-          <div className="flex items-center">
+      <div className="hidden md:flex flex-col h-screen overflow-auto gap-8 items-center justify-center w-1/3  bg-gray-50 p-8">
+        <div className="w-full flex flex-col gap-4 ">
+          <div className="flex items-center ">
             {currentStep > 1 && (
               <Check className="bg-blue-800 p-1 h-6 w-6 rounded-full text-white" />
             )}
@@ -232,7 +381,6 @@ const InterviewerSignupPage = () => {
           </div>
           <p className="ml-8 text-xl">Enter your details.</p>
         </div>
-        
       </div>
 
       <div className="w-full md:w-2/3 mt-4 min-h-full px-6 md:px-20 flex items-center justify-center">
@@ -247,17 +395,19 @@ const InterviewerSignupPage = () => {
             <div className="w-full">
               <input
                 type="text"
-                placeholder="Search profile"
+                placeholder="Search Domain"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)} // Update search term
                 className="w-full p-3 border-2 border-gray-300 rounded-md"
               />
             </div>
-            <div className="grid grid-cols-3 gap-6 w-full overflow-y-auto  p-5">
-              {profiles.map((profile) => (
+            <div className="grid grid-cols-3 gap-6 w-full overflow-y-auto p-5">
+              {filteredProfiles.map((profile) => (
                 <div
                   key={profile.id}
-                  onClick={() => setSelectedProcess(profile.id)}
+                  onClick={() => handleDomainSelection(profile.id)}
                   className={`border-2 ${
-                    selectedProcess === profile.id
+                    selectedProcesses.includes(profile.id)
                       ? "border-blue-600 "
                       : "border-gray-300"
                   } rounded-md cursor-pointer p-4 flex flex-col items-center`}
@@ -275,29 +425,26 @@ const InterviewerSignupPage = () => {
             </div>
           </div>
         ) : currentStep === 2 ? (
-          // <div className="flex flex-col items-center w-full max-w-[800px] h-[90vh] overflow-y-auto gap-6">
-          //   <h1 className="text-xl font-semibold">Industry Expertise</h1>
-          //   <p className="text-gray-600">Choose your availability:</p>
+          <div className="flex flex-col items-center w-full max-w-[800px] h-full overflow-y-auto gap-6">
+            <div className="flex flex-col text-center pb-5">
+              <h3 className="font-bold text-2xl md:text-3xl text-[rgba(51,51,51,1)] ">
+                Complete your Fintervue Profile
+              </h3>
+              <p className="font-extralight text-md md:text-md pt-3">
+                Search & apply to finance jobs from here
+              </p>
+            </div>
 
-          //   <div className="w-full mt-6">
-          //     <h2 className="text-lg font-semibold mb-2">Availability</h2>
-          //     <p className="text-gray-600 mb-4">
-          //       Choose when you will be available for work:
-          //     </p>
-          //     <input
-          //       onChange={(e) => handleChange("availability", e.target.value)}
-          //       value={interviewerData.availability}
-          //       type="date"
-          //       placeholder="Start Date"
-          //       className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-          //     />
-          //   </div>
-          // </div>
-          <InterviewerSignupForm
-            formData={interviewerData}
-            handleChange={handleChange}
-            errors={errors}
-          />
+            <div className="w-full ">
+              <AvailabilitySelector />
+            </div>
+
+            <InterviewerSignupForm
+              formData={interviewerData}
+              handleChange={handleChange}
+              errors={errors}
+            />
+          </div>
         ) : (
           <div>
             <h1></h1>
