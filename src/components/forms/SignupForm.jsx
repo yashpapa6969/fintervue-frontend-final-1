@@ -1,135 +1,106 @@
 import { Select } from "@chakra-ui/react";
 
 const SignupForm = ({ formData, handleChange }) => {
-
   const handleResumeUpload = (e) => {
     const resumeFile = e.target.files[0];
-    // TODO: Handle resume upload api integration
-    const resumeURL = "temp resume file url";
+    const resumeURL = URL.createObjectURL(resumeFile); // Temporary URL
     handleChange("resume", resumeURL);
   };
 
   return (
-    <div className="flex flex-col gap-4 px-4 md:px-6 lg:px-8 w-full m-auto ">
-      <div className="flex flex-col text-center pb-5">
-        <h3 className="font-bold text-2xl md:text-3xl text-[rgba(51,51,51,1)] ">
-          Complete your Fintervue Profile
+      <div className="flex flex-col gap-4 px-6 md:px-8 lg:px-10 w-full max-w-2xl mx-auto">
+      {/* Header */}
+      <div className="text-center space-y-2">
+        <h3 className="text-4xl font-extrabold text-blue-700 tracking-wide">
+          Complete your <span className="text-blue-900">Fintervue Profile</span>
         </h3>
-        <p className="font-extralight text-md md:text-md pt-3">
+        <p className="text-lg text-gray-500 font-light">
           Search & apply to finance jobs from here
         </p>
       </div>
-      <div className="flex flex-row gap-5">
+    
+      {/* Name Fields */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label
-            htmlFor="fname_input"
-            className="text-black font-medium text-lg leading-[24px] pb-2"
-          >
-            First name*
-          </label>
+          <label className="block text-sm font-semibold mb-1">First Name*</label>
           <input
-            className="w-full outline-none border border-[rgba(102,102,102,0.35)] rounded-md text-base py-2 px-3 mb-4"
             type="text"
-            id="fname_input"
-            name="firstname"
             placeholder="What is your first name?"
             value={formData?.firstName}
             onChange={(e) => handleChange("firstName", e.target.value)}
+            className="w-full border border-blue-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 transition-all"
           />
         </div>
         <div>
-          <label
-            htmlFor="lname_input"
-            className="text-black font-medium text-lg leading-[24px] pb-2"
-          >
-            Last name*
-          </label>
+          <label className="block text-sm font-semibold mb-1">Last Name*</label>
           <input
-            className="w-full outline-none border border-[rgba(102,102,102,0.35)] rounded-md text-base py-2 px-3 mb-4"
             type="text"
-            id="lname_input"
-            name="lastname"
             placeholder="What is your last name?"
             value={formData?.lastName}
             onChange={(e) => handleChange("lastName", e.target.value)}
+            className="w-full border border-blue-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 transition-all"
           />
         </div>
       </div>
-      <div>
-        <label
-          htmlFor="email_input"
-          className="text-black font-medium text-lg leading-[24px] pb-2"
-        >
-          Email ID*
-        </label>
-        <input
-          className="w-full outline-none border border-[rgba(102,102,102,0.35)] rounded-md text-base py-2 px-3 mb-4"
-          type="email"
-          id="email_input"
-          name="email"
-          placeholder="Tell us your Email ID"
-          value={formData?.email}
-          onChange={(e) => handleChange("email", e.target.value)}
-        />
-      </div>
-      <div className="flex flex-row gap-5">
-        <div className="w-full">
-          <label
-            htmlFor="password_input"
-            className="text-black font-medium text-lg leading-[24px] pb-2"
-          >
-            Password*
-          </label>
+    
+      {/* Email and Password */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-semibold mb-1">Email ID*</label>
           <input
-            className="w-full outline-none border border-[rgba(102,102,102,0.35)] rounded-md text-base py-2 px-3 mb-4"
+            type="email"
+            placeholder="Tell us your Email ID"
+            value={formData?.email}
+            onChange={(e) => handleChange("email", e.target.value)}
+            className="w-full border border-blue-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 transition-all"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-semibold mb-1">Password*</label>
+          <input
             type="password"
-            id="password_input"
-            name="password"
             placeholder="Enter your password"
             value={formData?.password}
             onChange={(e) => handleChange("password", e.target.value)}
+            className="w-full border border-blue-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 transition-all"
           />
         </div>
-        <div className="w-full">
-          <label
-            htmlFor="emp_select"
-            className="text-black font-medium text-lg leading-[24px] pb-2"
-          >
-            Employment Status*
-          </label>
-          <Select
-            onChange={(e) => handleChange("currentEmploymentStatus", e.target.value)}
-            className="w-full outline-none border border-[rgba(102,102,102,0.35)] rounded-md text-base"
-          >
-            <option value="employed">Employed</option>
-            <option value="unemployed">Unemployed</option>
-            <option value="student">Student</option>
-            <option value="freelancer">Freelancer</option>
-          </Select>
-        </div>
       </div>
-      <label
-        htmlFor="linkedin_input"
-        className="text-black font-medium text-lg leading-[24px] pb-2"
-      >
-        LinkedIn Url*
-      </label>
-      <input
-        className="w-full outline-none border border-[rgba(102,102,102,0.35)] rounded-md text-base py-2 px-3 mb-4"
-        type="url"
-        id="linkedin_input"
-        name="linkedin_input"
-        placeholder="https://linkedin.com/"
-        value={formData?.linkedInProfile}
-        onChange={(e) => handleChange("linkedInProfile", e.target.value)}
-      />
-
-      <div className="flex gap-4 mb-4">
+    
+      {/* Employment Status */}
+      <div>
+        <label className="block text-sm font-semibold mb-1">Employment Status*</label>
+        <Select
+          placeholder="Select your employment status"
+          onChange={(e) => handleChange("currentEmploymentStatus", e.target.value)}
+          className="w-full border border-blue-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 transition-all"
+        >
+          <option value="employed">Employed</option>
+          <option value="unemployed">Unemployed</option>
+          <option value="student">Student</option>
+          <option value="freelancer">Freelancer</option>
+        </Select>
+      </div>
+    
+      {/* LinkedIn Profile */}
+      <div>
+        <label className="block text-sm font-semibold mb-1">LinkedIn URL*</label>
+        <input
+          type="url"
+          placeholder="https://linkedin.com/"
+          value={formData?.linkedInProfile}
+          onChange={(e) => handleChange("linkedInProfile", e.target.value)}
+          className="w-full border border-blue-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 transition-all"
+        />
+      </div>
+    
+      {/* Resume Upload */}
+      <div className="flex items-center gap-4">
         <label
           htmlFor="resume-upload"
-          className="bg-black text-white py-2 px-4 rounded-md cursor-pointer"
+          className="bg-blue-700 text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-blue-800 transition-all"
         >
-          Add your resume
+          Upload Resume
         </label>
         <input
           type="file"
@@ -138,9 +109,20 @@ const SignupForm = ({ formData, handleChange }) => {
           className="hidden"
           onChange={handleResumeUpload}
         />
+        {formData?.resume && (
+          <a
+            href={formData.resume}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 underline"
+          >
+            View Uploaded Resume
+          </a>
+        )}
       </div>
-
-      <div className="flex items-center gap-2 mb-4">
+    
+      {/* WhatsApp Opt-in */}
+      <div className="flex items-center gap-2">
         <input type="checkbox" id="whatsapp_opt_in" />
         <label
           htmlFor="whatsapp_opt_in"
@@ -150,45 +132,40 @@ const SignupForm = ({ formData, handleChange }) => {
           <span className="text-green-500">WhatsApp</span>
         </label>
       </div>
-
-      {/* Expected Salary Range Section */}
-      <div className="w-full mb-4">
-        <label
-          htmlFor="salary_range"
-          className="text-black font-medium text-lg leading-[24px] pb-2"
-        >
+    
+      {/* Salary Range */}
+      <div>
+        <label className="block text-sm font-semibold mb-1">
           Expected Salary Range (in Lakhs)*
         </label>
-        <div className="text-center mt-2 text-lg font-semibold">
-          ₹{formData?.expectedCompensation} Lakhs
+        <div className="text-center mt-1 text-lg font-bold">
+          ₹{formData?.expectedCompensation || 0} Lakhs
         </div>
         <input
-          className="w-full mt-2"
           type="range"
-          id="salary_range"
-          name="salary_range"
           min="0"
-          max="20"
+          max="50"
           step="0.5"
           value={formData?.expectedCompensation}
-          onChange={(e) => handleChange("expectedCompensation", e.target.value)}
+          onChange={(e) =>
+            handleChange("expectedCompensation", e.target.value)
+          }
+          className="w-full mt-2"
         />
       </div>
-
-      {/* Notice Period Section */}
-      <div className="w-full mb-4">
-        <label className="text-black font-medium text-lg leading-[24px] pb-2">
+    
+      {/* Notice Period */}
+      <div className="w-full mb-6">
+        <label className="block text-sm font-semibold mb-1">
           Are you currently in your notice period?*
         </label>
-        {/* NOTE: These fields are not present in backend. Look into this. */}
-        {/* <div className="flex gap-4 mt-2">
+        <div className="flex gap-6 mt-2">
           <label className="flex items-center">
             <input
               type="radio"
               name="notice_period"
               value="yes"
-              checked={noticePeriod === "yes"}
-              onChange={(e) => setNoticePeriod(e.target.value)}
+              onChange={(e) => handleChange("noticePeriod", "yes")}
             />
             <span className="ml-2">Yes</span>
           </label>
@@ -197,15 +174,14 @@ const SignupForm = ({ formData, handleChange }) => {
               type="radio"
               name="notice_period"
               value="no"
-              checked={noticePeriod === "no"}
-              onChange={(e) => setNoticePeriod(e.target.value)}
+              onChange={(e) => handleChange("noticePeriod", "no")}
             />
             <span className="ml-2">No</span>
           </label>
-        </div> */}
+        </div>
       </div>
     </div>
-  );
+  );  
 };
 
 export default SignupForm;
