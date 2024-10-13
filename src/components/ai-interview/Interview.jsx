@@ -406,21 +406,22 @@ const handleSubmit = async (audioBlob) => {
     setQuestionNo((prev) => prev + 1);
   };
 
-  // Handle Speech Synthesis
-  const speak = (text) => {
-    const synth = window.speechSynthesis;
-    if (!synth) {
-      console.error("Speech synthesis not supported in this browser");
-      return;
-    }
+// Handle Speech Synthesis
+const speak = (text) => {
+  const synth = window.speechSynthesis;
+  if (!synth) {
+    console.error("Speech synthesis not supported in this browser");
+    return;
+  }
 
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.onend = () => {
-      console.log("AI finished speaking.");
-      // Optionally, you can auto-start recording here
-    };
-    synth.speak(utterance);
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.onend = () => {
+    console.log("AI finished speaking. Starting recording...");
+    startRecording(); // Auto-start recording after speech synthesis ends
   };
+  synth.speak(utterance);
+};
+
 
   // Manage speaking state
   useEffect(() => {

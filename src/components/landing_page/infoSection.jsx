@@ -26,22 +26,20 @@ const InfoSection = ({
           <div className="max-w-xl mb-10 lg:mb-0">
             <div
               className={`${
-                lightTopLine ? "text-gray-400" : "text-blue-500"
+                lightTopLine ? "text-white-400" : "text-blue-500"
               } text-sm font-semibold mb-4 tracking-widest`}
             >
               {topLine}
             </div>
             <h1
               className={`${
-                lightText ? "text-gray-200" : "text-gray-900"
+                lightText ? "text-white-200" : "text-white-900"
               } text-4xl font-semibold mb-6`}
             >
               {headline}
             </h1>
             <p
-              className={`${
-                lightTextDesc ? "text-gray-400" : "text-gray-700"
-              } mb-6`}
+              className={`${lightTextDesc ? "text-white-400" : "text-white"} mb-6`}
             >
               {description}
             </p>

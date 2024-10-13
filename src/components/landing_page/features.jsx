@@ -8,12 +8,13 @@ const homeObjOne = {
   lightBg: false,
   lightTopLine: true,
   lightText: true,
-  lightTextDesc: true,
+  lightTextDesc: false,
   topLine: "AI Interview platform",
   headline: "Take our mock AI interview to know your preparation level",
   description:
     "Fintervue also offers corporates a powerful platform to identify top talent in finance through structured mock interviews and detailed candidate assessments, to substantially save their hiring bandwidth and reduce onboarding time by focussing on only the right candidates.",
   buttonLabel: "Start for free",
+
   imgStart: "",
   img: svg1,
   alt: "Credit Card",
@@ -28,7 +29,8 @@ const homeObjThree = {
   lightTextDesc: false,
   topLine: "About us",
   headline: "What is Fintervue?",
-  description:"Fintervue helps you ace your finance interviews with confidence. Whether you’re a fresh graduate, an aspiring financial analyst, or an experienced professional aiming for top roles, Fintervue provides mock interviews, expert tips, and personalised career advice to sharpen your skills and boost your chances of success providing efficient candidate assessments and data-driven decision-making. It also offers a fair and flexible interview experience, ensuring objective evaluation and valuable feedback for your career growth.",
+  description:
+    "Fintervue helps you ace your finance interviews with confidence. Whether you’re a fresh graduate, an aspiring financial analyst, or an experienced professional aiming for top roles, Fintervue provides mock interviews, expert tips, and personalised career advice to sharpen your skills and boost your chances of success providing efficient candidate assessments and data-driven decision-making. It also offers a fair and flexible interview experience, ensuring objective evaluation and valuable feedback for your career growth.",
   buttonLabel: "Know More",
   imgStart: "start",
   img: profile,
