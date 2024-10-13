@@ -1,14 +1,13 @@
-import React from "react";
 import InfoSection from "./infoSection";
 import svg1 from "../../assests/profile.png";
 import profile from "../../assests/svg-1.svg";
 
 const homeObjOne = {
-  primary: true,
-  lightBg: false,
-  lightTopLine: true,
-  lightText: true,
-  lightTextDesc: false,
+  primary: false,
+  lightBg: true,
+  lightTopLine: false,
+  lightText: false,
+  lightTextDesc: true,
   topLine: "AI Interview platform",
   headline: "Take our mock AI interview to know your preparation level",
   description:
