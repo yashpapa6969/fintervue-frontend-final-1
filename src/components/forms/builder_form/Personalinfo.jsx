@@ -769,7 +769,7 @@ GitHub: \\href{{github}}{\\texttt{{github}}}
   const sendPostRequest = async (populatedResume) => {
     try {
       const response = await fetch(
-        "https://b5ba-2401-4900-1cbd-4d-e40d-46ba-3958-6678.ngrok-free.app/latex",
+        "https://3.110.216.137:8080/latex",
         {
           method: "POST",
           headers: {

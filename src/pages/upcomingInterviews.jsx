@@ -46,7 +46,7 @@ function UpcomingInterviews() {
 
       console.log('Payload being sent:', payload);
 
-      const endpoint = `https://tm374xkq-2000.inc1.devtunnels.ms/api/interviewee/getAcceptedInterviews`;
+      const endpoint = `https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/api/interviewee/getAcceptedInterviews`;
 
       const response = await axios.post(endpoint, payload);
       setUpcomingInterviews(response.data);

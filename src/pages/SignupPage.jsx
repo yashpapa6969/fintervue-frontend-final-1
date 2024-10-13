@@ -181,7 +181,7 @@ const SignupPage = () => {
     }
     try {
       setLoading(true);
-      const result = await axios.post("https://x3oh1podsi.execute-api.ap-south-1.amazonaws.com/api/interviewee/AddInterviewee", {
+      const result = await axios.post("https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/api/interviewee/AddInterviewee", {
         ...candidateData,
         skills: selectedKeySkills,
       });

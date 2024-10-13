@@ -35,7 +35,7 @@ const ResumeAnalysis = () => {
 
     try {
       const response = await axios.post(
-        "https://x3oh1podsi.execute-api.ap-south-1.amazonaws.com/api/interviewee/addResumeAnalysis",
+        "https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/api/interviewee/addResumeAnalysis",
         // "104.244.242.65:31246",
         formData,
         {
