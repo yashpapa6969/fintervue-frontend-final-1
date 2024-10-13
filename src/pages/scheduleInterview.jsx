@@ -15,6 +15,7 @@ import {
   HStack,
   Icon,
 } from "@chakra-ui/react";
+
 import { ChevronLeftIcon, ChevronRightIcon, TimeIcon } from '@chakra-ui/icons';
 import { MdOutlineAccessTime, MdPersonOutline, MdCalendarToday, MdOutlineVideoCall } from 'react-icons/md';
 import { motion } from 'framer-motion';

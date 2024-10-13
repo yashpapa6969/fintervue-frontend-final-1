@@ -6,9 +6,9 @@ import {
 } from "react-router-dom";
 import { HMSRoomProvider } from "@100mslive/react-sdk";
 import "./styles/index.css";
-import createStore from 'react-auth-kit/createStore'
+import { createStore } from 'react-auth-kit';
 import App from './App.jsx'
-import RequireAuth from '@auth-kit/react-router/RequireAuth'
+import { RequireAuth } from "@auth-kit/react-router";
 
 import AuthProvider from 'react-auth-kit'
 
