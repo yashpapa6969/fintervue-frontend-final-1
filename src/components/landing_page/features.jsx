@@ -14,7 +14,6 @@ const homeObjOne = {
   description:
     "Fintervue also offers corporates a powerful platform to identify top talent in finance through structured mock interviews and detailed candidate assessments, to substantially save their hiring bandwidth and reduce onboarding time by focussing on only the right candidates.",
   buttonLabel: "Start for free",
-  description: "",
   imgStart: "",
   img: svg1,
   alt: "Credit Card",

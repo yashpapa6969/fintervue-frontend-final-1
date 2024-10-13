@@ -2,17 +2,16 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import path from "path";
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
   build: {
     rollupOptions: {
-      external: ['react-auth-kit/createStore'],
-    },},
+      external: ['react-auth-kit/createStore', '@auth-kit/react-router/RequireAuth','@chakra-ui/icons'],
+    },
+  },
   optimizeDeps: {
     exclude: ['@ffmpeg/ffmpeg', '@ffmpeg/util'],
     include: ['@100mslive/hms-video-react'],
-
   },
   server: {
     headers: {
@@ -25,4 +24,4 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-})
+});
