@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   build: {
     rollupOptions: {
-      external: ['react-auth-kit/createStore', '@auth-kit/react-router/RequireAuth','@chakra-ui/icons'],
+      external: ['react-auth-kit/createStore', '@auth-kit/react-router/RequireAuth'],
     },
   },
   optimizeDeps: {
