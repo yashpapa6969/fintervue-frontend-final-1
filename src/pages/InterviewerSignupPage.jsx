@@ -238,7 +238,7 @@ const InterviewerSignupPage = () => {
     try {
       setLoading(true);
       const result = await axios.post(
-        "https://x3oh1podsi.execute-api.ap-south-1.amazonaws.com/api/interviewer/AddInterviewer",
+        "https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/api/interviewer/AddInterviewer",
         interviewerData
       );
       if (result.status === 201) {

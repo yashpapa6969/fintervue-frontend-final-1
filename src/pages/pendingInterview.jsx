@@ -20,7 +20,7 @@ function PendingInterviews() {
   const fetchPendingInterviews = async () => {
     try {
       const response = await axios.get(
-        'https://tm374xkq-2000.inc1.devtunnels.ms/api/interviewee/getAllScheduledInterview',{
+        'https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/api/interviewee/getAllScheduledInterview',{
           headers: {
             Authorization: authHeader, 
           },
@@ -38,7 +38,7 @@ function PendingInterviews() {
   const acceptInterview = async (interviewId) => {
     try {
       await axios.post(
-        'https://tm374xkq-2000.inc1.devtunnels.ms/api/interviewee/acceptInterviewRequest',
+        'https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/api/interviewee/acceptInterviewRequest',
         {
           interviewer_id: interviewerId,
           interviewee_id: interviewId,

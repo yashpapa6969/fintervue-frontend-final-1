@@ -19,7 +19,7 @@ const LoginInterviewee = () => {
 
     try {
       // Make a POST request to the interviewee login API
-      const response = await axios.post('https://tm374xkq-2000.inc1.devtunnels.ms/api/interviewee/intervieweelogin', {
+      const response = await axios.post('https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/api/interviewee/intervieweelogin', {
         email,
         password,
       });

@@ -30,7 +30,7 @@ const AIAnalysis = () => {
 
       try {
         const response = await axios.get(
-          `https://x3oh1podsi.execute-api.ap-south-1.amazonaws.com/api/interviewee/fetchAiInterviewAnalysis/${analysisId}`
+          `https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/api/interviewee/fetchAiInterviewAnalysis/${analysisId}`
         );
         
         if (response.data && response.data.postanalysis) {

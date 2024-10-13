@@ -17,7 +17,7 @@ const LoginInterviewer = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('https://tm374xkq-2000.inc1.devtunnels.ms/api/interviewer/Interviewerlogin', {
+      const response = await axios.post('https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/api/interviewer/Interviewerlogin', {
         email,
         password,
       });

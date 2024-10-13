@@ -15,6 +15,7 @@ import {
   HStack,
   Icon,
 } from "@chakra-ui/react";
+
 import { ChevronLeftIcon, ChevronRightIcon, TimeIcon } from '@chakra-ui/icons';
 import { MdOutlineAccessTime, MdPersonOutline, MdCalendarToday, MdOutlineVideoCall } from 'react-icons/md';
 import { motion } from 'framer-motion';
@@ -126,7 +127,7 @@ function ScheduleInterviewForm() {
       setLoading(true);
       const dateTimeString = `${format(selectedDate, 'yyyy-MM-dd')}T${selectedTime}`;
       const response = await axios.post(
-        'https://x3oh1podsi.execute-api.ap-south-1.amazonaws.com/api/interviewee/createInterviewRequest',
+        'https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/api/interviewee/createInterviewRequest',
         {
           date: format(selectedDate, 'yyyy-MM-dd'),
           time: selectedTime,

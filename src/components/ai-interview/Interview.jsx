@@ -97,7 +97,7 @@ const Interview = ({ audioOn }) => {
     try {
       const encodedDomain = encodeURIComponent(domainName);
       const response = await axios.get(
-        `https://x3oh1podsi.execute-api.ap-south-1.amazonaws.com/api/Interviewee/getAIQuestionByDomain/${encodedDomain}`
+        `https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/api/interviewee/getAIQuestionByDomain/${encodedDomain}`
       );
   
       console.log('API response:', response.data); // Log the API response for debugging
@@ -128,57 +128,51 @@ const Interview = ({ audioOn }) => {
 
 
 
-  // Submit final answers
-  const submitFinalAnswers = async () => {
-    const formData = new FormData();
+// Submit final answers as JSON
+const submitFinalAnswers = async () => {
+  // Prepare the data as JSON
+  const data = {
+    questions: questions.map((question, index) => ({
+      questionText: question.questionText,
+      transcription: transcriptions[index],
+    })),
+  };
 
-    audioBlobs.forEach((audioBlob, index) => {
-      formData.append("audio", new File([audioBlob], `audio_${index}.mp3`, { type: "audio/mp3" }));
-    });
-
-    videoBlobs.forEach((videoBlob, index) => {
-      formData.append("video", new File([videoBlob], `video_${index}.mp4`, { type: "video/mp4" }));
-    });
-
-    questions.forEach((question, index) => {
-      formData.append(`question_${index}`, question.questionText);
-      formData.append(`transcription_${index}`, JSON.stringify(transcriptions[index]));
-    });
-
-    try {
-      const response = await axios.post(
-        "https://x3oh1podsi.execute-api.ap-south-1.amazonaws.com/api/interviewee/addAiAnalysis",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
-      if (response.status === 201) {
-        const { ai_analysis_id } = response.data; // Assuming the response contains the analysis_id
-        localStorage.setItem("ai_analysis_id", ai_analysis_id);
-        toast({
-          title: "Success",
-          description: "Analysis submitted successfully.",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
-        navigate("/analysis");
+  try {
+    const response = await axios.post(
+      "https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/api/interviewee/addAiAnalysis",
+      data, // Send data as JSON
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
       }
-    } catch (error) {
-      console.error("Error submitting analysis:", error);
+    );
+
+    if (response.status === 201) {
+      const { ai_analysis_id } = response.data; // Assuming the response contains the analysis_id
+      localStorage.setItem("ai_analysis_id", ai_analysis_id);
       toast({
-        title: "Submission Error",
-        description: "Failed to submit analysis.",
-        status: "error",
-        duration: 5000,
+        title: "Success",
+        description: "Analysis submitted successfully.",
+        status: "success",
+        duration: 3000,
         isClosable: true,
       });
+      navigate("/analysis");
     }
-  };
+  } catch (error) {
+    console.error("Error submitting analysis:", error);
+    toast({
+      title: "Submission Error",
+      description: "Failed to submit analysis.",
+      status: "error",
+      duration: 5000,
+      isClosable: true,
+    });
+  }
+};
+
 
   // Request camera and microphone permissions
   const getCameraPermission = async () => {
@@ -348,7 +342,7 @@ const handleSubmit = async (audioBlob) => {
   formData.append("audio_file", new File([audioBlob], "audio.mp3", { type: "audio/mp3" }));
   
   try {
-    const response = await axios.post("http://104.244.242.65:31246/processAudio", formData, {
+    const response = await axios.post("https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/dgProcessAudio", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -619,7 +613,6 @@ const handleSubmit = async (audioBlob) => {
                           (index + 1) % 2 === 0 ? "text-purple-400" : "text-purple-500"
                         }`}
                       >
-                        {item.Speaker}:
                       </strong>{" "}
                       {item.Text}
                     </Text>

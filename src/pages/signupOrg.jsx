@@ -55,7 +55,7 @@ const SignupOrg = () => {
     }
     try {
       setLoading(true);
-      const result = await axios.post("https://x3oh1podsi.execute-api.ap-south-1.amazonaws.com/api/recruiter/createRecruiter", recruiterData);
+      const result = await axios.post("https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/api/recruiter/createRecruiter", recruiterData);
       if (result.status === 201) {
         toast({
           title: "Welcome",

@@ -17,7 +17,7 @@ function FinalInterviewPage() {
   useEffect(() => {
     const fetchInterviewDetails = async () => {
       try {
-        const response = await axios.get(`https://tm374xkq-2000.inc1.devtunnels.ms/api/interviewee/getByScheduleId/${scheduleId}`);
+        const response = await axios.get(`https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/api/interviewee/getByScheduleId/${scheduleId}`);
         const interviewData = response.data;
         
         if (role === 'interviewee') {
