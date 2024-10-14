@@ -6,7 +6,6 @@ const InfoSection = ({
   topLine,
   lightTopLine,
   lightText,
-  lightTextDesc,
   headline,
   description,
   buttonLabel,
@@ -16,12 +15,10 @@ const InfoSection = ({
   start,
 }) => {
   return (
-    <div className={`${lightBg ? "bg-white" : "bg-gray-900"} text-white py-20`}>
+    <div className={`${lightBg ? "bg-white" : "bg-gray-900"} py-20`}>
       <div className="container mx-auto flex flex-wrap items-center px-6">
         <div
-          className={`w-full lg:w-1/2 px-6 ${
-            imgStart ? "order-2 lg:order-1" : ""
-          }`}
+          className={`w-full lg:w-1/2 px-6 ${imgStart ? "order-2 lg:order-1" : ""}`}
         >
           <div className="max-w-xl mb-10 lg:mb-0">
             <div
@@ -33,16 +30,12 @@ const InfoSection = ({
             </div>
             <h1
               className={`${
-                lightText ? "text-gray-200" : "text-gray-900"
+                lightText ? "text-white" : "text-gray-900"
               } text-4xl font-semibold mb-6`}
             >
               {headline}
             </h1>
-            <p
-              className={`${
-                lightTextDesc ? "text-gray-400" : "text-gray-700"
-              } mb-6`}
-            >
+            <p className={`text-black mb-6`}>
               {description}
             </p>
             <Link to="/signup">
@@ -59,14 +52,10 @@ const InfoSection = ({
           </div>
         </div>
         <div
-          className={`w-full lg:w-1/2 px-6 ${
-            imgStart ? "order-1 lg:order-2" : ""
-          }`}
+          className={`w-full lg:w-1/2 px-6 ${imgStart ? "order-1 lg:order-2" : ""}`}
         >
           <div
-            className={`max-w-xl mx-auto ${
-              start ? "justify-start" : "justify-end"
-            } flex`}
+            className={`max-w-xl mx-auto ${start ? "justify-start" : "justify-end"} flex`}
           >
             <img src={img} alt={alt} className="max-h-80 object-cover" />
           </div>
