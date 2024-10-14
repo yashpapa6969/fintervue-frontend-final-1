@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Modal from "react-modal";
 import Navbar from "../navbar";
 // Import images
@@ -57,6 +57,7 @@ const ProductCard = ({
   imagelink,
   link,
 }) => {
+  const navigate = useNavigate();
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [formData, setFormData] = useState({ name: "", email: "", phone: "" });
 
@@ -78,6 +79,7 @@ const ProductCard = ({
     if (validateInput(name, email, phone)) {
       alert("Details are valid! Proceeding to the product...");
       closeModal();
+      navigate(link);
     }
   };
 

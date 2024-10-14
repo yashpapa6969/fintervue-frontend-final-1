@@ -30,10 +30,8 @@ const Interview = ({ audioOn }) => {
   const toast = useToast();
   const [allDomains] = useState([
     { name: "finance", description: "Finance Engineer" },
-    { name: "Rust Developer", description: "Rust Programmer" },
-    { name: "Marketing", description: "Marketing Programme" },
-    { name: "Business", description: "Business Programme" },
-    { name: "Product Manager", description: "Product Management Programme" },
+    { name: "SAP", description: "Sap Developer" },
+  
   ]);
   const [transcriptions, setTranscriptions] = useState([]);
   const [searchDomainValue, setSearchDomainValue] = useState("");
