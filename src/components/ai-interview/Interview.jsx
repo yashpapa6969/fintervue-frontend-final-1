@@ -379,7 +379,6 @@ const Interview = ({ audioOn }) => {
     }
   };
   
-  
   const handleSubmit = async (audioBlob) => {
     if (!audioBlob) {
       toast({
@@ -397,45 +396,58 @@ const Interview = ({ audioOn }) => {
     const formData = new FormData();
     formData.append("audio_file", new File([audioBlob], "audio.mp3", { type: "audio/mp3" }));
 
-    try {
-      const response = await axios.post(
-        "https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/dgProcessAudio",
-        formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
+    const maxRetries = 5;
+    let retries = 0;
 
-      if (response.data && response.data.result) {
-        setTranscriptions((prevTranscriptions) => {
-          const newTranscriptions = [...prevTranscriptions];
-          newTranscriptions[questionNo] = response.data.result;
-          return newTranscriptions;
-        });
-        toast({
-          title: "Transcription Completed",
-          description: "Your response has been transcribed.",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
-        setIsSubmitted(true);
-        setCurrentAction(questionNo + 1 < questions.length ? "next" : "finish");
-      } else {
-        throw new Error("Invalid transcription response");
+    while (retries < maxRetries) {
+      try {
+        const { data } = await axios.post(
+          "https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/dgProcessAudio",
+          formData,
+          { headers: { "Content-Type": "multipart/form-data" } }
+        );
+
+        if (data?.result) {
+          setTranscriptions(prev => {
+            const newTranscriptions = [...prev];
+            newTranscriptions[questionNo] = data.result;
+            return newTranscriptions;
+          });
+
+          toast({
+            title: "Transcription Completed",
+            description: "Your response has been transcribed.",
+            status: "success",
+            duration: 3000,
+            isClosable: true,
+          });
+
+          setIsSubmitted(true);
+          setCurrentAction(questionNo + 1 < questions.length ? "next" : "finish");
+          break; // Exit the loop if successful
+        } else {
+          throw new Error("Invalid transcription response");
+        }
+      } catch (error) {
+        console.error(`Error submitting audio file (Attempt ${retries + 1}):`, error);
+        retries++;
+
+        if (retries === maxRetries) {
+          toast({
+            title: "Transcription Error",
+            description: "Failed to transcribe your response after multiple attempts.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          });
+        } else {
+          // Wait for a short time before retrying
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
       }
-    } catch (error) {
-      console.error("Error submitting audio file:", error);
-      toast({
-        title: "Transcription Error",
-        description: "Failed to transcribe your response.",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    } finally {
-      setIsSubmitting(false);
     }
+
+    setIsSubmitting(false);
   };
 
   const nextQuestion = () => {
