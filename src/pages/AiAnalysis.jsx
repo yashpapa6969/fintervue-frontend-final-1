@@ -36,8 +36,8 @@ const AIAnalysis = () => {
           `https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/api/interviewee/fetchAiInterviewAnalysis/${analysisId}`
         );
         
-        if (response.data && response.data) {
-          setAnalysisData(response.data);
+        if (response.data && response.data.processed_transcript) {
+          setAnalysisData(response.data.processed_transcript);
         } else {
           setError("No analysis data available. Please try again later.");
         }
