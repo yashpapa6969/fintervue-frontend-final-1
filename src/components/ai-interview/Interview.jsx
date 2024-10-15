@@ -59,14 +59,13 @@ const Interview = ({ audioOn }) => {
   // Load FFmpeg
   useEffect(() => {
     const loadFFmpeg = async () => {
-      const baseURL = "https://unpkg.com/@ffmpeg/core-mt@0.12.6/dist/esm";
+      const baseURL = "https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm";
       const ffmpeg = ffmpegRef.current;
 
       try {
         await ffmpeg.load({
           coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, "text/javascript"),
           wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, "application/wasm"),
-          workerURL: await toBlobURL(`${baseURL}/ffmpeg-core.worker.js`, "text/javascript"),
         });
         setLoaded(true);
       } catch (error) {
@@ -174,23 +173,30 @@ const Interview = ({ audioOn }) => {
 
   const getCameraPermission = async () => {
     try {
-      const videoConstraints = { video: true };
+      // Define lower resolution constraints
+      const videoConstraints = {
+        video: {
+          width: { ideal: 640 },  // Lower the resolution to 640x480
+          height: { ideal: 480 },
+          frameRate: { ideal: 15 } // Optional: Reduce frame rate to reduce size further
+        },
+      };
       const audioConstraints = { audio: true };
-
+  
       const videoStream = await navigator.mediaDevices.getUserMedia(videoConstraints);
       const audioStream = await navigator.mediaDevices.getUserMedia(audioConstraints);
-
+  
       const combinedStream = new MediaStream([
         ...videoStream.getVideoTracks(),
         ...audioStream.getAudioTracks(),
       ]);
-
+  
       setStream(combinedStream);
-
+  
       if (liveVideoFeed.current) {
         liveVideoFeed.current.srcObject = videoStream;
       }
-
+  
       toast({
         title: "Permissions Granted",
         description: "Camera and microphone access granted.",
@@ -209,6 +215,7 @@ const Interview = ({ audioOn }) => {
       });
     }
   };
+  
 
   const startRecording = async () => {
     if (!isMediaRecorderSupported() || !stream) {
@@ -230,7 +237,6 @@ const Interview = ({ audioOn }) => {
         setRecordedVideoBlob(blob);
         const videoUrl = URL.createObjectURL(blob);
         setRecordedVideoURL(videoUrl);
-        saveVideoBlobToLocalStorage(blob);
         toast({
           title: "Recording Stopped",
           description: "Your response has been recorded.",
@@ -274,7 +280,6 @@ const Interview = ({ audioOn }) => {
           setRecordedVideoBlob(videoBlob);
           setRecordedVideoURL(videoUrl);
           setVideoBlobs((prevBlobs) => [...prevBlobs, videoBlob]);
-          saveVideoBlobToLocalStorage(videoBlob);
           toast({
             title: "Recording Stopped",
             description: "Your response has been recorded.",
@@ -309,7 +314,6 @@ const Interview = ({ audioOn }) => {
           setRecordedVideoBlob(videoBlob);
           setRecordedVideoURL(videoUrl);
           setVideoBlobs((prevBlobs) => [...prevBlobs, videoBlob]);
-          saveVideoBlobToLocalStorage(videoBlob);
           extractAudio(videoBlob);
         });
         setRecordingStatus("inactive");
@@ -328,15 +332,41 @@ const Interview = ({ audioOn }) => {
       });
       return;
     }
+  
     try {
       const ffmpeg = ffmpegRef.current;
+  
+      // Write the video file to FFmpeg's virtual filesystem
       await ffmpeg.writeFile("input.webm", await fetchFile(videoBlob));
-      await ffmpeg.exec(["-i", "input.webm", "-vn", "-acodec", "libmp3lame", "-q:a", "2", "output.mp3"]);
+  
+      // Convert the video to audio
+      await ffmpeg.exec([
+        "-i", "input.webm",
+        "-vn", // Disable video
+        "-acodec", "libmp3lame", // Set the audio codec
+        "-q:a", "2", // Audio quality setting
+        "output.mp3", // Output audio file
+      ]);
+  
+      // Read the extracted audio file from the virtual filesystem
       const data = await ffmpeg.readFile("output.mp3");
       const audioBlob = new Blob([data.buffer], { type: "audio/mp3" });
-      saveAudioBlobToLocalStorage(audioBlob);
-      setAudioBlobs((prevBlobs) => [...prevBlobs, audioBlob]);
+  
+      // Set the audio blob in state and submit it
+      setAudioBlobs([audioBlob]);
       await handleSubmit(audioBlob);
+  
+      // Clean up the virtual filesystem by deleting the files
+      await ffmpeg.deleteFile("input.webm");
+      await ffmpeg.deleteFile("output.mp3");
+  
+      toast({
+        title: "Audio Extracted and Cleaned Up",
+        description: "Audio extracted and memory cleared.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
     } catch (error) {
       console.error("Error extracting audio:", error);
       toast({
@@ -348,7 +378,8 @@ const Interview = ({ audioOn }) => {
       });
     }
   };
-
+  
+  
   const handleSubmit = async (audioBlob) => {
     if (!audioBlob) {
       toast({
@@ -381,7 +412,6 @@ const Interview = ({ audioOn }) => {
           newTranscriptions[questionNo] = response.data.result;
           return newTranscriptions;
         });
-        saveTranscriptionToLocalStorage(response.data.result);
         toast({
           title: "Transcription Completed",
           description: "Your response has been transcribed.",
@@ -406,22 +436,6 @@ const Interview = ({ audioOn }) => {
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const saveAudioBlobToLocalStorage = (audioBlob) => {
-    const questionKey = `audioBlob_question_${questionNo}`;
-    localStorage.setItem(questionKey, URL.createObjectURL(audioBlob));
-  };
-
-  const saveVideoBlobToLocalStorage = (videoBlob) => {
-    const videoKey = `videoBlob_question_${questionNo}`;
-    const videoURL = URL.createObjectURL(videoBlob);
-    localStorage.setItem(videoKey, videoURL);
-  };
-
-  const saveTranscriptionToLocalStorage = (transcription) => {
-    const transcriptionKey = `transcription_question_${questionNo}`;
-    localStorage.setItem(transcriptionKey, JSON.stringify(transcription));
   };
 
   const nextQuestion = () => {
@@ -591,14 +605,7 @@ const Interview = ({ audioOn }) => {
                 </>
               )}
             </Flex>
-            <Button
-              onClick={extractAudio}
-              colorScheme="purple"
-              rightIcon={<ChevronRight />}
-              isDisabled={!recordedVideoBlob}
-            >
-              Submit
-            </Button>
+         
           </Flex>
           {recordingStatus === "recording" && (
             <Box mb={4}>

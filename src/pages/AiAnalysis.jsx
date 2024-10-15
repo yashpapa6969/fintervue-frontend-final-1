@@ -11,13 +11,16 @@ import {
   VStack,
   Button,
   Divider,
+  Flex,
 } from "@chakra-ui/react";
 import ReactMarkdown from "react-markdown";
+import { jsPDF } from "jspdf";
+import html2canvas from "html2canvas";
 
 const AIAnalysis = () => {
   const [analysisData, setAnalysisData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null); // Updated error handling
+  const [error, setError] = useState(null);
   const analysisId = localStorage.getItem("ai_analysis_id");
 
   useEffect(() => {
@@ -49,10 +52,26 @@ const AIAnalysis = () => {
     fetchAnalysis();
   }, [analysisId]);
 
-  // Debugging: Log the analysisId
   useEffect(() => {
     console.log("Analysis ID:", analysisId);
   }, [analysisId]);
+
+  const generatePDF = () => {
+    const input = document.getElementById('analysis-content');
+    html2canvas(input).then((canvas) => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+      const imgX = (pdfWidth - imgWidth * ratio) / 2;
+      const imgY = 30;
+      pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
+      pdf.save('interview_analysis.pdf');
+    });
+  };
 
   if (loading) {
     return (
@@ -87,13 +106,20 @@ const AIAnalysis = () => {
 
   return (
     <Container maxW="container.md" py={8}>
-      <Box bg="gray.50" p={6} borderRadius="md" shadow="md">
-        <Heading as="h1" mb={6} textAlign="center" color="teal.600">
-          AI Interview Analysis Results
-        </Heading>
+      <Box bg="gray.50" p={6} borderRadius="md" shadow="md" id="analysis-content">
+        <Flex justifyContent="space-between" alignItems="center" mb={4}>
+          <Heading as="h1" color="teal.600">
+            AI Interview Analysis Results
+          </Heading>
+          <Button
+            colorScheme="blue"
+            onClick={generatePDF}
+          >
+            Download PDF
+          </Button>
+        </Flex>
 
         <VStack spacing={8} align="stretch">
-          {/* Abstract Summary */}
           <Box>
             <Heading as="h2" size="md" mb={2} color="teal.700">
               Abstract Summary
@@ -103,7 +129,6 @@ const AIAnalysis = () => {
 
           <Divider />
 
-          {/* Key Points */}
           <Box>
             <Heading as="h2" size="md" mb={2} color="teal.700">
               Key Points
@@ -113,7 +138,6 @@ const AIAnalysis = () => {
 
           <Divider />
 
-          {/* Interview Assessment */}
           <Box>
             <Heading as="h2" size="md" mb={2} color="teal.700">
               Interview Assessment
@@ -123,7 +147,6 @@ const AIAnalysis = () => {
 
           <Divider />
 
-          {/* Transcript */}
           <Box>
             <Heading as="h2" size="md" mb={2} color="teal.700">
               Transcript
@@ -133,16 +156,17 @@ const AIAnalysis = () => {
             </Text>
           </Box>
         </VStack>
+      </Box>
 
+      <VStack mt={8} spacing={4}>
         <Button
-          mt={8}
           colorScheme="teal"
           variant="outline"
           onClick={() => window.location.reload()}
         >
           Refresh Analysis
         </Button>
-      </Box>
+      </VStack>
     </Container>
   );
 };
