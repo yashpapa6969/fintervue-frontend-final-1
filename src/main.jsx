@@ -14,6 +14,7 @@ import { Loader } from './loader';
 import { NotFoundPage } from './pages/NotFoundPage';
 import ProductPage from './pages/ProductPage.jsx';
 import FinalInterviewPage from './pages/finalInterview.jsx';
+import AIAnalysisPage from './pages/AiAnalysis.jsx';
 
 const router = createBrowserRouter([
   {
@@ -28,10 +29,13 @@ const router = createBrowserRouter([
     path: "/meeting",
     element: <Lazy.MeetingPage />,
   },
-  {
-    path: "/analysis",
-    element: <Lazy.aIAnalysis />,
-  },
+ 
+    
+{
+  // In the route definition
+  path: "/analysis",
+  element: <AIAnalysisPage />,
+},
   {
     path: "/signup",
     element: <Lazy.SignUpPage />,
