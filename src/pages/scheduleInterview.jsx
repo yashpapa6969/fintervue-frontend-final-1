@@ -41,12 +41,10 @@ const Navbar = () => (
     <Container maxW="container.xl">
       <Flex justify="space-between" align="center">
       <a href="/home">
-        <img src={Logo} alt="Logo" className="cursor-pointer w-60 h-auto" />
+        <img src={Logo} alt="Logo" className="cursor-pointer w-40 h-auto md:w-60" />
       </a>
         <Button color={BLUE_700} variant="ghost">
-        <a href="/home">
-          Home
-        </a>
+          <a href="/home">Home</a>
         </Button>
       </Flex>
     </Container>
@@ -77,7 +75,6 @@ function ScheduleInterviewForm() {
   const toast = useToast();
   const navigate = useNavigate();
 
-  // Define timeSlots array
   const timeSlots = ['9:00 AM', '10:00 AM', '11:00 AM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM'];
 
   useEffect(() => {
@@ -96,7 +93,6 @@ function ScheduleInterviewForm() {
   };
 
   const fetchAvailableTimes = async (date) => {
-    // Simulate API call to get available times
     const dummyAvailableTimes = ['9:00 AM', '3:00 PM', '6:00 PM'];
     setAvailableTimes(dummyAvailableTimes);
   };
@@ -177,7 +173,7 @@ function ScheduleInterviewForm() {
               key={day}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              p={4}
+              p={2} // Reduced padding for mobile
               borderRadius="xl"
               bg={isSelected ? "blue.700" : isAvailable ? "blue.50" : "gray.50"}
               cursor={isAvailable ? "pointer" : "not-allowed"}
@@ -206,27 +202,29 @@ function ScheduleInterviewForm() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          direction={{ base: "column", lg: "row" }}
+          direction={{ base: "column", lg: "row" }} // Switch direction for mobile
           gap={10}
         >
           {/* Description Section */}
           <VStack flex="1" align="flex-start" spacing={6}>
-            <Heading size="2xl" color={BLUE_700}>Schedule Your Interview</Heading>
-            <Text fontSize="xl" color="gray.600" lineHeight="tall">
+            <Heading size="xl" color={BLUE_700} textAlign={{ base: "center", lg: "left" }}>
+              Schedule Your Interview
+            </Heading>
+            <Text fontSize="md" color="gray.600" lineHeight="tall" textAlign={{ base: "center", lg: "left" }}>
               Get ready for a seamless interview experience with our AI-powered platform.
             </Text>
-            <Box bg="blue.50" p={6} borderRadius="xl" width="full">
+            <Box bg="blue.50" p={4} borderRadius="xl" width="full">
               <VStack align="flex-start" spacing={4}>
                 <HStack spacing={4}>
-                  <Icon as={MdOutlineVideoCall} w={8} h={8} color={BLUE_700} />
+                  <Icon as={MdOutlineVideoCall} w={6} h={6} color={BLUE_700} />
                   <Text fontSize="lg" color={BLUE_700}>AI-Powered Video Interview</Text>
                 </HStack>
                 <HStack spacing={4}>
-                  <Icon as={MdOutlineAccessTime} w={8} h={8} color={BLUE_700} />
+                  <Icon as={MdOutlineAccessTime} w={6} h={6} color={BLUE_700} />
                   <Text fontSize="lg" color={BLUE_700}>30-Minute Session</Text>
                 </HStack>
                 <HStack spacing={4}>
-                  <Icon as={MdPersonOutline} w={8} h={8} color={BLUE_700} />
+                  <Icon as={MdPersonOutline} w={6} h={6} color={BLUE_700} />
                   <Text fontSize="lg" color={BLUE_700}>One-on-One Format</Text>
                 </HStack>
               </VStack>
@@ -234,8 +232,8 @@ function ScheduleInterviewForm() {
           </VStack>
 
           {/* Calendar Section */}
-          <Box flex="1.2" bg="white" p={8} borderRadius="2xl" boxShadow="xl">
-            <VStack spacing={8} align="stretch">
+          <Box flex="1.2" bg="white" p={6} borderRadius="2xl" boxShadow="xl">
+            <VStack spacing={6} align="stretch">
               {/* Date Selection */}
               <Box>
                 <HStack justify="space-between" mb={6}>
@@ -268,13 +266,13 @@ function ScheduleInterviewForm() {
               {/* Time Selection */}
               <Box>
                 <Heading size="md" mb={6} color={BLUE_700}>Select Time</Heading>
-                <Grid templateColumns="repeat(3, 1fr)" gap={4}>
+                <Grid templateColumns={{ base: "repeat(2, 1fr)", md: "repeat(3, 1fr)" }} gap={4}>
                   {timeSlots.map((time) => (
                     <MotionButton
                       key={time}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      size="lg"
+                      size="md" // Adjust button size for mobile
                       variant={selectedTime === time ? "solid" : "outline"}
                       bg={selectedTime === time ? BLUE_700 : "transparent"}
                       color={selectedTime === time ? "white" : BLUE_700}

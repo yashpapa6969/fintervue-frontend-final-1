@@ -7,11 +7,9 @@ import { Select } from "@chakra-ui/react";
 
 const PreResumeForm = ({ setExperienceLevel, setDomain }) => {
   return (
-    <div className="flex gap-4">
-      <div className="my-4 max-w-[300px]">
-        <span className="font-semibold">
-          Choose your experience level
-        </span>
+    <div className="flex flex-col md:flex-row gap-4">
+      <div className="my-4 w-full max-w-xs md:max-w-[300px]">
+        <span className="font-semibold">Choose your experience level</span>
         <Select mt={2} onChange={(e) => setExperienceLevel(e.target.value)}>
           <option defaultValue={""}>What is your experience?</option>
           <option value={"beginner"}>Beginner</option>
@@ -19,10 +17,8 @@ const PreResumeForm = ({ setExperienceLevel, setDomain }) => {
           <option value={"expert"}>Expert</option>
         </Select>
       </div>
-      <div className="my-4 max-w-[300px]">
-        <span className="font-semibold">
-          Choose your domain
-        </span>
+      <div className="my-4 w-full max-w-xs md:max-w-[300px]">
+        <span className="font-semibold">Choose your domain</span>
         <Select mt={2} onChange={(e) => setDomain(e.target.value)}>
           <option defaultValue={""}>What is your domain?</option>
           <option value={"finance1"}>Finance 1</option>
@@ -31,8 +27,8 @@ const PreResumeForm = ({ setExperienceLevel, setDomain }) => {
         </Select>
       </div>
     </div>
-  )
-}
+  );
+};
 
 const ResumeBuilder = () => {
   const [experienceLevel, setExperienceLevel] = useState("");
@@ -67,49 +63,52 @@ const ResumeBuilder = () => {
         name: "",
         summary: "",
         date: ""
-      },],
+      },
+    ],
   });
   const [finalData, setFinalData] = useState([]);
-  console.log(experienceLevel)
 
   return (
     <div>
       <Navbar />
-      {/* Single form view */}
-      <div className="nd:wd-1/2 shadow-xl rounded-2xl p-2 m-10 px-10 bg-white">
-        <div className="">
-          <FlipText
-            className="text-4xl font-bold tracking-[-0.1em] bg-clip-text md:text-5xl md:leading-[5rem]"
-            word="Resume builder"
-          />
-          <h3 className="mt-[.5rem] text-xl">
-            Accelerate your job application process by completing it twice as
-            fast. Begin by choosing from a variety of recruiter-approved
-            templates. Next, just click to add ready-made skills and phrases
-            into your selected template
-          </h3>
-        </div>
+      <div className="container mx-auto px-4">
+        <div className="mt-8 shadow-xl rounded-2xl p-6 md:p-10 bg-white">
+          <div className="">
+            <FlipText
+              className="text-3xl md:text-4xl font-bold tracking-[-0.1em] bg-clip-text"
+              word="Resume builder"
+            />
+            <h3 className="mt-4 text-lg md:text-xl">
+              Accelerate your job application process by completing it twice as
+              fast. Begin by choosing from a variety of recruiter-approved
+              templates. Next, just click to add ready-made skills and phrases
+              into your selected template.
+            </h3>
+          </div>
 
-        <PreResumeForm setExperienceLevel={setExperienceLevel} setDomain={setDomain} />
-        {experienceLevel && domain && (
-          <>
-            <div className="container horizontal">
-              <div className="w-full flex justify-center ">
-                {/* Optionally add a title or any additional content here */}
+          {/* PreResumeForm */}
+          <PreResumeForm setExperienceLevel={setExperienceLevel} setDomain={setDomain} />
+
+          {experienceLevel && domain && (
+            <>
+              <div className="container mx-auto">
+                <div className="w-full flex justify-center ">
+                  {/* Optionally add a title or any additional content here */}
+                </div>
+                <StepperContext.Provider
+                  value={{
+                    userData,
+                    setUserData,
+                    finalData,
+                    setFinalData,
+                  }}
+                >
+                  <Personalinfo />
+                </StepperContext.Provider>
               </div>
-              <StepperContext.Provider
-                value={{
-                  userData,
-                  setUserData,
-                  finalData,
-                  setFinalData,
-                }}
-              >
-                <Personalinfo />
-              </StepperContext.Provider>
-            </div>
-          </>
-        )}
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

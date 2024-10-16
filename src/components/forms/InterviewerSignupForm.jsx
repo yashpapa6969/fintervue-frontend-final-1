@@ -39,10 +39,10 @@ const InterviewerSignupForm = ({ formData, handleChange, errors }) => {
   };
 
   return (
-    <div className="flex flex-col gap-4 px-4 w-full">
+    <div className="flex flex-col gap-4 px-4 w-full mb-24"> {/* Added mb-24 to prevent overlap */}
       {/* First Name & Last Name */}
-      <div className="flex flex-row gap-5">
-        <FormControl isInvalid={!!errors?.firstName} isRequired>
+      <div className="flex flex-col md:flex-row gap-5">
+        <FormControl isInvalid={!!errors?.firstName} isRequired className="w-full">
           <FormLabel className="font-medium text-gray-700">First Name</FormLabel>
           <InputGroup>
             <Input
@@ -55,7 +55,7 @@ const InterviewerSignupForm = ({ formData, handleChange, errors }) => {
           </InputGroup>
           {errors?.firstName && <FormErrorMessage>{errors.firstName}</FormErrorMessage>}
         </FormControl>
-        <FormControl isInvalid={!!errors?.lastName} isRequired>
+        <FormControl isInvalid={!!errors?.lastName} isRequired className="w-full">
           <FormLabel className="font-medium text-gray-700">Last Name</FormLabel>
           <InputGroup>
             <Input
@@ -70,9 +70,9 @@ const InterviewerSignupForm = ({ formData, handleChange, errors }) => {
         </FormControl>
       </div>
 
-      {/* Phone Number & email*/}
-      <div className="flex flex-row gap-5">
-        <FormControl isInvalid={!!errors?.phoneNumber} isRequired>
+      {/* Phone Number & email */}
+      <div className="flex flex-col md:flex-row gap-5">
+        <FormControl isInvalid={!!errors?.phoneNumber} isRequired className="w-full">
           <FormLabel className="font-medium text-gray-700">Phone Number</FormLabel>
           <InputGroup>
             <Input
@@ -85,20 +85,19 @@ const InterviewerSignupForm = ({ formData, handleChange, errors }) => {
           </InputGroup>
           {errors?.phoneNumber && <FormErrorMessage>{errors.phoneNumber}</FormErrorMessage>}
         </FormControl>
-        <FormControl isInvalid={!!errors?.email} isRequired>
-            <FormLabel className="font-medium text-gray-700">Email</FormLabel>
-            <InputGroup>
-              <Input
-                className="outline-none border border-gray-300 rounded-md py-2 px-3 transition-all focus:border-blue-700"
-                type="email"
-                placeholder="Enter your email address"
-                value={formData?.email}
-                onChange={(e) => handleChange("email", e.target.value)}
-              />
-            </InputGroup>
-            {errors?.email && <FormErrorMessage>{errors.email}</FormErrorMessage>}
-          </FormControl>
-
+        <FormControl isInvalid={!!errors?.email} isRequired className="w-full">
+          <FormLabel className="font-medium text-gray-700">Email</FormLabel>
+          <InputGroup>
+            <Input
+              className="outline-none border border-gray-300 rounded-md py-2 px-3 transition-all focus:border-blue-700"
+              type="email"
+              placeholder="Enter your email address"
+              value={formData?.email}
+              onChange={(e) => handleChange("email", e.target.value)}
+            />
+          </InputGroup>
+          {errors?.email && <FormErrorMessage>{errors.email}</FormErrorMessage>}
+        </FormControl>
       </div>
 
       {/* LinkedIn Profile */}
@@ -116,22 +115,20 @@ const InterviewerSignupForm = ({ formData, handleChange, errors }) => {
         {errors?.linkedInProfile && <FormErrorMessage>{errors.linkedInProfile}</FormErrorMessage>}
       </FormControl>
 
-      {/* Password*/}
-        <FormControl isInvalid={!!errors?.password} isRequired>
-          <FormLabel className="font-medium text-gray-700">Password</FormLabel>
-          <InputGroup>
-            <Input
-              className="outline-none border border-gray-300 rounded-md py-2 px-3 transition-all focus:border-blue-700"
-              type="password"
-              placeholder="Create a password"
-              value={formData?.password}
-              onChange={(e) => handleChange("password", e.target.value)}
-            />
-          </InputGroup>
-          {errors?.password && <FormErrorMessage>{errors.password}</FormErrorMessage>}
-        </FormControl>
-        
-      
+      {/* Password */}
+      <FormControl isInvalid={!!errors?.password} isRequired>
+        <FormLabel className="font-medium text-gray-700">Password</FormLabel>
+        <InputGroup>
+          <Input
+            className="outline-none border border-gray-300 rounded-md py-2 px-3 transition-all focus:border-blue-700"
+            type="password"
+            placeholder="Create a password"
+            value={formData?.password}
+            onChange={(e) => handleChange("password", e.target.value)}
+          />
+        </InputGroup>
+        {errors?.password && <FormErrorMessage>{errors.password}</FormErrorMessage>}
+      </FormControl>
 
       {/* Drag-and-Drop Resume Upload */}
       <div
