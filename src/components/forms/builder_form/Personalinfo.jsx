@@ -572,7 +572,6 @@ GitHub: \\href{{github}}{\\texttt{{github}}}
     const achievementsArray = data.achievements
       ? data.achievements.split(",").map((achievement) => achievement.trim())
       : [];
-
     // General placeholder replacement
     template = template.replace("{name}", replaceNewlines(data.name || ""));
     template = template.replace(
@@ -769,7 +768,7 @@ GitHub: \\href{{github}}{\\texttt{{github}}}
   const sendPostRequest = async (populatedResume) => {
     try {
       const response = await fetch(
-        "https://3.110.216.137:8080/latex",
+        "https://api.fintervue.com/latex",
         {
           method: "POST",
           headers: {
@@ -785,12 +784,16 @@ GitHub: \\href{{github}}{\\texttt{{github}}}
         );
       }
 
-      const blob = await response.blob();
+      const arrayBuffer = await response.arrayBuffer();
+      // Convert ArrayBuffer to Uint8Array
+      const uint8Array = new Uint8Array(arrayBuffer);
+
+      const blob = new Blob([uint8Array], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);
 
       const a = document.createElement("a");
       a.href = url;
-      a.download = "resume.pdf";
+      a.download = "generated_resume.pdf";
       document.body.appendChild(a);
       a.click();
 

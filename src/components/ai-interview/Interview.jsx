@@ -395,7 +395,7 @@ const Interview = ({ audioOn }) => {
     while (retries < maxRetries) {
       try {
         const { data } = await axios.post(
-          "https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/dgProcessAudio",
+          "https://api.fintervue.com/dgProcessAudio",
           formData,
           { headers: { "Content-Type": "multipart/form-data" } }
         );
