@@ -30,8 +30,7 @@ const Interview = ({ audioOn }) => {
   const toast = useToast();
   const [allDomains] = useState([
     { name: "finance", description: "Finance Engineer" },
-    { name: "SAP", description: "Sap Developer" },
-  
+    { name: "SAP", description: "SAP Developer" },
   ]);
   const [transcriptions, setTranscriptions] = useState([]);
   const [searchDomainValue, setSearchDomainValue] = useState("");
@@ -173,12 +172,11 @@ const Interview = ({ audioOn }) => {
 
   const getCameraPermission = async () => {
     try {
-      // Define lower resolution constraints
       const videoConstraints = {
         video: {
-          width: { ideal: 640 },  // Lower the resolution to 640x480
+          width: { ideal: 640 },
           height: { ideal: 480 },
-          frameRate: { ideal: 15 } // Optional: Reduce frame rate to reduce size further
+          frameRate: { ideal: 15 },
         },
       };
       const audioConstraints = { audio: true };
@@ -336,27 +334,22 @@ const Interview = ({ audioOn }) => {
     try {
       const ffmpeg = ffmpegRef.current;
   
-      // Write the video file to FFmpeg's virtual filesystem
       await ffmpeg.writeFile("input.webm", await fetchFile(videoBlob));
   
-      // Convert the video to audio
       await ffmpeg.exec([
         "-i", "input.webm",
-        "-vn", // Disable video
-        "-acodec", "libmp3lame", // Set the audio codec
-        "-q:a", "2", // Audio quality setting
-        "output.mp3", // Output audio file
+        "-vn",
+        "-acodec", "libmp3lame",
+        "-q:a", "2",
+        "output.mp3",
       ]);
   
-      // Read the extracted audio file from the virtual filesystem
       const data = await ffmpeg.readFile("output.mp3");
       const audioBlob = new Blob([data.buffer], { type: "audio/mp3" });
   
-      // Set the audio blob in state and submit it
       setAudioBlobs([audioBlob]);
       await handleSubmit(audioBlob);
   
-      // Clean up the virtual filesystem by deleting the files
       await ffmpeg.deleteFile("input.webm");
       await ffmpeg.deleteFile("output.mp3");
   
@@ -424,12 +417,11 @@ const Interview = ({ audioOn }) => {
 
           setIsSubmitted(true);
           setCurrentAction(questionNo + 1 < questions.length ? "next" : "finish");
-          break; // Exit the loop if successful
+          break;
         } else {
           throw new Error("Invalid transcription response");
         }
       } catch (error) {
-        console.error(`Error submitting audio file (Attempt ${retries + 1}):`, error);
         retries++;
 
         if (retries === maxRetries) {
@@ -441,7 +433,6 @@ const Interview = ({ audioOn }) => {
             isClosable: true,
           });
         } else {
-          // Wait for a short time before retrying
           await new Promise(resolve => setTimeout(resolve, 1000));
         }
       }
@@ -481,7 +472,6 @@ const Interview = ({ audioOn }) => {
       speak(questions[questionNo].questionText);
       hasSpokenRef.current = true;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [questions, questionNo, selectedDomain]);
 
   useEffect(() => {
@@ -525,7 +515,17 @@ const Interview = ({ audioOn }) => {
             setValue={setSearchDomainValue}
             className="max-w-md mb-6"
           />
-          <Grid templateColumns="repeat(auto-fit, minmax(250px, 1fr))" gap={6} maxW="800px">
+          <Grid 
+            templateColumns={{
+              base: "repeat(1, 1fr)", // 1 column on mobile
+              sm: "repeat(2, 1fr)", // 2 columns on small screens
+              md: "repeat(3, 1fr)", // 3 columns on medium screens
+              lg: "repeat(4, 1fr)", // 4 columns on larger screens
+            }}
+            gap={6} 
+            maxW="800px"
+            width="100%"
+          >
             {filteredDomains.map((domain, index) => (
               <GridItem key={`domain-${index}`}>
                 <MotionBox

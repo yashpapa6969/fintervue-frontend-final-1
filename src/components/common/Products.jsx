@@ -16,7 +16,7 @@ const customStyles = {
     marginRight: "-50%",
     transform: "translate(-50%, -50%)",
     borderRadius: "15px",
-    padding: "30px",
+    padding: "20px",
     width: "90%",
     maxWidth: "500px",
     boxShadow: "0px 10px 15px rgba(0, 0, 0, 0.2)",
@@ -91,7 +91,7 @@ const ProductCard = ({
     >
       <div className="w-full lg:w-1/2 space-y-6">
         <h2 className="text-3xl font-bold tracking-tight">{title}</h2>
-        <p className="text-lg text-muted-foreground">{description}</p>
+        <p className="text-lg text-gray-600">{description}</p>
         <button
           className="mt-3 btn btn-lg bg-black text-white p-3 rounded-md"
           onClick={openModal}
@@ -100,10 +100,8 @@ const ProductCard = ({
         </button>
       </div>
       <div className="w-full lg:w-1/2">
-        <div className="aspect-video rounded-lg flex items-center justify-center">
-          <span className="text-2xl font-bold text-background">
-            <img src={imagelink} alt={title} className="rounded-lg w-auto h-auto" />
-          </span>
+        <div className="aspect-video rounded-lg flex items-center justify-center overflow-hidden">
+          <img src={imagelink} alt={title} className="max-w-full h-auto rounded-lg" />
         </div>
       </div>
 
@@ -156,39 +154,37 @@ const ProductSection = () => {
   return (
     <>
       <Navbar />
-      <div>
-        <div className="container mx-auto px-4">
-          <ProductCard
-            title="AI Job Interview"
-            description="Prepare for your upcoming interview with a mock interview. Gain valuable insights and confidence to ace your next job interview."
-            buttonText="Start Now"
-            imagePosition="left"
-            link="/product/ai_intervue"
-            imagelink={aiInterviewImage}
-          />
+      <div className="container mx-auto px-4">
+        <ProductCard
+          title="AI Job Interview"
+          description="Prepare for your upcoming interview with a mock interview. Gain valuable insights and confidence to ace your next job interview."
+          buttonText="Start Now"
+          imagePosition="left"
+          link="/product/ai_intervue"
+          imagelink={aiInterviewImage}
+        />
 
-          <div className="divider my-2 border-t border-border"></div>
+        <div className="divider my-2 border-t border-gray-200"></div>
 
-          <ProductCard
-            title="Resume Builder"
-            description="Create or upload a resume, or enter your job title and let our AI generate a professional resume for you in seconds."
-            buttonText="Start Now"
-            imagePosition="right"
-            link="/product/resumeBuilder"
-            imagelink={resumeBuilderImage}
-          />
+        <ProductCard
+          title="Resume Builder"
+          description="Create or upload a resume, or enter your job title and let our AI generate a professional resume for you in seconds."
+          buttonText="Start Now"
+          imagePosition="right"
+          link="/product/resumeBuilder"
+          imagelink={resumeBuilderImage}
+        />
 
-          <div className="divider my-2 border-t border-border"></div>
+        <div className="divider my-2 border-t border-gray-200"></div>
 
-          <ProductCard
-            title="Resume Analysis"
-            description="Upload your resume and get matched with the best job offers. Generate application kits for job posts with just a click!"
-            buttonText="Start Now"
-            imagePosition="left"
-            link="/product/resumeAnalysis"
-            imagelink={resumeAnalysisImage}
-          />
-        </div>
+        <ProductCard
+          title="Resume Analysis"
+          description="Upload your resume and get matched with the best job offers. Generate application kits for job posts with just a click!"
+          buttonText="Start Now"
+          imagePosition="left"
+          link="/product/resumeAnalysis"
+          imagelink={resumeAnalysisImage}
+        />
       </div>
     </>
   );

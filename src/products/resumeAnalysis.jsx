@@ -36,7 +36,6 @@ const ResumeAnalysis = () => {
     try {
       const response = await axios.post(
         "https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/api/interviewee/addResumeAnalysis",
-        // "104.244.242.65:31246",
         formData,
         {
           headers: {
@@ -69,20 +68,20 @@ const ResumeAnalysis = () => {
   return (
     <div>
       <Navbar />
-      <div className="flex flex-col gap-10 p-20">
+      <div className="flex flex-col gap-10 p-4 md:p-20">
         <div className="flex-grow flex flex-col items-center justify-center">
           <div className="text-center">
             <FlipText
-              className="text-4xl font-bold tracking-[-0.1em] bg-clip-text md:text-7xl md:leading-[5rem]"
-              word="Resume analyser"
+              className="text-3xl md:text-6xl font-bold tracking-[-0.1em] bg-clip-text md:leading-[5rem]  "
+              word="Resume Analyser"
             />
-            <h3 className="mt-[.5rem] text-[1.5rem] pt-5">
+            <h3 className="mt-[.5rem] text-base md:text-lg pt-5 px-4 md:px-0">
               Helps you optimize your resume for any job, highlighting the key
               experience and skills recruiters need to see.
             </h3>
 
             {/* Image and BorderBeam Container */}
-            <div className="relative mt-10 w-[400px] h-[400px] mx-auto rounded-[20px]">
+            <div className="relative mt-10 w-full max-w-[300px] md:max-w-[400px] h-[300px] md:h-[400px] mx-auto rounded-[20px]">
               <img
                 src={img1}
                 alt="Resume Generator"
@@ -102,13 +101,13 @@ const ResumeAnalysis = () => {
             </div>
           </div>
         </div>
-        <div>
+        <div className="w-full flex justify-center">
           <Upload onFileChange={handleFileChange} onSubmit={handleSubmit} />
         </div>
 
         {analysis && (
-          <div className="mt-10 p-5 bg-gray-50 rounded-xl shadow-lg">
-            <h3 className="text-2xl font-bold text-teal-600 mb-4">
+          <div className="mt-10 p-4 md:p-5 bg-gray-50 rounded-xl shadow-lg max-w-3xl mx-auto">
+            <h3 className="text-xl md:text-2xl font-bold text-teal-600 mb-4">
               Analysis Result
             </h3>
             <div

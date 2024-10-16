@@ -54,12 +54,10 @@ const InterviewerSignupPage = () => {
   const handleDomainSelection = (profileId) => {
     setSelectedProcesses((prevSelected) => {
       if (prevSelected.includes(profileId)) {
-        // If already selected, remove it
         const updatedSelections = prevSelected.filter((id) => id !== profileId);
         updateIndustryExpertise(updatedSelections);
         return updatedSelections;
       } else {
-        // If not selected, add it
         const updatedSelections = [...prevSelected, profileId];
         updateIndustryExpertise(updatedSelections);
         return updatedSelections;
@@ -67,8 +65,7 @@ const InterviewerSignupPage = () => {
     });
   };
 
-   // Update interviewer data with selected domains
-   const updateIndustryExpertise = (updatedSelections) => {
+  const updateIndustryExpertise = (updatedSelections) => {
     const selectedDomains = profiles
       .filter((profile) => updatedSelections.includes(profile.id))
       .map((profile) => profile.name);
@@ -79,8 +76,6 @@ const InterviewerSignupPage = () => {
     }));
   };
 
-
-  // Form validation
   const validateForm = () => {
     const newErrors = {};
     let isValid = true;
@@ -113,7 +108,6 @@ const InterviewerSignupPage = () => {
     return isValid;
   };
 
-  // Availability Selector for Days and Time Slots
   const AvailabilitySelector = () => {
     const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
     const timeSlots = ["12:00 AM", "3:00 AM", "6:00 AM", "9:00 AM", "12:00 PM", "3:00 PM", "6:00 PM", "9:00 PM"];
@@ -148,7 +142,6 @@ const InterviewerSignupPage = () => {
 
     return (
       <div className="flex flex-col lg:flex-row gap-8 mt-6">
-        {/* Select Days */}
         <div className="w-full">
           <h2 className="text-lg font-semibold mb-4">Choose your available days</h2>
           <div className="grid grid-cols-3 gap-4">
@@ -162,7 +155,7 @@ const InterviewerSignupPage = () => {
                       ? "bg-blue-700 text-white"
                       : "bg-white text-gray-600 hover:bg-gray-100"
                   } border-blue-700`}
-                style={{ width: 'auto', whiteSpace: 'nowrap' }} // Adjusting button size to fit text
+                style={{ width: "auto", whiteSpace: "nowrap" }}
               >
                 {day}
               </button>
@@ -170,8 +163,6 @@ const InterviewerSignupPage = () => {
           </div>
         </div>
 
-
-        {/* Select Time Slots */}
         <div className="w-full">
           <h2 className="text-lg font-semibold mb-4">Choose your available time slots</h2>
           <div className="grid grid-cols-2 gap-4">
@@ -185,20 +176,18 @@ const InterviewerSignupPage = () => {
                     : "bg-white text-gray-600 border-blue-700 hover:bg-gray-100 hover:scale-105"
                 }`}
                 style={{
-                  transitionTimingFunction: 'ease-in-out',
-                }} // Adding smooth transitions
+                  transitionTimingFunction: "ease-in-out",
+                }}
               >
                 {slot}
               </button>
             ))}
           </div>
         </div>
-
       </div>
     );
   };
 
-  // Profile Categories
   const profiles = [
     { id: 1, category: "Corporate Finance", name: "Corporate Finance", icon: FrontendIcon1 },
     { id: 2, category: "Investment Banking", name: "Investment Banking", icon: FrontendIcon2 },
@@ -217,13 +206,10 @@ const InterviewerSignupPage = () => {
     { id: 15, category: "Taxation", name: "Taxation", icon: FrontendIcon15 },
   ];
 
-
   const filteredProfiles = profiles.filter((profile) =>
     profile.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-
-  // Search input change
   const handleChange = (key, value) => {
     setInterviewerData((prevData) => ({
       ...prevData,
@@ -276,8 +262,7 @@ const InterviewerSignupPage = () => {
   return (
     <div className="h-full overflow-auto w-full flex items-start">
       <LoadingBar color="blue" progress={33.33 * (currentStep - 1)} />
-  
-      {/* Left Sidebar */}
+
       <div className="hidden md:flex flex-col h-screen overflow-auto gap-8 items-center justify-center w-1/3 bg-gray-50 p-8">
         <div className="w-full flex flex-col gap-4">
           <div className="flex items-center">
@@ -298,8 +283,7 @@ const InterviewerSignupPage = () => {
           <p className="ml-8 text-xl text-gray-600">Enter your details.</p>
         </div>
       </div>
-  
-      {/* Main Content */}
+
       <div className="w-full md:w-2/3 mt-4 min-h-full px-6 md:px-20 flex items-center justify-center">
         {currentStep === 1 ? (
           <div className="flex flex-col items-center w-full max-w-[800px] h-[90vh] overflow-y-auto gap-8">
@@ -310,7 +294,7 @@ const InterviewerSignupPage = () => {
             <p className="text-lg md:text-xl text-gray-500 font-light">
               Crack your next finance-interview with us
             </p>
-  
+
             <div className="w-full">
               <input
                 type="text"
@@ -320,8 +304,8 @@ const InterviewerSignupPage = () => {
                 className="w-full p-3 border-2 border-blue-300 rounded-md focus:ring-4 focus:ring-blue-200 transition-all duration-300"
               />
             </div>
-  
-            <div className="grid grid-cols-3 gap-6 w-full overflow-y-auto p-5">
+
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-6 w-full overflow-y-auto p-5">
               {filteredProfiles.map((profile) => (
                 <div
                   key={profile.id}
@@ -337,7 +321,7 @@ const InterviewerSignupPage = () => {
                     alt={profile.name}
                     className="w-12 h-12 mb-2"
                   />
-                  <h3 className="text-center text-lg font-semibold text-gray-800">
+                  <h3 className="text-center text-sm md:text-lg font-semibold text-gray-800">
                     {profile.name}
                   </h3>
                 </div>
@@ -345,71 +329,72 @@ const InterviewerSignupPage = () => {
             </div>
           </div>
         ) : currentStep === 2 ? (
-          <div className="flex flex-col items-center w-full max-w-[800px] h-full overflow-y-auto gap-8">
-            {/* Header */}
-            <div className="text-center space-y-2">
-              <h3 className="text-4xl font-extrabold text-blue-700 tracking-wide">
-                Complete your <span className="text-blue-900">Fintervue Profile</span>
-              </h3>
-              <p className="text-lg md:text-xl text-gray-500 font-light">
-                Search & apply to finance jobs from here
-              </p>
-            </div>
-  
-            {/* Availability Selector */}
-            <div className="w-full">
-              <AvailabilitySelector />
-            </div>
-  
-            {/* Signup Form */}
+          <div className="flex flex-col items-center w-full max-w-[800px] h-full overflow-y-auto gap-8 px-4 md:px-0">
+          {/* Header */}
+          <div className="text-center space-y-2">
+            <h3 className="text-3xl md:text-4xl font-extrabold text-blue-700 tracking-wide">
+              Complete your <span className="text-blue-900">Fintervue Profile</span>
+            </h3>
+            <p className="text-lg md:text-xl text-gray-500 font-light">
+              Search & apply to finance jobs from here
+            </p>
+          </div>
+
+          {/* Availability Selector */}
+          <div className="w-full">
+            <AvailabilitySelector />
+          </div>
+
+          {/* Signup Form */}
+          <div className="w-full max-w-[800px]">
             <InterviewerSignupForm
               formData={interviewerData}
               handleChange={handleChange}
               errors={errors}
             />
           </div>
+        </div>
         ) : (
           <div>
             <h1></h1>
           </div>
         )}
-  
-        {/* Bottom Navigation */}
-        <div className="fixed bottom-6 right-6 flex gap-4">
-          {currentStep > 1 && (
-            <button
-              onClick={() => setCurrentStep(currentStep - 1)}
-              className="py-3 px-4 text-blue-500 border bg-white border-blue-500 w-full md:w-40 text-lg rounded-2xl transition-transform hover:scale-105"
-            >
-              Back
-            </button>
-          )}
-          {currentStep < 2 && (
-            <button
-              onClick={() => setCurrentStep(currentStep + 1)}
-              className="py-3 px-4 text-white bg-blue-700 font-bold w-full md:w-40 text-lg rounded-2xl transition-transform hover:scale-105"
-            >
-              Next
-            </button>
-          )}
-          {currentStep === 2 && (
-            <button
-              disabled={loading}
-              onClick={handleSubmit}
-              className="py-3 px-4 text-white bg-blue-700 font-bold w-full md:w-40 text-lg rounded-2xl flex items-center justify-center gap-4 transition-transform hover:scale-105"
-            >
-              {loading ? (
-                <Loader2 size={20} className="animate-spin" />
-              ) : (
-                "Sign up"
-              )}
-            </button>
-          )}
-        </div>
+
+      <div className="fixed bottom-6 right-6 flex gap-4 w-15 md:w-auto px-4 md:px-0"> 
+        {currentStep > 1 && (
+          <button
+            onClick={() => setCurrentStep(currentStep - 1)}
+            className="py-3 px-4 text-blue-500 border bg-white border-blue-500 w-full md:w-40 text-lg rounded-2xl transition-transform hover:scale-105"
+          >
+            Back
+          </button>
+        )}
+        {currentStep < 2 && (
+          <button
+            onClick={() => setCurrentStep(currentStep + 1)}
+            className="py-3 px-4 text-white bg-blue-700 font-bold w-full md:w-40 text-lg rounded-2xl transition-transform hover:scale-105"
+          >
+            Next
+          </button>
+        )}
+        {currentStep === 2 && (
+          <button
+            disabled={loading}
+            onClick={handleSubmit}
+            className="py-3 px-4 text-white bg-blue-700 font-bold w-full md:w-40 text-lg rounded-2xl flex items-center justify-center gap-4 transition-transform hover:scale-105"
+          >
+            {loading ? (
+              <Loader2 size={20} className="animate-spin" />
+            ) : (
+              "Sign up"
+            )}
+          </button>
+        )}
+      </div>
+
       </div>
     </div>
-  );  
-  
+  );
 };
 
 export default InterviewerSignupPage;
