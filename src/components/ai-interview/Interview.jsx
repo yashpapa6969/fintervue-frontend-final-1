@@ -11,11 +11,8 @@ import {
   Spinner,
   Badge,
 } from "@chakra-ui/react";
-import { ChevronRight } from "lucide-react";
 import { useEffect, useRef, useState, useMemo } from "react";
 import axios from "axios";
-import Loading from "../Loading";
-import SearchBox from "../common/SearchBox";
 import { FFmpeg } from "@ffmpeg/ffmpeg";
 import { toBlobURL, fetchFile } from "@ffmpeg/util";
 import { useNavigate } from "react-router-dom";
@@ -40,20 +37,18 @@ const Interview = ({ audioOn }) => {
   const [recordedVideoBlob, setRecordedVideoBlob] = useState(null);
   const [recordedVideoURL, setRecordedVideoURL] = useState(null);
   const [loaded, setLoaded] = useState(false);
-  const hasSpokenRef = useRef(false);
+  const [isLoadingQuestions, setIsLoadingQuestions] = useState(false);
+  const [recordingStatus, setRecordingStatus] = useState("inactive"); // Update recording status
+  const hasSpokenRef = useRef(false); 
   const ffmpegRef = useRef(new FFmpeg());
   const [audioBlobs, setAudioBlobs] = useState([]);
   const [videoBlobs, setVideoBlobs] = useState([]);
   const mediaRecorder = useRef(null);
-  const [recordingStatus, setRecordingStatus] = useState("inactive");
   const liveVideoFeed = useRef(null);
   const [stream, setStream] = useState(null);
-  const cameraPermissionCalledRef = useRef(false);
-  const [recordingTime, setRecordingTime] = useState(0);
-  const timerRef = useRef(null);
-  const [currentAction, setCurrentAction] = useState("record");
-  const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [recordingTime, setRecordingTime] = useState(0); // Timer for recording
+  const timerRef = useRef(null);
 
   // Load FFmpeg
   useEffect(() => {
@@ -81,7 +76,6 @@ const Interview = ({ audioOn }) => {
 
     loadFFmpeg();
     return () => {
-      // Cleanup on unmount
       if (stream) {
         stream.getTracks().forEach((track) => track.stop());
       }
@@ -99,6 +93,7 @@ const Interview = ({ audioOn }) => {
   }, [allDomains, searchDomainValue]);
 
   const getQuestionsByDomain = async (domainName) => {
+    setIsLoadingQuestions(true);
     try {
       const encodedDomain = encodeURIComponent(domainName);
       const response = await axios.get(
@@ -107,6 +102,8 @@ const Interview = ({ audioOn }) => {
 
       if (response.data && Array.isArray(response.data) && response.data.length > 0) {
         setQuestions(response.data);
+        speak(response.data[0].questionText); // Speak the first question
+        hasSpokenRef.current = true;
       } else {
         setQuestions([]);
         toast({
@@ -126,10 +123,13 @@ const Interview = ({ audioOn }) => {
         duration: 5000,
         isClosable: true,
       });
+    } finally {
+      setIsLoadingQuestions(false);
     }
   };
 
   const submitFinalAnswers = async () => {
+    setIsSubmitting(true);
     const data = {
       questions: questions.map((question, index) => ({
         questionText: question.questionText,
@@ -140,7 +140,7 @@ const Interview = ({ audioOn }) => {
     try {
       const response = await axios.post(
         "https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/api/interviewee/addAiAnalysis",
-        data, 
+        data,
         {
           headers: { "Content-Type": "application/json" },
         }
@@ -167,6 +167,8 @@ const Interview = ({ audioOn }) => {
         duration: 5000,
         isClosable: true,
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -180,21 +182,21 @@ const Interview = ({ audioOn }) => {
         },
       };
       const audioConstraints = { audio: true };
-  
+
       const videoStream = await navigator.mediaDevices.getUserMedia(videoConstraints);
       const audioStream = await navigator.mediaDevices.getUserMedia(audioConstraints);
-  
+
       const combinedStream = new MediaStream([
         ...videoStream.getVideoTracks(),
         ...audioStream.getAudioTracks(),
       ]);
-  
+
       setStream(combinedStream);
-  
+
       if (liveVideoFeed.current) {
         liveVideoFeed.current.srcObject = videoStream;
       }
-  
+
       toast({
         title: "Permissions Granted",
         description: "Camera and microphone access granted.",
@@ -213,7 +215,6 @@ const Interview = ({ audioOn }) => {
       });
     }
   };
-  
 
   const startRecording = async () => {
     if (!isMediaRecorderSupported() || !stream) {
@@ -330,12 +331,12 @@ const Interview = ({ audioOn }) => {
       });
       return;
     }
-  
+
     try {
       const ffmpeg = ffmpegRef.current;
-  
+
       await ffmpeg.writeFile("input.webm", await fetchFile(videoBlob));
-  
+
       await ffmpeg.exec([
         "-i", "input.webm",
         "-vn",
@@ -343,16 +344,16 @@ const Interview = ({ audioOn }) => {
         "-q:a", "2",
         "output.mp3",
       ]);
-  
+
       const data = await ffmpeg.readFile("output.mp3");
       const audioBlob = new Blob([data.buffer], { type: "audio/mp3" });
-  
+
       setAudioBlobs([audioBlob]);
       await handleSubmit(audioBlob);
-  
+
       await ffmpeg.deleteFile("input.webm");
       await ffmpeg.deleteFile("output.mp3");
-  
+
       toast({
         title: "Audio Extracted and Cleaned Up",
         description: "Audio extracted and memory cleared.",
@@ -371,7 +372,7 @@ const Interview = ({ audioOn }) => {
       });
     }
   };
-  
+
   const handleSubmit = async (audioBlob) => {
     if (!audioBlob) {
       toast({
@@ -401,7 +402,7 @@ const Interview = ({ audioOn }) => {
         );
 
         if (data?.result) {
-          setTranscriptions(prev => {
+          setTranscriptions((prev) => {
             const newTranscriptions = [...prev];
             newTranscriptions[questionNo] = data.result;
             return newTranscriptions;
@@ -433,7 +434,7 @@ const Interview = ({ audioOn }) => {
             isClosable: true,
           });
         } else {
-          await new Promise(resolve => setTimeout(resolve, 1000));
+          await new Promise((resolve) => setTimeout(resolve, 1000));
         }
       }
     }
@@ -445,8 +446,18 @@ const Interview = ({ audioOn }) => {
     setRecordedVideoBlob(null);
     setRecordedVideoURL(null);
     setQuestionNo((prev) => prev + 1);
-    setCurrentAction("record");
+    setRecordingStatus("inactive");
     setIsSubmitted(false);
+  };
+
+  const retryInterview = () => {
+    setRecordedVideoBlob(null);
+    setRecordedVideoURL(null);
+    setTranscriptions([]);
+    setQuestionNo(0);
+    setRecordingStatus("inactive");
+    setIsSubmitted(false);
+    speak(questions[0]?.questionText); // Restart from the first question
   };
 
   const speak = (text) => {
@@ -458,7 +469,7 @@ const Interview = ({ audioOn }) => {
 
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.onend = () => {
-      startRecording();
+      startRecording(); // Automatically start recording after question is spoken
     };
     synth.speak(utterance);
   };
@@ -468,22 +479,11 @@ const Interview = ({ audioOn }) => {
   }, [questionNo]);
 
   useEffect(() => {
-    if (questions[questionNo]?.questionText && !hasSpokenRef.current && selectedDomain) {
+    if (questions[questionNo]?.questionText && !hasSpokenRef.current) {
       speak(questions[questionNo].questionText);
       hasSpokenRef.current = true;
     }
-  }, [questions, questionNo, selectedDomain]);
-
-  useEffect(() => {
-    const synth = window.speechSynthesis;
-    if (synth) {
-      if (!audioOn) {
-        synth.pause();
-      } else {
-        synth.resume();
-      }
-    }
-  }, [audioOn]);
+  }, [questions, questionNo]);
 
   if (!loaded) {
     return (
@@ -510,19 +510,14 @@ const Interview = ({ audioOn }) => {
           <Text fontSize="2xl" fontWeight="bold" mb={6}>
             Select a Domain
           </Text>
-          <SearchBox
-            value={searchDomainValue}
-            setValue={setSearchDomainValue}
-            className="max-w-md mb-6"
-          />
-          <Grid 
+          <Grid
             templateColumns={{
-              base: "repeat(1, 1fr)", // 1 column on mobile
-              sm: "repeat(2, 1fr)", // 2 columns on small screens
-              md: "repeat(3, 1fr)", // 3 columns on medium screens
-              lg: "repeat(4, 1fr)", // 4 columns on larger screens
+              base: "repeat(1, 1fr)",
+              sm: "repeat(2, 1fr)",
+              md: "repeat(3, 1fr)",
+              lg: "repeat(4, 1fr)",
             }}
-            gap={6} 
+            gap={6}
             maxW="800px"
             width="100%"
           >
@@ -578,7 +573,7 @@ const Interview = ({ audioOn }) => {
                 if (stream) {
                   stream.getTracks().forEach((track) => track.stop());
                 }
-                navigate("/"); 
+                navigate("/");
               }}
             >
               Exit Interview
@@ -586,84 +581,32 @@ const Interview = ({ audioOn }) => {
           </Flex>
           <Box mb={4}>
             <Text fontSize="xl" mb={2}>
-              {questions[questionNo]?.questionText || <Loading />}
+              {isLoadingQuestions ? (
+                <Spinner size="md" /> // Spinner for loading questions
+              ) : (
+                questions[questionNo]?.questionText || <Loading />
+              )}
             </Text>
             <Badge colorScheme="purple" variant="subtle">
               Question {questionNo + 1} of {questions.length}
             </Badge>
           </Box>
-          <Flex justify="space-between" align="center" mb={4}>
-            <Flex gap={4}>
-              <Button
-                onClick={startRecording}
-                colorScheme="green"
-                isDisabled={recordingStatus === "recording"}
-              >
-                Start Recording
-              </Button>
-              <Button
-                onClick={stopRecording}
-                colorScheme="red"
-                isDisabled={recordingStatus !== "recording"}
-              >
-                Stop Recording
-              </Button>
-            </Flex>
-            <Flex align="center" gap={2}>
-              {recordingStatus === "recording" && (
-                <>
-                  <Spinner size="sm" color="red.500" />
-                  <Text color="red.500">Recording: {recordingTime}s</Text>
-                </>
-              )}
-            </Flex>
-         
-          </Flex>
-          {recordingStatus === "recording" && (
-            <Box mb={4}>
-              <Text color="red.500">Recording in progress...</Text>
-            </Box>
-          )}
-          {recordedVideoURL && (
-            <Box mb={4}>
-              <Text fontSize="lg" fontWeight="semibold" mb={2}>
-                Recorded Video
-              </Text>
-              <video src={recordedVideoURL} controls className="w-full max-w-xl rounded-md shadow-lg" />
-            </Box>
-          )}
-          {transcriptions[questionNo]?.length > 0 && (
-            <Box mb={4}>
-              <Text fontSize="lg" fontWeight="semibold" mb={2}>
-                Transcription
-              </Text>
-              <Box maxH="200px" overflowY="auto" p={4} bg="gray.50" borderRadius="md" boxShadow="sm">
-                {transcriptions[questionNo].map((item, index) => (
-                  <Box key={index} mb={2}>
-                    <Text fontSize="sm" color="purple.600">
-                      Start: {item.Start}, End: {item.End}
-                    </Text>
-                    <Text>
-                      <strong className={`text-purple-${(index + 1) % 2 === 0 ? "400" : "500"}`}>
-                        {index + 1}.
-                      </strong>{" "}
-                      {item.Text}
-                    </Text>
-                  </Box>
-                ))}
-              </Box>
-            </Box>
-          )}
+          {/* Buttons for recording */}
           <Flex justify="flex-end" mt={4}>
-            {questions.length === questionNo + 1 ? (
+            {isSubmitting ? (
+              <Spinner size="lg" color="purple.500" /> // Spinner for final submission
+            ) : questions.length === questionNo + 1 ? (
               <Button colorScheme="purple" onClick={submitFinalAnswers}>
                 Submit Final Answers
               </Button>
-            ) : transcriptions[questionNo]?.length > 0 ? (
+            ) : (
               <Button colorScheme="blue" onClick={nextQuestion}>
                 Next Question
               </Button>
-            ) : null}
+            )}
+            <Button colorScheme="orange" ml={4} onClick={retryInterview}>
+              Retry Interview
+            </Button>
           </Flex>
           {/* Live Video Feed */}
           <Box mt={6}>
