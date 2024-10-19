@@ -8,8 +8,8 @@ import {
   Box,
   Text,
   Flex,
-  Spinner,
   Badge,
+  Heading,
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState, useMemo } from "react";
 import axios from "axios";
@@ -18,6 +18,8 @@ import { toBlobURL, fetchFile } from "@ffmpeg/util";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import RecordRTC from "recordrtc";
+import Loading from "../Loading";
+import SearchBox from "../common/SearchBox";
 
 const mimeType = "video/webm";
 const MotionBox = motion(Box);
@@ -34,23 +36,23 @@ const Interview = ({ audioOn }) => {
   const [selectedDomain, setSelectedDomain] = useState("");
   const [questionNo, setQuestionNo] = useState(0);
   const [questions, setQuestions] = useState([]);
-  const [recordedVideoBlob, setRecordedVideoBlob] = useState(null);
-  const [recordedVideoURL, setRecordedVideoURL] = useState(null);
+  const [recordedVideos, setRecordedVideos] = useState([]); // Store all videos
   const [loaded, setLoaded] = useState(false);
-  const [isLoadingQuestions, setIsLoadingQuestions] = useState(false);
-  const [recordingStatus, setRecordingStatus] = useState("inactive"); // Update recording status
-  const hasSpokenRef = useRef(false); 
+  const hasSpokenRef = useRef(false);
   const ffmpegRef = useRef(new FFmpeg());
-  const [audioBlobs, setAudioBlobs] = useState([]);
-  const [videoBlobs, setVideoBlobs] = useState([]);
   const mediaRecorder = useRef(null);
+  const [recordingStatus, setRecordingStatus] = useState("inactive");
   const liveVideoFeed = useRef(null);
   const [stream, setStream] = useState(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [recordingTime, setRecordingTime] = useState(0); // Timer for recording
+  const [recordingTime, setRecordingTime] = useState(0); // For recording time display
   const timerRef = useRef(null);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loadingQuestions, setLoadingQuestions] = useState(false); // Spinner state for loading questions
+  const [loadingSubmission, setLoadingSubmission] = useState(false); // Spinner state for final answer submission
+  const [loadingTranscription, setLoadingTranscription] = useState(false); 
 
-  // Load FFmpeg
+  // Load FFmpeg for audio processing
   useEffect(() => {
     const loadFFmpeg = async () => {
       const baseURL = "https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm";
@@ -76,6 +78,7 @@ const Interview = ({ audioOn }) => {
 
     loadFFmpeg();
     return () => {
+      // Cleanup on unmount
       if (stream) {
         stream.getTracks().forEach((track) => track.stop());
       }
@@ -93,8 +96,8 @@ const Interview = ({ audioOn }) => {
   }, [allDomains, searchDomainValue]);
 
   const getQuestionsByDomain = async (domainName) => {
-    setIsLoadingQuestions(true);
     try {
+      setLoadingQuestions(true);
       const encodedDomain = encodeURIComponent(domainName);
       const response = await axios.get(
         `https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/api/interviewee/getAIQuestionByDomain/${encodedDomain}`
@@ -102,8 +105,6 @@ const Interview = ({ audioOn }) => {
 
       if (response.data && Array.isArray(response.data) && response.data.length > 0) {
         setQuestions(response.data);
-        speak(response.data[0].questionText); // Speak the first question
-        hasSpokenRef.current = true;
       } else {
         setQuestions([]);
         toast({
@@ -124,12 +125,12 @@ const Interview = ({ audioOn }) => {
         isClosable: true,
       });
     } finally {
-      setIsLoadingQuestions(false);
+      setLoadingQuestions(false); // Stop loading spinner once questions are fetched
     }
   };
 
   const submitFinalAnswers = async () => {
-    setIsSubmitting(true);
+    setLoadingSubmission(true); // Start loading spinner for submission
     const data = {
       questions: questions.map((question, index) => ({
         questionText: question.questionText,
@@ -168,330 +169,254 @@ const Interview = ({ audioOn }) => {
         isClosable: true,
       });
     } finally {
-      setIsSubmitting(false);
+      setLoadingSubmission(false); // Stop loading spinner after submission
     }
   };
 
-  const getCameraPermission = async () => {
+
+  useEffect(() => {
+    getCameraPermission();
+}, []);
+
+const getCameraPermission = async () => {
     try {
-      const videoConstraints = {
-        video: {
-          width: { ideal: 640 },
-          height: { ideal: 480 },
-          frameRate: { ideal: 15 },
-        },
-      };
-      const audioConstraints = { audio: true };
-
-      const videoStream = await navigator.mediaDevices.getUserMedia(videoConstraints);
-      const audioStream = await navigator.mediaDevices.getUserMedia(audioConstraints);
-
-      const combinedStream = new MediaStream([
-        ...videoStream.getVideoTracks(),
-        ...audioStream.getAudioTracks(),
-      ]);
-
-      setStream(combinedStream);
-
-      if (liveVideoFeed.current) {
-        liveVideoFeed.current.srcObject = videoStream;
-      }
-
-      toast({
-        title: "Permissions Granted",
-        description: "Camera and microphone access granted.",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
+        const videoStream = await navigator.mediaDevices.getUserMedia({
+            video: { width: 1280, height: 720 },
+            audio: true,
+        });
+        setStream(videoStream);
+        if (liveVideoFeed.current) {
+            liveVideoFeed.current.srcObject = videoStream;
+        }
+        toast({
+            title: "Permissions Granted",
+            description: "Camera and microphone access granted.",
+            status: "success",
+            duration: 3000,
+            isClosable: true,
+        });
     } catch (err) {
-      console.error("Permission denied:", err);
-      toast({
-        title: "Permissions Denied",
-        description: "Camera and microphone access are required for the interview.",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
+        console.error("Permission denied:", err);
+        toast({
+            title: "Permissions Denied",
+            description: "Camera and microphone access are required for the interview.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+        });
     }
+};
+
+  const speakQuestion = (questionText) => {
+    const synth = window.speechSynthesis;
+    if (!synth) {
+      console.error("Speech synthesis not supported in this browser");
+      return;
+    }
+  
+    const utterance = new SpeechSynthesisUtterance(questionText);
+    synth.speak(utterance);
   };
+  
+ 
 
   const startRecording = async () => {
     if (!isMediaRecorderSupported() || !stream) {
-      toast({
-        title: "Unsupported",
-        description: "MediaRecorder not supported in this browser. Using fallback.",
-        status: "warning",
-        duration: 3000,
-        isClosable: true,
-      });
-
-      const recorder = new RecordRTC(stream, { type: 'video' });
-      recorder.startRecording();
-      mediaRecorder.current = recorder;
-      setRecordingStatus("recording");
-      setCurrentAction("stop");
-
-      recorder.getBlob = (blob) => {
-        setRecordedVideoBlob(blob);
-        const videoUrl = URL.createObjectURL(blob);
-        setRecordedVideoURL(videoUrl);
         toast({
-          title: "Recording Stopped",
-          description: "Your response has been recorded.",
-          status: "success",
-          duration: 2000,
-          isClosable: true,
-        });
-      };
-    } else {
-      try {
-        const media = new MediaRecorder(stream, { mimeType });
-        mediaRecorder.current = media;
-        setRecordingStatus("recording");
-        setCurrentAction("stop");
-        media.start();
-
-        setRecordingTime(0);
-        timerRef.current = setInterval(() => {
-          setRecordingTime((prev) => prev + 1);
-        }, 1000);
-
-        toast({
-          title: "Recording Started",
-          description: "Your responses are being recorded.",
-          status: "info",
-          duration: 2000,
-          isClosable: true,
-        });
-
-        let localVideoChunks = [];
-        media.ondataavailable = (event) => {
-          if (event.data.size > 0) {
-            localVideoChunks.push(event.data);
-          }
-        };
-
-        media.onstop = () => {
-          clearInterval(timerRef.current);
-          const videoBlob = new Blob(localVideoChunks, { type: mimeType });
-          const videoUrl = URL.createObjectURL(videoBlob);
-          setRecordedVideoBlob(videoBlob);
-          setRecordedVideoURL(videoUrl);
-          setVideoBlobs((prevBlobs) => [...prevBlobs, videoBlob]);
-          toast({
-            title: "Recording Stopped",
-            description: "Your response has been recorded.",
-            status: "success",
-            duration: 2000,
+            title: "Unsupported",
+            description: "MediaRecorder not supported in this browser. Using fallback.",
+            status: "warning",
+            duration: 3000,
             isClosable: true,
-          });
-          extractAudio(videoBlob);
-        };
-      } catch (error) {
-        console.error("Error starting recording:", error);
-        toast({
-          title: "Recording Error",
-          description: "Failed to start recording.",
-          status: "error",
-          duration: 5000,
-          isClosable: true,
         });
-      }
+
+        // Using the fallback option (RecordRTC) if MediaRecorder is not supported
+        const recorder = new RecordRTC(stream, { type: 'video' });
+        mediaRecorder.current = recorder;
+        recorder.startRecording();
+        setRecordingStatus("recording");
+
+        // Proper placement for the stopRecording callback
+        recorder.onstop = async () => {
+            const blob = recorder.getBlob();
+            saveVideoBlob(blob);
+            await extractAudioTranscription(blob); // Auto transcription after video recording
+        };
+    } else {
+        try {
+            // Check if stream is available
+            if (!stream) {
+                throw new Error("No video/audio stream available. Please check your camera and microphone permissions.");
+            }
+
+            const media = new MediaRecorder(stream, { mimeType: 'video/webm; codecs=vp9' });
+            mediaRecorder.current = media;
+            setRecordingStatus("recording");
+            media.start();
+
+            setRecordingTime(0);
+            timerRef.current = setInterval(() => {
+                setRecordingTime((prev) => prev + 1);
+            }, 1000);
+
+            toast({
+                title: "Recording Started",
+                description: "Your responses are being recorded.",
+                status: "info",
+                duration: 2000,
+                isClosable: true,
+            });
+
+            let localVideoChunks = [];
+            media.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    localVideoChunks.push(event.data);
+                }
+            };
+
+            media.onstop = async () => {
+                clearInterval(timerRef.current);
+                const videoBlob = new Blob(localVideoChunks, { type: 'video/webm' });
+                saveVideoBlob(videoBlob);
+                await extractAudioTranscription(videoBlob); // Auto transcription after video recording
+            };
+        } catch (error) {
+            console.error("Error starting recording:", error);
+            toast({
+                title: "Recording Error",
+                description: "Failed to start recording. Please ensure permissions are granted and your browser supports recording.",
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+            });
+        }
     }
+};
+
+
+
+  const saveVideoBlob = (videoBlob) => {
+    const videoUrl = URL.createObjectURL(videoBlob);
+    setRecordedVideos((prev) => {
+      const updatedVideos = [...prev];
+      updatedVideos[questionNo] = { blob: videoBlob, url: videoUrl };
+      return updatedVideos;
+    });
+    setRecordingStatus("inactive");
   };
 
   const stopRecording = () => {
     if (mediaRecorder.current && recordingStatus === "recording") {
       if (mediaRecorder.current instanceof MediaRecorder) {
         mediaRecorder.current.stop();
-        setRecordingStatus("inactive");
       } else if (mediaRecorder.current instanceof RecordRTC) {
         mediaRecorder.current.stopRecording(() => {
           const videoBlob = mediaRecorder.current.getBlob();
-          const videoUrl = URL.createObjectURL(videoBlob);
-          setRecordedVideoBlob(videoBlob);
-          setRecordedVideoURL(videoUrl);
-          setVideoBlobs((prevBlobs) => [...prevBlobs, videoBlob]);
-          extractAudio(videoBlob);
+          saveVideoBlob(videoBlob);
+          extractAudioTranscription(videoBlob); // Auto transcription after video recording
         });
-        setRecordingStatus("inactive");
       }
     }
   };
 
-  const extractAudio = async (videoBlob) => {
-    if (!videoBlob) {
-      toast({
-        title: "No Video Recorded",
-        description: "Please record a video before extracting audio.",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-      return;
-    }
-
+  const extractAudioTranscription = async (videoBlob) => {
     try {
-      const ffmpeg = ffmpegRef.current;
-
-      await ffmpeg.writeFile("input.webm", await fetchFile(videoBlob));
-
-      await ffmpeg.exec([
-        "-i", "input.webm",
-        "-vn",
-        "-acodec", "libmp3lame",
-        "-q:a", "2",
-        "output.mp3",
-      ]);
-
-      const data = await ffmpeg.readFile("output.mp3");
-      const audioBlob = new Blob([data.buffer], { type: "audio/mp3" });
-
-      setAudioBlobs([audioBlob]);
-      await handleSubmit(audioBlob);
-
-      await ffmpeg.deleteFile("input.webm");
-      await ffmpeg.deleteFile("output.mp3");
-
-      toast({
-        title: "Audio Extracted and Cleaned Up",
-        description: "Audio extracted and memory cleared.",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
+      setLoadingTranscription(true); // Start loading spinner for transcription
+  
+      // Initialize SpeechRecognition
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        toast({
+          title: "Unsupported Browser",
+          description: "Speech recognition is not supported in this browser.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+        return;
+      }
+  
+      const recognition = new SpeechRecognition();
+      recognition.lang = "en-US";
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+  
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        setTranscriptions((prev) => {
+          const updatedTranscriptions = [...prev];
+          updatedTranscriptions[questionNo] = transcript;
+          return updatedTranscriptions;
+        });
+  
+        toast({
+          title: "Transcription Success",
+          description: "Your video has been transcribed.",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      };
+  
+      recognition.onerror = (event) => {
+        console.error("Speech recognition error:", event.error);
+        toast({
+          title: "Transcription Error",
+          description: "Failed to transcribe the audio.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      };
+  
+      // Convert videoBlob to array buffer for SpeechRecognition to process
+      const arrayBuffer = await videoBlob.arrayBuffer();
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+  
+      // Start the speech recognition without playing the audio
+      recognition.start();
+  
+      // Stop the recognition after the duration of the audio
+      setTimeout(() => {
+        recognition.stop();
+      }, audioBuffer.duration * 1000); // Use audio duration to stop recognition
     } catch (error) {
-      console.error("Error extracting audio:", error);
+      console.error("Error during transcription:", error);
       toast({
-        title: "Extraction Error",
-        description: "Failed to extract audio from the video.",
+        title: "Transcription Error",
+        description: "Failed to transcribe the audio.",
         status: "error",
         duration: 5000,
         isClosable: true,
       });
+    } finally {
+      setLoadingTranscription(false); // Stop loading spinner after transcription
     }
-  };
-
-  const handleSubmit = async (audioBlob) => {
-    if (!audioBlob) {
-      toast({
-        title: "No Audio Extracted",
-        description: "Please record and extract audio before submitting.",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    const formData = new FormData();
-    formData.append("audio_file", new File([audioBlob], "audio.mp3", { type: "audio/mp3" }));
-
-    const maxRetries = 5;
-    let retries = 0;
-
-    while (retries < maxRetries) {
-      try {
-        const { data } = await axios.post(
-          "https://api.fintervue.com/dgProcessAudio",
-          formData,
-          { headers: { "Content-Type": "multipart/form-data" } }
-        );
-
-        if (data?.result) {
-          setTranscriptions((prev) => {
-            const newTranscriptions = [...prev];
-            newTranscriptions[questionNo] = data.result;
-            return newTranscriptions;
-          });
-
-          toast({
-            title: "Transcription Completed",
-            description: "Your response has been transcribed.",
-            status: "success",
-            duration: 3000,
-            isClosable: true,
-          });
-
-          setIsSubmitted(true);
-          setCurrentAction(questionNo + 1 < questions.length ? "next" : "finish");
-          break;
-        } else {
-          throw new Error("Invalid transcription response");
-        }
-      } catch (error) {
-        retries++;
-
-        if (retries === maxRetries) {
-          toast({
-            title: "Transcription Error",
-            description: "Failed to transcribe your response after multiple attempts.",
-            status: "error",
-            duration: 5000,
-            isClosable: true,
-          });
-        } else {
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-        }
-      }
-    }
-
-    setIsSubmitting(false);
-  };
+  };  
+  
 
   const nextQuestion = () => {
-    setRecordedVideoBlob(null);
-    setRecordedVideoURL(null);
     setQuestionNo((prev) => prev + 1);
-    setRecordingStatus("inactive");
-    setIsSubmitted(false);
-  };
-
-  const retryInterview = () => {
-    setRecordedVideoBlob(null);
-    setRecordedVideoURL(null);
-    setTranscriptions([]);
-    setQuestionNo(0);
-    setRecordingStatus("inactive");
-    setIsSubmitted(false);
-    speak(questions[0]?.questionText); // Restart from the first question
-  };
-
-  const speak = (text) => {
-    const synth = window.speechSynthesis;
-    if (!synth) {
-      console.error("Speech synthesis not supported in this browser");
-      return;
-    }
-
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.onend = () => {
-      startRecording(); // Automatically start recording after question is spoken
-    };
-    synth.speak(utterance);
-  };
-
-  useEffect(() => {
     hasSpokenRef.current = false;
-  }, [questionNo]);
+  };
 
   useEffect(() => {
     if (questions[questionNo]?.questionText && !hasSpokenRef.current) {
-      speak(questions[questionNo].questionText);
-      hasSpokenRef.current = true;
+      speakQuestion(questions[questionNo].questionText);
+      
+      // Delay starting the recording to allow the question to be read aloud
+      const delayTimer = setTimeout(() => {
+        startRecording(); 
+        hasSpokenRef.current = true;
+      }, 2000); // 2-second delay after the question is read
+  
+      // Clean up the timeout on component unmount or when questionNo changes
+      return () => clearTimeout(delayTimer);
     }
   }, [questions, questionNo]);
 
-  if (!loaded) {
-    return (
-      <Flex justify="center" align="center" height="100vh">
-        <Spinner size="xl" />
-      </Flex>
-    );
-  }
+  const canMoveToNextQuestion = !!recordedVideos[questionNo]?.url;
 
   return (
     <MotionBox
@@ -507,9 +432,23 @@ const Interview = ({ audioOn }) => {
           animate={{ scale: 1 }}
           transition={{ duration: 0.5 }}
         >
-          <Text fontSize="2xl" fontWeight="bold" mb={6}>
+          {/* Heading with blue.700 */}
+          <Text fontSize="3xl" fontWeight="bold" mb={8} color="blue.700">
             Select a Domain
           </Text>
+
+          {/* Search Bar with updated styling */}
+          <SearchBox
+            value={searchDomainValue}
+            setValue={setSearchDomainValue}
+            className="max-w-md mb-8 px-4 py-2"
+            borderRadius="md"
+            borderColor="blue.700"
+            placeholder="Search domains..."
+            _focus={{ borderColor: "blue.700", boxShadow: "0 0 0 2px blue.300" }}
+          />
+
+          {/* Updated Grid for domain cards with better spacing */}
           <Grid
             templateColumns={{
               base: "repeat(1, 1fr)",
@@ -517,15 +456,16 @@ const Interview = ({ audioOn }) => {
               md: "repeat(3, 1fr)",
               lg: "repeat(4, 1fr)",
             }}
-            gap={6}
+            gap={8}
             maxW="800px"
             width="100%"
           >
             {filteredDomains.map((domain, index) => (
               <GridItem key={`domain-${index}`}>
                 <MotionBox
-                  whileHover={{ scale: 1.05, boxShadow: "lg" }}
+                  whileHover={{ scale: 1.05, boxShadow: "xl" }}
                   whileTap={{ scale: 0.95 }}
+                  transition="0.3s ease"
                 >
                   <Card
                     cursor="pointer"
@@ -534,20 +474,28 @@ const Interview = ({ audioOn }) => {
                       getQuestionsByDomain(domain.name);
                       getCameraPermission();
                     }}
-                    _hover={{ borderColor: "blue.400", borderWidth: "2px" }}
-                    transition="border-color 0.3s"
+                    _hover={{
+                      borderColor: "blue.700",
+                      borderWidth: "2px",
+                      backgroundColor: "blue.50",
+                      transition: "background-color 0.3s ease",
+                    }}
+                    transition="border-color 0.3s, background-color 0.3s ease"
                     borderWidth="1px"
-                    borderColor="gray.200"
+                    borderColor="gray.300"
                     borderRadius="lg"
                     overflow="hidden"
                     height="100%"
                   >
                     <CardBody>
                       <Flex direction="column" align="start">
-                        <Text fontSize="xl" fontWeight="semibold" mb={2}>
+                        {/* Domain name and description with blue.700 styling */}
+                        <Text fontSize="xl" fontWeight="semibold" mb={1} color="blue.700">
                           {domain.name}
                         </Text>
-                        <Text color="gray.600">{domain.description}</Text>
+                        <Text color="gray.600" fontSize="sm">
+                          {domain.description}
+                        </Text>
                       </Flex>
                     </CardBody>
                   </Card>
@@ -558,69 +506,112 @@ const Interview = ({ audioOn }) => {
         </MotionBox>
       ) : (
         <MotionBox
-          className="p-6 rounded-xl w-full max-w-4xl mx-auto"
+          className="p-6 rounded-xl w-full max-w-5xl mx-auto"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <Flex justify="space-between" align="center" mb={4}>
-            <Text fontSize="2xl" fontWeight="bold">
-              {selectedDomain} Interview
-            </Text>
+          {/* Exit Button at the top right */}
+          <Flex justify="flex-end" mb={4}>
             <Button
               colorScheme="red"
               onClick={() => {
                 if (stream) {
                   stream.getTracks().forEach((track) => track.stop());
                 }
-                navigate("/");
+                setSelectedDomain("");
               }}
             >
               Exit Interview
             </Button>
           </Flex>
+
           <Box mb={4}>
             <Text fontSize="xl" mb={2}>
-              {isLoadingQuestions ? (
-                <Spinner size="md" /> // Spinner for loading questions
-              ) : (
-                questions[questionNo]?.questionText || <Loading />
-              )}
+              {questions[questionNo]?.questionText || <Loading />}
             </Text>
             <Badge colorScheme="purple" variant="subtle">
               Question {questionNo + 1} of {questions.length}
             </Badge>
           </Box>
-          {/* Buttons for recording */}
-          <Flex justify="flex-end" mt={4}>
-            {isSubmitting ? (
-              <Spinner size="lg" color="purple.500" /> // Spinner for final submission
-            ) : questions.length === questionNo + 1 ? (
+
+          {/* Live Video Feed */}
+          <Box mb={4}>
+            <Text fontSize="lg" fontWeight="semibold" mb={2}>
+              Live Video Feed
+            </Text>
+            <Flex justify="center">
+              <video
+                ref={liveVideoFeed}
+                autoPlay
+                muted
+                className="w-full max-w-full rounded-md shadow-lg"
+                style={{ height: "500px", border: "2px solid #E2E8F0" }}
+              ></video>
+            </Flex>
+            {recordingStatus === "recording" && (
+              <Text fontSize="md" color="red.500" mt={2} textAlign="center">
+                Recording... {Math.floor(recordingTime / 60)}m {recordingTime % 60}s
+              </Text>
+            )}
+          </Box>
+
+          {/* Next Question Button Below Live Feed */}
+          <Flex justify="center" mb={6} gap={4}>
+            {questions.length === questionNo + 1 ? (
               <Button colorScheme="purple" onClick={submitFinalAnswers}>
                 Submit Final Answers
               </Button>
             ) : (
-              <Button colorScheme="blue" onClick={nextQuestion}>
-                Next Question
-              </Button>
+              <>
+                <Button
+                  colorScheme="red"
+                  onClick={stopRecording}
+                  isDisabled={recordingStatus !== "recording"}
+                >
+                  Stop Recording
+                </Button>
+                <Button
+                  colorScheme="blue"
+                  onClick={nextQuestion}
+                  isDisabled={!canMoveToNextQuestion}
+                >
+                  Next Question
+                </Button>
+              </>
             )}
-            <Button colorScheme="orange" ml={4} onClick={retryInterview}>
-              Retry Interview
-            </Button>
           </Flex>
-          {/* Live Video Feed */}
-          <Box mt={6}>
-            <Text fontSize="lg" fontWeight="semibold" mb={2}>
-              Live Video Feed
-            </Text>
-            <video
-              ref={liveVideoFeed}
-              autoPlay
-              muted
-              className="w-full max-w-xl rounded-md shadow-lg"
-              style={{ border: "2px solid #E2E8F0" }}
-            ></video>
-          </Box>
+
+          {/* Recorded Videos Section */}
+            <Box mt={6}>
+              <Heading size="lg" mb={4}>
+                Recorded Videos
+              </Heading>
+              {recordedVideos.map((video, index) => (
+                <Box key={index} mb={6}>
+                  <Text fontSize="lg" fontWeight="semibold" mb={2}>
+                    Question {index + 1}: {questions[index]?.questionText}
+                  </Text>
+                  <Flex direction="column" align="center" mb={4}>
+                    {/* Video Player */}
+                    <video
+                      src={video.url}
+                      controls
+                      className="w-full max-w-md rounded-md shadow-lg"
+                      style={{ border: "2px solid #E2E8F0" }}
+                    />
+                    
+                    {/* Transcription Text */}
+                    <Text mt={2} color="gray.600" fontSize="sm">
+                      {transcriptions[index]
+                        ? `Transcription: ${transcriptions[index]}`
+                        : "Interview."}
+                    </Text>
+                  </Flex>
+                </Box>
+              ))}
+            </Box>
+
         </MotionBox>
       )}
     </MotionBox>
