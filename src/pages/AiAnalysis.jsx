@@ -22,6 +22,8 @@ const AIAnalysis = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const analysisId = localStorage.getItem("ai_analysis_id");
+  const tabChangeCount = localStorage.getItem("tabChangeCount") || 0;
+  const windowBlurCount = localStorage.getItem("windowBlurCount") || 0;
 
   useEffect(() => {
     const fetchAnalysis = async () => {
@@ -147,6 +149,18 @@ const AIAnalysis = () => {
 
           <Divider />
 
+<Box>
+  <Heading as="h2" size="md" mb={2} color="teal.700">
+    Session Details
+  </Heading>
+  <Text fontSize="md">
+    Number of times you switched tabs: {tabChangeCount}
+  </Text>
+  <Text fontSize="md">
+    Number of times the window lost focus: {windowBlurCount}
+  </Text>
+</Box>
+<Divider />
           <Box>
             <Heading as="h2" size="md" mb={2} color="teal.700">
               Transcript
