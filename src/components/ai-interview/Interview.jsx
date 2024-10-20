@@ -54,6 +54,9 @@ const Interview = ({ audioOn }) => {
   const [currentAction, setCurrentAction] = useState("record");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // State variables to track tab and window switches
+  const [tabChangeCount, setTabChangeCount] = useState(0);
+  const [windowBlurCount, setWindowBlurCount] = useState(0);
 
   // Load FFmpeg
   useEffect(() => {
@@ -78,7 +81,7 @@ const Interview = ({ audioOn }) => {
         });
       }
     };
-
+    
     loadFFmpeg();
     return () => {
       // Cleanup on unmount
@@ -87,6 +90,46 @@ const Interview = ({ audioOn }) => {
       }
     };
   }, [stream, toast]);
+// Tab switch detection
+useEffect(() => {
+  const handleVisibilityChange = () => {
+    if (document.visibilityState === 'hidden') {
+      setTabChangeCount((prevCount) => prevCount + 1);
+      toast({
+        title: "Tab Switch Detected",
+        description: "Switching tabs is not allowed during the interview.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
+  document.addEventListener("visibilitychange", handleVisibilityChange);
+
+  return () => {
+    document.removeEventListener("visibilitychange", handleVisibilityChange);
+  };
+}, [toast]);
+// Window blur detection
+useEffect(() => {
+  const handleWindowBlur = () => {
+    setWindowBlurCount((prevCount) => prevCount + 1);
+    toast({
+      title: "Focus Lost",
+      description: "Please return to the interview window.",
+      status: "warning",
+      duration: 3000,
+      isClosable: true,
+    });
+  };
+
+  window.addEventListener("blur", handleWindowBlur);
+
+  return () => {
+    window.removeEventListener("blur", handleWindowBlur);
+  };
+}, [toast]);
 
   const isMediaRecorderSupported = () => {
     return "MediaRecorder" in window || RecordRTC;
@@ -135,6 +178,8 @@ const Interview = ({ audioOn }) => {
         questionText: question.questionText,
         transcription: transcriptions[index],
       })),
+      tabChangeCount: tabChangeCount, // tab switch count
+      windowBlurCount: windowBlurCount, // Include window blur count
     };
 
     try {
@@ -149,6 +194,8 @@ const Interview = ({ audioOn }) => {
       if (response.status === 201) {
         const { ai_analysis_id } = response.data;
         localStorage.setItem("ai_analysis_id", ai_analysis_id);
+        localStorage.setItem("tabChangeCount", tabChangeCount); // Store counts in localStorage
+        localStorage.setItem("windowBlurCount", windowBlurCount);
         toast({
           title: "Success",
           description: "Analysis submitted successfully.",
