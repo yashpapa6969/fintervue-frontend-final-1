@@ -22,7 +22,11 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import RecordRTC from "recordrtc";
 
-const mimeType = "video/webm";
+// Updated MIME type dynamically based on browser compatibility
+const mimeType = (MediaRecorder.isTypeSupported("video/webm") && !/Safari/.test(navigator.userAgent)) 
+  ? "video/webm" 
+  : "video/mp4"; // Fallback to mp4 for Safari
+
 const MotionBox = motion(Box);
 
 const Interview = ({ audioOn }) => {
@@ -90,46 +94,48 @@ const Interview = ({ audioOn }) => {
       }
     };
   }, [stream, toast]);
-// Tab switch detection
-useEffect(() => {
-  const handleVisibilityChange = () => {
-    if (document.visibilityState === 'hidden') {
-      setTabChangeCount((prevCount) => prevCount + 1);
+
+  // Tab switch detection
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        setTabChangeCount((prevCount) => prevCount + 1);
+        toast({
+          title: "Tab Switch Detected",
+          description: "Switching tabs is not allowed during the interview.",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [toast]);
+
+  // Window blur detection
+  useEffect(() => {
+    const handleWindowBlur = () => {
+      setWindowBlurCount((prevCount) => prevCount + 1);
       toast({
-        title: "Tab Switch Detected",
-        description: "Switching tabs is not allowed during the interview.",
-        status: "error",
+        title: "Focus Lost",
+        description: "Please return to the interview window.",
+        status: "warning",
         duration: 3000,
         isClosable: true,
       });
-    }
-  };
+    };
 
-  document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("blur", handleWindowBlur);
 
-  return () => {
-    document.removeEventListener("visibilitychange", handleVisibilityChange);
-  };
-}, [toast]);
-// Window blur detection
-useEffect(() => {
-  const handleWindowBlur = () => {
-    setWindowBlurCount((prevCount) => prevCount + 1);
-    toast({
-      title: "Focus Lost",
-      description: "Please return to the interview window.",
-      status: "warning",
-      duration: 3000,
-      isClosable: true,
-    });
-  };
-
-  window.addEventListener("blur", handleWindowBlur);
-
-  return () => {
-    window.removeEventListener("blur", handleWindowBlur);
-  };
-}, [toast]);
+    return () => {
+      window.removeEventListener("blur", handleWindowBlur);
+    };
+  }, [toast]);
 
   const isMediaRecorderSupported = () => {
     return "MediaRecorder" in window || RecordRTC;
@@ -261,7 +267,6 @@ useEffect(() => {
     }
   };
   
-
   const startRecording = async () => {
     if (!isMediaRecorderSupported() || !stream) {
       toast({
@@ -292,7 +297,7 @@ useEffect(() => {
       };
     } else {
       try {
-        const media = new MediaRecorder(stream, { mimeType });
+        const media = new MediaRecorder(stream, { mimeType }); // Updated to use dynamic mimeType
         mediaRecorder.current = media;
         setRecordingStatus("recording");
         setCurrentAction("stop");
