@@ -11,7 +11,7 @@ export const ResumeBuilderPage = React.lazy(() => import("../../products/resumeB
 export const TocPage = React.lazy(() => import("../../pages/TocPage.jsx"));
 export const RefundsAndCancellationPage = React.lazy(() => import("../../pages/RefundsAndCancellationPage.jsx"));
 export const ContactPage = React.lazy(() => import("../../pages/ContactPage.jsx"));
-export const AboutPage = React.lazy(() => import("../../pages/AboutPage.jsx"));
+export const AboutPage = React.lazy(() => import("../../pages/About.jsx"));
 export const PrivacyPolicyPage = React.lazy(() => import("../../pages/PrivacyPolicyPage.jsx"));
 export const PricingPage = React.lazy(() => import("../../pages/PricingPage.jsx"));
 export const SignUpPage = React.lazy(() => import("../../pages/signupPage2.jsx"));

@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../assests/logo/logo4.jpeg";
 
-import Navbar from "../components/navbar";
-import axios from 'axios';
+import Navbar from "../components/Navbar";
+import axios from "axios";
 import useSignIn from "react-auth-kit/hooks/useSignIn";
 
 const LoginInterviewer = () => {
@@ -17,48 +17,50 @@ const LoginInterviewer = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/api/interviewer/Interviewerlogin', {
-        email,
-        password,
-      });
+      const response = await axios.post(
+        "https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/api/interviewer/Interviewerlogin",
+        {
+          email,
+          password,
+        }
+      );
 
-      const {  user } = response.data;
+      const { user } = response.data;
 
       signIn({
         auth: {
           token: response.data.token,
-          type: 'Bearer'
+          type: "Bearer",
         },
-        refresh: '',
+        refresh: "",
         userState: {
           name: user.firstName,
           uid: user.interviewer_id,
-          email: user.email ,
-          role : "interviewer"
-        }
-      })
+          email: user.email,
+          role: "interviewer",
+        },
+      });
 
-      localStorage.setItem('interviewer', JSON.stringify(user));
+      localStorage.setItem("interviewer", JSON.stringify(user));
 
-     navigate('/pendingInterviews'); // Replace with your desired route
-
+      navigate("/pendingInterviews"); // Replace with your desired route
     } catch (error) {
       // Handle login error
-      console.error('Login error:', error);
+      console.error("Login error:", error);
 
       if (error.response && error.response.data && error.response.data.msg) {
         setErrorMessage(error.response.data.msg);
       } else if (error.message) {
         setErrorMessage(error.message);
       } else {
-        setErrorMessage('An error occurred during login');
+        setErrorMessage("An error occurred during login");
       }
     }
   };
 
   return (
     <>
-      <Navbar/>
+      <Navbar />
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
         <div className="flex w-full max-w-4xl rounded-lg shadow-lg overflow-hidden">
           {/* Left side */}
