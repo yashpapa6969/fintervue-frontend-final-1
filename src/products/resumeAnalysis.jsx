@@ -5,7 +5,7 @@ import { BorderBeam } from "../components/ui/border-beam";
 import img1 from "../assests/resume_generator.png"; // Ensure the path is correct
 import Upload from "../components/common/Upload";
 
-import { useToast } from "@chakra-ui/react";
+import { useToast,  Spinner, Container} from "@chakra-ui/react";
 import { marked } from "marked";
 import axios from "axios";
 
@@ -17,6 +17,8 @@ const ResumeAnalysis = () => {
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
   };
+
+const [loading, setLoading] = useState(false); 
 
   const handleSubmit = async () => {
     if (!file) {
@@ -34,6 +36,7 @@ const ResumeAnalysis = () => {
     formData.append("filename", file);
 
     try {
+      setLoading(true);
       const response = await axios.post(
         "https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/api/interviewee/addResumeAnalysis",
         formData,
@@ -43,6 +46,15 @@ const ResumeAnalysis = () => {
           },
         }
       );
+
+      if (loading) {
+        return (
+          <Container centerContent>
+            <Spinner size="xl" color="teal.500" />
+            <Text mt={4}>Loading analysis data...</Text>
+          </Container>
+        );
+      }
 
       const { analysis } = response.data;
       setAnalysis(analysis);
@@ -62,6 +74,8 @@ const ResumeAnalysis = () => {
         duration: 5000,
         isClosable: true,
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -102,7 +116,12 @@ const ResumeAnalysis = () => {
           </div>
         </div>
         <div className="w-full flex justify-center">
-          <Upload onFileChange={handleFileChange} onSubmit={handleSubmit} />
+          {/* Passing loading state to Upload component */}
+          <Upload 
+            onFileChange={handleFileChange} 
+            onSubmit={handleSubmit} 
+            loading={loading}  // Passed loading state here
+          />
         </div>
 
         {analysis && (
