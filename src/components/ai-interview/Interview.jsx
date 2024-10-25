@@ -22,6 +22,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import RecordRTC from "recordrtc";
 
+
 // Updated MIME type dynamically based on browser compatibility
 const mimeType = (MediaRecorder.isTypeSupported("video/webm") && !/Safari/.test(navigator.userAgent)) 
   ? "video/webm" 
@@ -61,6 +62,9 @@ const Interview = ({ audioOn }) => {
   // State variables to track tab and window switches
   const [tabChangeCount, setTabChangeCount] = useState(0);
   const [windowBlurCount, setWindowBlurCount] = useState(0);
+  const [loading, setLoading] = useState(false); 
+  const [isQuestionAnswered, setIsQuestionAnswered] = useState(false);
+
 
   // Load FFmpeg
   useEffect(() => {
@@ -147,8 +151,10 @@ const Interview = ({ audioOn }) => {
     );
   }, [allDomains, searchDomainValue]);
 
+
   const getQuestionsByDomain = async (domainName) => {
     try {
+      setLoading(true);
       const encodedDomain = encodeURIComponent(domainName);
       const response = await axios.get(
         `https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/api/interviewee/getAIQuestionByDomain/${encodedDomain}`
@@ -175,6 +181,8 @@ const Interview = ({ audioOn }) => {
         duration: 5000,
         isClosable: true,
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -446,6 +454,7 @@ const Interview = ({ audioOn }) => {
 
     while (retries < maxRetries) {
       try {
+        setLoading(true);
         const { data } = await axios.post(
           "https://api.fintervue.com/dgProcessAudio",
           formData,
@@ -487,11 +496,13 @@ const Interview = ({ audioOn }) => {
         } else {
           await new Promise(resolve => setTimeout(resolve, 1000));
         }
+      }finally {
+        setLoading(false);
       }
     }
-
     setIsSubmitting(false);
   };
+
 
   const nextQuestion = () => {
     setRecordedVideoBlob(null);
@@ -499,6 +510,11 @@ const Interview = ({ audioOn }) => {
     setQuestionNo((prev) => prev + 1);
     setCurrentAction("record");
     setIsSubmitted(false);
+    setIsQuestionAnswered(false);
+  };
+
+  const handleQuestionAnswered = () => {
+    setIsQuestionAnswered(true);
   };
 
   const speak = (text) => {
@@ -537,6 +553,13 @@ const Interview = ({ audioOn }) => {
     }
   }, [audioOn]);
 
+  useEffect(() => {
+    if (questionNo > 0 && !isSubmitted) {
+      // Auto start recording for questions after the first one
+      startRecording();
+    }
+  }, [questionNo]);
+
   if (!loaded) {
     return (
       <Flex justify="center" align="center" height="100vh">
@@ -551,6 +574,7 @@ const Interview = ({ audioOn }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
+      style={{ backgroundColor: "blue.700" }} 
     >
       {!selectedDomain ? (
         <MotionBox
@@ -559,13 +583,17 @@ const Interview = ({ audioOn }) => {
           animate={{ scale: 1 }}
           transition={{ duration: 0.5 }}
         >
-          <Text fontSize="2xl" fontWeight="bold" mb={6}>
+          <Text fontSize="3xl" fontWeight="bold" mb={8} color="blue.700">
             Select a Domain
           </Text>
           <SearchBox
             value={searchDomainValue}
             setValue={setSearchDomainValue}
-            className="max-w-md mb-6"
+            className="max-w-md mb-8 px-4 py-2"
+            borderRadius="md"
+            borderColor="blue.700"
+            placeholder="Search domains..."
+            _focus={{ borderColor: "blue.700", boxShadow: "0 0 0 2px blue.300" }}
           />
           <Grid 
             templateColumns={{
@@ -574,7 +602,7 @@ const Interview = ({ audioOn }) => {
               md: "repeat(3, 1fr)", // 3 columns on medium screens
               lg: "repeat(4, 1fr)", // 4 columns on larger screens
             }}
-            gap={6} 
+            gap={8} 
             maxW="800px"
             width="100%"
           >
@@ -583,6 +611,7 @@ const Interview = ({ audioOn }) => {
                 <MotionBox
                   whileHover={{ scale: 1.05, boxShadow: "lg" }}
                   whileTap={{ scale: 0.95 }}
+                   transition="0.3s ease"
                 >
                   <Card
                     cursor="pointer"
@@ -591,17 +620,22 @@ const Interview = ({ audioOn }) => {
                       getQuestionsByDomain(domain.name);
                       getCameraPermission();
                     }}
-                    _hover={{ borderColor: "blue.400", borderWidth: "2px" }}
-                    transition="border-color 0.3s"
+                    _hover={{
+                      borderColor: "blue.700",
+                      borderWidth: "2px",
+                      backgroundColor: "blue.50",
+                      transition: "background-color 0.3s ease",
+                    }}
+                    transition="border-color 0.3s, background-color 0.3s ease"
                     borderWidth="1px"
-                    borderColor="gray.200"
+                    borderColor="gray.300"
                     borderRadius="lg"
                     overflow="hidden"
                     height="100%"
                   >
                     <CardBody>
                       <Flex direction="column" align="start">
-                        <Text fontSize="xl" fontWeight="semibold" mb={2}>
+                        <Text fontSize="xl" fontWeight="semibold" mb={1} color="blue.700">
                           {domain.name}
                         </Text>
                         <Text color="gray.600">{domain.description}</Text>
@@ -649,7 +683,10 @@ const Interview = ({ audioOn }) => {
               <Button
                 onClick={startRecording}
                 colorScheme="green"
-                isDisabled={recordingStatus === "recording"}
+                isDisabled={
+                  (questionNo === 0 && recordingStatus === "recording") || // Disable while recording the first question
+                  (questionNo > 0 && (!isQuestionAnswered || recordingStatus === "recording")) // Disable for subsequent questions until answered
+                }
               >
                 Start Recording
               </Button>
@@ -661,6 +698,7 @@ const Interview = ({ audioOn }) => {
                 Stop Recording
               </Button>
             </Flex>
+
             <Flex align="center" gap={2}>
               {recordingStatus === "recording" && (
                 <>
@@ -669,8 +707,8 @@ const Interview = ({ audioOn }) => {
                 </>
               )}
             </Flex>
-         
           </Flex>
+
           {recordingStatus === "recording" && (
             <Box mb={4}>
               <Text color="red.500">Recording in progress...</Text>
@@ -684,7 +722,15 @@ const Interview = ({ audioOn }) => {
               <video src={recordedVideoURL} controls className="w-full max-w-xl rounded-md shadow-lg" />
             </Box>
           )}
-          {transcriptions[questionNo]?.length > 0 && (
+
+          {/* Transcription loading below the recorded video */}
+        {isSubmitting ? (
+          <Flex justify="center" align="center" mt={4}>
+            <Spinner size="lg" color="teal.500" />
+            <Text mt={4}>Transcribing...</Text>
+          </Flex>
+        ) : (
+          transcriptions[questionNo]?.length > 0 && (
             <Box mb={4}>
               <Text fontSize="lg" fontWeight="semibold" mb={2}>
                 Transcription
@@ -705,35 +751,39 @@ const Interview = ({ audioOn }) => {
                 ))}
               </Box>
             </Box>
-          )}
-          <Flex justify="flex-end" mt={4}>
-            {questions.length === questionNo + 1 ? (
-              <Button colorScheme="purple" onClick={submitFinalAnswers}>
-                Submit Final Answers
-              </Button>
-            ) : transcriptions[questionNo]?.length > 0 ? (
-              <Button colorScheme="blue" onClick={nextQuestion}>
-                Next Question
-              </Button>
-            ) : null}
-          </Flex>
-          {/* Live Video Feed */}
-          <Box mt={6}>
-            <Text fontSize="lg" fontWeight="semibold" mb={2}>
-              Live Video Feed
-            </Text>
+          )
+        )}
+        <Flex justify="flex-end" mt={4}>
+          {questions.length === questionNo + 1 ? (
+            <Button colorScheme="purple" onClick={submitFinalAnswers}>
+              Submit Final Answers
+            </Button>
+          ) : transcriptions[questionNo]?.length > 0 ? (
+            <Button colorScheme="blue" onClick={nextQuestion}>
+              Next Question
+            </Button>
+          ) : null}
+        </Flex>
+
+        {/* Live Video Feed */}
+        <Box mt={6}>
+          <Text fontSize="lg" fontWeight="semibold" mb={2}>
+            Live Video Feed
+          </Text>
+          <Flex justify="center">
             <video
               ref={liveVideoFeed}
               autoPlay
               muted
-              className="w-full max-w-xl rounded-md shadow-lg"
-              style={{ border: "2px solid #E2E8F0" }}
+              className="w-full max-w-full rounded-md shadow-lg"
+              style={{ height: "550px", border: "2px solid #E2E8F0" }}
             ></video>
-          </Box>
-        </MotionBox>
-      )}
-    </MotionBox>
-  );
+          </Flex>
+        </Box>
+      </MotionBox>
+    )}
+  </MotionBox>
+);
 };
 
 export default Interview;

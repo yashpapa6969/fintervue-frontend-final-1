@@ -4,11 +4,12 @@ import ShimmerButton from "../../ui/shimmer-button";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import RequiredIndicator from "../../ui/RequiredIndicator";
-import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
+import { Tab, TabList, TabPanel, TabPanels, Tabs, Spinner } from "@chakra-ui/react";
 
 const Personalinfo = () => {
   const { userData, setUserData } = useContext(StepperContext);
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e, index, section, field) => {
     const { value } = e.target;
@@ -767,6 +768,7 @@ GitHub: \\href{{github}}{\\texttt{{github}}}
   // Function to handle the POST request and download the PDF
   const sendPostRequest = async (populatedResume) => {
     try {
+      setLoading(true);
       const response = await fetch(
         "https://api.fintervue.com/latex",
         {
@@ -801,6 +803,8 @@ GitHub: \\href{{github}}{\\texttt{{github}}}
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Error:", error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -1277,6 +1281,13 @@ GitHub: \\href{{github}}{\\texttt{{github}}}
           </span>
         </ShimmerButton>
       </div>
+        {/* Conditionally render the spinner below the button */}
+        {loading && (
+        <div className="mt-4">
+          <Spinner size="lg" color="teal.500" />
+        </div>
+      )}
+
     </div>
   );
 };

@@ -149,18 +149,19 @@ const AIAnalysis = () => {
 
           <Divider />
 
-<Box>
-  <Heading as="h2" size="md" mb={2} color="teal.700">
-    Session Details
-  </Heading>
-  <Text fontSize="md">
-    Number of times you switched tabs: {tabChangeCount}
-  </Text>
-  <Text fontSize="md">
-    Number of times the window lost focus: {windowBlurCount}
-  </Text>
-</Box>
-<Divider />
+          <Box>
+            <Heading as="h2" size="md" mb={2} color="teal.700">
+              Session Details
+            </Heading>
+            <Text fontSize="md">
+              Number of times you switched tabs: {tabChangeCount}
+            </Text>
+            <Text fontSize="md">
+              Number of times the window lost focus: {windowBlurCount}
+            </Text>
+          </Box>
+          <Divider />
+          
           <Box>
             <Heading as="h2" size="md" mb={2} color="teal.700">
               Transcript
