@@ -1,4 +1,4 @@
-import Navbar from "../components/navbar";
+import Navbar from "../components/Navbar";
 import Hero from "../components/landing_page/hero";
 //import Pricing from "../components/landing_page/pricing";
 import Features from "../components/landing_page/features";
@@ -18,6 +18,6 @@ const HomePage = () => {
       <Footer />
     </>
   );
-}
+};
 
-export default HomePage
+export default HomePage;

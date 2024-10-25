@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Modal from "react-modal";
-import Navbar from "../navbar";
+import Navbar from "../Navbar";
 // Import images
 import resumeAnalysisImage from "../../assests/icons/resume_analysis.jpg";
 import aiInterviewImage from "../../assests/ai_interview.jpg";
@@ -101,7 +101,11 @@ const ProductCard = ({
       </div>
       <div className="w-full lg:w-1/2">
         <div className="aspect-video rounded-lg flex items-center justify-center overflow-hidden">
-          <img src={imagelink} alt={title} className="max-w-full h-auto rounded-lg" />
+          <img
+            src={imagelink}
+            alt={title}
+            className="max-w-full h-auto rounded-lg"
+          />
         </div>
       </div>
 

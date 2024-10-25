@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { useToast } from "@chakra-ui/react";
 import LoadingBar from "react-top-loading-bar";
 import { FiChevronRight, FiChevronLeft } from "react-icons/fi";
-import Navbar from '../navbar';
+import Navbar from "../Navbar";
 import FlipText from "../ui/flip-text";
 
 import Resume1 from "../../assests/Resumes/Resume1.png";
@@ -44,7 +44,7 @@ function ResumeSelect() {
     if (step > 1) setStep(step - 1); // Navigate back to previous step
   };
 
-  const [paymentMethod, setPaymentMethod] = useState('Credit/Debit Card');
+  const [paymentMethod, setPaymentMethod] = useState("Credit/Debit Card");
 
   // Function to remove item from cart
   const removeFromCart = (index) => {
@@ -53,7 +53,7 @@ function ResumeSelect() {
   };
 
   const addToCart = (template) => {
-    if (!cart.find(item => item.id === template.id)) {
+    if (!cart.find((item) => item.id === template.id)) {
       setCart([...cart, template]);
       toast({
         title: "Added to Cart",
@@ -79,8 +79,12 @@ function ResumeSelect() {
     <div>
       <Navbar />
       <div className="container mx-auto px-4">
-        <LoadingBar color="#4a90e2" progress={100} onLoaderFinished={() => {}} />
-        
+        <LoadingBar
+          color="#4a90e2"
+          progress={100}
+          onLoaderFinished={() => {}}
+        />
+
         {/* Steps Navigation */}
         <div className="flex flex-col md:flex-row justify-between items-center p-4 mb-4 mt-6">
           <div className="w-full md:w-1/2 text-center md:text-left">
@@ -95,17 +99,25 @@ function ResumeSelect() {
             <div className="relative flex flex-col items-center">
               <div
                 className={`flex items-center justify-center w-10 h-10 md:w-14 md:h-14 rounded-full text-lg font-bold transition-all duration-500 ${
-                  step >= 1 ? "bg-blue-700 text-white scale-110 shadow-lg" : "border-2 border-blue-700 text-blue-700"
+                  step >= 1
+                    ? "bg-blue-700 text-white scale-110 shadow-lg"
+                    : "border-2 border-blue-700 text-blue-700"
                 }`}
               >
                 1
               </div>
-              <span className={`mt-2 text-xs md:text-sm font-medium ${step >= 1 ? "text-blue-700" : "text-gray-500"}`}>
+              <span
+                className={`mt-2 text-xs md:text-sm font-medium ${
+                  step >= 1 ? "text-blue-700" : "text-gray-500"
+                }`}
+              >
                 Choose Template
               </span>
               <div
                 className={`absolute top-5 left-full w-8 md:w-12 h-1 transform transition-all duration-500 ${
-                  step >= 2 ? "bg-gradient-to-r from-blue-500 to-blue-700" : "bg-gray-300"
+                  step >= 2
+                    ? "bg-gradient-to-r from-blue-500 to-blue-700"
+                    : "bg-gray-300"
                 }`}
               />
             </div>
@@ -114,17 +126,26 @@ function ResumeSelect() {
             <div className="relative flex flex-col items-center">
               <div
                 className={`flex items-center justify-center w-10 h-10 md:w-14 md:h-14 rounded-full text-lg font-bold transition-all duration-500 ${
-                  step >= 2 ? "bg-blue-700 text-white scale-110 shadow-lg" : "border-2 border-blue-700 text-blue-700"
+                  step >= 2
+                    ? "bg-blue-700 text-white scale-110 shadow-lg"
+                    : "border-2 border-blue-700 text-blue-700"
                 }`}
               >
                 2
               </div>
-              <span className={`mt-2 text-xs md:text-sm font-medium ${step >= 2 ? "text-blue-700" : "text-gray-500"}`}>
-                Review <span className="text-xs">({cart.length} items)</span> & Payment
+              <span
+                className={`mt-2 text-xs md:text-sm font-medium ${
+                  step >= 2 ? "text-blue-700" : "text-gray-500"
+                }`}
+              >
+                Review <span className="text-xs">({cart.length} items)</span> &
+                Payment
               </span>
               <div
                 className={`absolute top-5 left-full w-8 md:w-12 h-1 transform transition-all duration-500 ${
-                  step >= 3 ? "bg-gradient-to-r from-blue-500 to-blue-700" : "bg-gray-300"
+                  step >= 3
+                    ? "bg-gradient-to-r from-blue-500 to-blue-700"
+                    : "bg-gray-300"
                 }`}
               />
             </div>
@@ -133,12 +154,18 @@ function ResumeSelect() {
             <div className="relative flex flex-col items-center">
               <div
                 className={`flex items-center justify-center w-10 h-10 md:w-14 md:h-14 rounded-full text-lg font-bold transition-all duration-500 ${
-                  step >= 3 ? "bg-blue-700 text-white scale-110 shadow-lg" : "border-2 border-blue-700 text-blue-700"
+                  step >= 3
+                    ? "bg-blue-700 text-white scale-110 shadow-lg"
+                    : "border-2 border-blue-700 text-blue-700"
                 }`}
               >
                 3
               </div>
-              <span className={`mt-2 text-xs md:text-sm font-medium ${step >= 3 ? "text-blue-700" : "text-gray-500"}`}>
+              <span
+                className={`mt-2 text-xs md:text-sm font-medium ${
+                  step >= 3 ? "text-blue-700" : "text-gray-500"
+                }`}
+              >
                 Resume Builder
               </span>
             </div>
@@ -156,19 +183,36 @@ function ResumeSelect() {
             </button>
 
             <div className="overflow-hidden">
-              <div className="flex transition-transform duration-500 ease-in-out transform" style={{ transform: `translateX(-${currentSlide * 100}%)` }}>
+              <div
+                className="flex transition-transform duration-500 ease-in-out transform"
+                style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+              >
                 {templates.map((template) => (
-                  <div key={template.id} className="w-full md:w-1/3 flex-shrink-0 p-2 md:p-4">
+                  <div
+                    key={template.id}
+                    className="w-full md:w-1/3 flex-shrink-0 p-2 md:p-4"
+                  >
                     <div className="flex flex-col items-center">
                       <div className="mb-2 text-center">
                         <h2 className="text-lg font-bold">{template.name}</h2>
-                        <p className="text-sm text-gray-500">{template.users} users</p>
+                        <p className="text-sm text-gray-500">
+                          {template.users} users
+                        </p>
                       </div>
 
                       <div className="w-full p-4 border-2 border-blue-700 rounded-lg hover:shadow-xl relative group transform transition-transform duration-500 hover:scale-105">
-                        <img src={template.img} alt={template.name} className="w-full h-full object-cover rounded-lg" />
+                        <img
+                          src={template.img}
+                          alt={template.name}
+                          className="w-full h-full object-cover rounded-lg"
+                        />
                         <div className="absolute inset-0 flex flex-col justify-center items-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
-                          <button className="bg-green-500 text-white py-2 px-6 rounded-lg hover:bg-green-600 mt-2" onClick={() => addToCart(template)}>Add to Cart</button>
+                          <button
+                            className="bg-green-500 text-white py-2 px-6 rounded-lg hover:bg-green-600 mt-2"
+                            onClick={() => addToCart(template)}
+                          >
+                            Add to Cart
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -198,14 +242,21 @@ function ResumeSelect() {
         {/* Combined Cart and Payment Section */}
         {step === 2 && (
           <div className="w-full max-w-lg mx-auto">
-            <h2 className="text-2xl font-extrabold text-blue-700 mb-6">Review Cart & Make Payment</h2>
+            <h2 className="text-2xl font-extrabold text-blue-700 mb-6">
+              Review Cart & Make Payment
+            </h2>
 
             {cart.length === 0 ? (
-              <p className="text-gray-500 text-center">Your cart is empty. Add some templates.</p>
+              <p className="text-gray-500 text-center">
+                Your cart is empty. Add some templates.
+              </p>
             ) : (
               <ul className="space-y-4">
                 {cart.map((item, index) => (
-                  <li key={index} className="flex justify-between items-center p-4 bg-gray-100 rounded-lg shadow-md">
+                  <li
+                    key={index}
+                    className="flex justify-between items-center p-4 bg-gray-100 rounded-lg shadow-md"
+                  >
                     <div>
                       <span className="font-semibold">{item.name}</span> <br />
                       <span className="text-gray-600">{item.users} users</span>
@@ -223,37 +274,50 @@ function ResumeSelect() {
 
             <div className="bg-gray-100 p-4 rounded-lg shadow-md mt-6">
               <p className="text-lg">
-                Total Items: <span className="font-semibold">{cart.length}</span>
+                Total Items:{" "}
+                <span className="font-semibold">{cart.length}</span>
               </p>
               <p className="text-lg">
-                Amount: <span className="font-semibold">₹{cart.length * 500}</span>
-                <span className="text-sm text-gray-500"> (₹500 per template)</span>
+                Amount:{" "}
+                <span className="font-semibold">₹{cart.length * 500}</span>
+                <span className="text-sm text-gray-500">
+                  {" "}
+                  (₹500 per template)
+                </span>
               </p>
             </div>
 
-            <h3 className="text-lg font-semibold mt-6 mb-4">Choose Payment Method:</h3>
+            <h3 className="text-lg font-semibold mt-6 mb-4">
+              Choose Payment Method:
+            </h3>
             <div className="flex flex-col md:flex-row space-x-0 md:space-x-4 space-y-4 md:space-y-0 mb-6">
               <button
                 className={`py-2 px-4 rounded-full transition-all duration-300 ${
-                  paymentMethod === 'Credit/Debit Card' ? 'bg-blue-700 text-white' : 'bg-gray-700 text-white'
+                  paymentMethod === "Credit/Debit Card"
+                    ? "bg-blue-700 text-white"
+                    : "bg-gray-700 text-white"
                 } hover:bg-blue-800`}
-                onClick={() => setPaymentMethod('Credit/Debit Card')}
+                onClick={() => setPaymentMethod("Credit/Debit Card")}
               >
                 Credit/Debit Card
               </button>
               <button
                 className={`py-2 px-4 rounded-full transition-all duration-300 ${
-                  paymentMethod === 'UPI' ? 'bg-blue-700 text-white' : 'bg-gray-700 text-white'
+                  paymentMethod === "UPI"
+                    ? "bg-blue-700 text-white"
+                    : "bg-gray-700 text-white"
                 } hover:bg-blue-800`}
-                onClick={() => setPaymentMethod('UPI')}
+                onClick={() => setPaymentMethod("UPI")}
               >
                 UPI
               </button>
               <button
                 className={`py-2 px-4 rounded-full transition-all duration-300 ${
-                  paymentMethod === 'Net Banking' ? 'bg-blue-700 text-white' : 'bg-gray-700 text-white'
+                  paymentMethod === "Net Banking"
+                    ? "bg-blue-700 text-white"
+                    : "bg-gray-700 text-white"
                 } hover:bg-blue-800`}
-                onClick={() => setPaymentMethod('Net Banking')}
+                onClick={() => setPaymentMethod("Net Banking")}
               >
                 Net Banking
               </button>

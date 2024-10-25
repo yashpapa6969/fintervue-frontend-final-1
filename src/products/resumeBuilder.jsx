@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { StepperContext } from "../context/StepperContext";
-import Navbar from "../components/navbar";
+import Navbar from "../components/Navbar";
 import Personalinfo from "../components/forms/builder_form/Personalinfo";
 import FlipText from "../components/ui/flip-text";
 import { Select } from "@chakra-ui/react";
@@ -62,7 +62,7 @@ const ResumeBuilder = () => {
       {
         name: "",
         summary: "",
-        date: ""
+        date: "",
       },
     ],
   });
@@ -87,7 +87,10 @@ const ResumeBuilder = () => {
           </div>
 
           {/* PreResumeForm */}
-          <PreResumeForm setExperienceLevel={setExperienceLevel} setDomain={setDomain} />
+          <PreResumeForm
+            setExperienceLevel={setExperienceLevel}
+            setDomain={setDomain}
+          />
 
           {experienceLevel && domain && (
             <>

@@ -12,7 +12,7 @@ import {
   FaChartLine,
   FaBalanceScale,
 } from "react-icons/fa";
-import Navbar from "../components/navbar";
+import Navbar from "../components/Navbar";
 
 const jobRoles = [
   { title: "Financial Analyst", status: "Pending", icon: <FaMoneyBillWave /> },
@@ -62,8 +62,10 @@ const ProfileCard = () => {
   };
 
   return (
-    <div> {/* Added font-sans class */}
-      <Navbar/>
+    <div>
+      {" "}
+      {/* Added font-sans class */}
+      <Navbar />
       <div className="pt-10">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -102,7 +104,9 @@ const ProfileCard = () => {
               </div>
             </div>
             <div>
-              <div className="bg-gray-50 p-4 rounded-lg transition transform hover:scale-105 hover:shadow-lg"> {/* Added hover effect */}
+              <div className="bg-gray-50 p-4 rounded-lg transition transform hover:scale-105 hover:shadow-lg">
+                {" "}
+                {/* Added hover effect */}
                 <h3 className="text-lg font-semibold text-gray-700">
                   Professional Summary
                 </h3>
@@ -118,15 +122,21 @@ const ProfileCard = () => {
 
           {/* Contact Info Section */}
           <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-white p-4 rounded-lg shadow transition transform hover:scale-105 hover:shadow-lg"> {/* Added hover effect */}
+            <div className="bg-white p-4 rounded-lg shadow transition transform hover:scale-105 hover:shadow-lg">
+              {" "}
+              {/* Added hover effect */}
               <h4 className="font-semibold text-gray-800">Email Address</h4>
               <p className="text-gray-600">Primary: hello@personalemail.com</p>
             </div>
-            <div className="bg-white p-4 rounded-lg shadow transition transform hover:scale-105 hover:shadow-lg"> {/* Added hover effect */}
+            <div className="bg-white p-4 rounded-lg shadow transition transform hover:scale-105 hover:shadow-lg">
+              {" "}
+              {/* Added hover effect */}
               <h4 className="font-semibold text-gray-800">Phone Numbers</h4>
               <p className="text-gray-600">Primary: +1234567890</p>
             </div>
-            <div className="bg-white p-4 rounded-lg shadow transition transform hover:scale-105 hover:shadow-lg"> {/* Added hover effect */}
+            <div className="bg-white p-4 rounded-lg shadow transition transform hover:scale-105 hover:shadow-lg">
+              {" "}
+              {/* Added hover effect */}
               <h4 className="font-semibold text-gray-800">Social Accounts</h4>
               <p className="text-gray-600">Facebook: charlie_f</p>
               <p className="text-gray-600">Google: charlie.r@gmail.com</p>
@@ -139,7 +149,7 @@ const ProfileCard = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
-              className="bg-white p-4 rounded-lg shadow transition transform hover:scale-105 hover:shadow-lg" 
+              className="bg-white p-4 rounded-lg shadow transition transform hover:scale-105 hover:shadow-lg"
             >
               <h4 className="font-semibold text-gray-800">
                 Job Application Status
@@ -152,7 +162,7 @@ const ProfileCard = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
-              className="bg-white p-4 rounded-lg shadow transition transform hover:scale-105 hover:shadow-lg" 
+              className="bg-white p-4 rounded-lg shadow transition transform hover:scale-105 hover:shadow-lg"
             >
               <h4 className="font-semibold text-gray-800">Job History</h4>
               <Line data={jobHistoryData} />
