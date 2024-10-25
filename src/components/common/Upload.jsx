@@ -1,21 +1,22 @@
 import React, { useState } from "react";
 import ShimmerButton from "../ui/shimmer-button";
+import { Spinner } from "@chakra-ui/react";  // Import the Spinner
 
-function Upload({ onFileChange, onSubmit }) { 
+function Upload({ onFileChange, onSubmit, loading }) {  // Add `loading` as a prop
   const [selectedFile, setSelectedFile] = useState(null);
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     setSelectedFile(file);
-    onFileChange(event); 
-    console.log(file); 
+    onFileChange(event);
+    console.log(file);
   };
 
   const handleButtonClick = () => {
     if (selectedFile) {
       console.log("File details:", selectedFile);
       console.log("File path:", selectedFile.path || "Path not available");
-      onSubmit(); 
+      onSubmit();
     } else {
       console.log("No file selected");
     }
@@ -43,7 +44,7 @@ function Upload({ onFileChange, onSubmit }) {
         </svg>
 
         <p className="text-black text-lg font-medium pointer-events-none">
-          {selectedFile ? `File added: ${selectedFile.name}`: "Drag & drop or click to upload your resume"}
+          {selectedFile ? `File added: ${selectedFile.name}` : "Drag & drop or click to upload your resume"}
         </p>
       </div>
 
@@ -54,8 +55,15 @@ function Upload({ onFileChange, onSubmit }) {
           </span>
         </ShimmerButton>
       </button>
+
+      {/* Conditionally render the spinner below the button */}
+      {loading && (
+        <div className="mt-4">
+          <Spinner size="lg" color="teal.500" />
+        </div>
+      )}
     </div>
   );
 }
 
-export default Upload;
+export default Upload;

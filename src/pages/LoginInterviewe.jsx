@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../assests/logo/logo4.jpeg";
-import Navbar from "../components/navbar";
-import axios from 'axios';
-import useSignIn from 'react-auth-kit/hooks/useSignIn'
-
+import Navbar from "../components/Navbar";
+import axios from "axios";
+import useSignIn from "react-auth-kit/hooks/useSignIn";
 
 const LoginInterviewee = () => {
   const [email, setEmail] = useState("");
@@ -19,40 +18,42 @@ const LoginInterviewee = () => {
 
     try {
       // Make a POST request to the interviewee login API
-      const response = await axios.post('https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/api/interviewee/intervieweelogin', {
-        email,
-        password,
-      });
+      const response = await axios.post(
+        "https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/api/interviewee/intervieweelogin",
+        {
+          email,
+          password,
+        }
+      );
 
       const { user } = response.data;
 
       signIn({
         auth: {
           token: response.data.token,
-          type: 'Bearer'
+          type: "Bearer",
         },
-        refresh: '',
+        refresh: "",
         userState: {
           name: user.firstName,
           uid: user.interviewee_id,
           email: user.email,
-          role: "interviewee"
-        }
-      })
+          role: "interviewee",
+        },
+      });
 
-      localStorage.setItem('interviewee', JSON.stringify(user));
+      localStorage.setItem("interviewee", JSON.stringify(user));
 
-      navigate('/display'); // Replace with your desired route
-
+      navigate("/display"); // Replace with your desired route
     } catch (error) {
-      console.error('Login error:', error);
+      console.error("Login error:", error);
 
       if (error.response && error.response.data && error.response.data.msg) {
         setErrorMessage(error.response.data.msg);
       } else if (error.message) {
         setErrorMessage(error.message);
       } else {
-        setErrorMessage('An error occurred during login');
+        setErrorMessage("An error occurred during login");
       }
     }
   };

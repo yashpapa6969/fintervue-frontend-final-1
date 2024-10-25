@@ -2,7 +2,7 @@ import React from "react";
 import worldMap from "../../assests/world.svg";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Navbar from "../navbar";
+import Navbar from "../Navbar";
 
 const Contact = () => {
   const navigate = useNavigate();
@@ -36,7 +36,9 @@ const Contact = () => {
         <div className="bg-white shadow-lg rounded-lg p-8 grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl">
           {/* Left Section */}
           <div className="flex flex-col justify-center">
-            <h1 className="text-4xl font-bold text-blue-700 mb-4">Contact Us</h1>
+            <h1 className="text-4xl font-bold text-blue-700 mb-4">
+              Contact Us
+            </h1>
             <p className="text-gray-600 mb-6">
               We are always looking for ways to improve our products and
               services. Reach out to us and let us know how we can assist you.
