@@ -70,13 +70,13 @@ const SignupPage = () => {
   );
 
   const jobLocations = [
-    { id: 1, name: "New York, USA" },
-    { id: 2, name: "London, UK" },
-    { id: 3, name: "Singapore" },
-    { id: 4, name: "Sydney, Australia" },
-    { id: 5, name: "Dubai, UAE" },
-    { id: 6, name: "Hong Kong" },
-    { id: 7, name: "Frankfurt, Germany" },
+    { id: 1, name: "Bangalore, India" },
+    { id: 2, name: "Mumbai, India" },
+    { id: 3, name: "Hyderabad, India" },
+    { id: 4, name: "Pune, India" },
+    { id: 5, name: "Delhi, India" },
+    { id: 6, name: "Gurugram, India" },
+    { id: 7, name: "Kolkata, India" },
   ];
 
   const yearsOfExperience = [

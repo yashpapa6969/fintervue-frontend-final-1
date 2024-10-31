@@ -159,6 +159,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
+import Logo from "../assests/logo/logo.png";
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -174,32 +175,38 @@ export default function Navbar() {
             <div className="flex-shrink-0">
               {/* Placeholder for logo */}
               <Link to={"/"}>
-                <div className="h-8  w-8 bg-gray-300 rounded-full"></div>
+                {/* <div className="h-8  w-8 bg-gray-300 rounded-full"></div> */}
+                <img
+                  src={Logo}
+                  alt="Logo"
+                  className="cursor-pointer"
+                  style={{ width: "200px", height: "auto" }}
+                />
               </Link>
             </div>
             <div className="hidden md:block">
               <div className="ml-10 flex items-baseline space-x-4">
                 <Link
                   to="/about"
-                  className="text-gray-700 hover:bg-gray-200 px-3 py-2 rounded-md text-sm font-medium"
+                  className="text-gray-700 hover:bg-gray-200 px-3 py-2 rounded-md text-sm font-medium relative after:absolute after:bg-blue-700 after:h-[2px] after:w-0 after:bottom-[-4px] after:left-0 after:transition-all after:duration-300 hover:after:w-full"
                 >
                   About
                 </Link>
                 <Link
                   to="/product"
-                  className="text-gray-700 hover:bg-gray-200 px-3 py-2 rounded-md text-sm font-medium"
+                  className="text-gray-700 hover:bg-gray-200 px-3 py-2 rounded-md text-sm font-medium relative after:absolute after:bg-blue-700 after:h-[2px] after:w-0 after:bottom-[-4px] after:left-0 after:transition-all after:duration-300 hover:after:w-full"
                 >
                   Product
                 </Link>
                 <Link
                   to="/pricing"
-                  className="text-gray-700 hover:bg-gray-200 px-3 py-2 rounded-md text-sm font-medium"
+                  className="text-gray-700 hover:bg-gray-200 px-3 py-2 rounded-md text-sm font-medium relative after:absolute after:bg-blue-700 after:h-[2px] after:w-0 after:bottom-[-4px] after:left-0 after:transition-all after:duration-300 hover:after:w-full"
                 >
                   Pricing
                 </Link>
                 <Link
                   to="/contact"
-                  className="text-gray-700 hover:bg-gray-200 px-3 py-2 rounded-md text-sm font-medium"
+                  className="text-gray-700 hover:bg-gray-200 px-3 py-2 rounded-md text-sm font-medium relative after:absolute after:bg-blue-700 after:h-[2px] after:w-0 after:bottom-[-4px] after:left-0 after:transition-all after:duration-300 hover:after:w-full"
                 >
                   Contact us
                 </Link>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { StepperContext } from "../context/StepperContext";
-import Navbar from "../components/Navbar";
+import Navbar from "../components/navbar";
 import Personalinfo from "../components/forms/builder_form/Personalinfo";
 import FlipText from "../components/ui/flip-text";
 import { Select } from "@chakra-ui/react";

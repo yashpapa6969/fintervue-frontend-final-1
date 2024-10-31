@@ -1,6 +1,6 @@
 import { ChevronRight } from "lucide-react";
 import React from "react";
-import Navbar from "../Navbar";
+import Navbar from "../navbar";
 import { useTheme } from "next-themes";
 import { MagicCard } from "../../components/ui/magic-card";
 import BoxReveal from "../../components/ui/box-reveal";

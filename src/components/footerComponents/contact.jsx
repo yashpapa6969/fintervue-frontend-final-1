@@ -2,7 +2,7 @@ import React from "react";
 import worldMap from "../../assests/world.svg";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Navbar from "../Navbar";
+import Navbar from "../navbar";
 
 const Contact = () => {
   const navigate = useNavigate();
