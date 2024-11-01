@@ -6,6 +6,8 @@ import axios from "axios";
 //import useSignIn from 'react-auth-kit/hooks/useSignIn';
 //import useIsAuthenticated from 'react-auth-kit/hooks/useIsAuthenticated';
 
+import config from '../config';
+
 const LoginInterviewee = () => {
   //const isAuthenticated = useIsAuthenticated();
   const [email, setEmail] = useState("");
@@ -28,7 +30,7 @@ const LoginInterviewee = () => {
     
     try {
       const response = await axios.post(
-        "https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/api/interviewee/intervieweelogin",
+        `${config.apiBaseUrl}/api/interviewee/intervieweelogin`,
         { email, password }
       );
       

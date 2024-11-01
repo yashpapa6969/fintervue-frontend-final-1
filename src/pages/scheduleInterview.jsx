@@ -29,7 +29,7 @@ import {
   isSameDay 
 } from 'date-fns';
 import Logo from "../assests/logo/logo.png";
-
+import config from "../config";
 const MotionBox = motion(Box);
 const MotionButton = motion(Button);
 const MotionFlex = motion(Flex);
@@ -123,7 +123,7 @@ function ScheduleInterviewForm() {
       setLoading(true);
       const dateTimeString = `${format(selectedDate, 'yyyy-MM-dd')}T${selectedTime}`;
       const response = await axios.post(
-        'https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/api/interviewee/createInterviewRequest',
+        `${config.apiBaseUrl}/api/interviewee/createInterviewRequest`,
         {
           date: format(selectedDate, 'yyyy-MM-dd'),
           time: selectedTime,

@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import VideoConferenceWrapper from '../components/common/VideoConference';
 import axios from 'axios';
 import Conference from './Conference';
+import config from '../config';
 
 function FinalInterviewPage() {
   const [searchParams] = useSearchParams();
@@ -17,7 +18,7 @@ function FinalInterviewPage() {
   useEffect(() => {
     const fetchInterviewDetails = async () => {
       try {
-        const response = await axios.get(`https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/api/interviewee/getByScheduleId/${scheduleId}`);
+        const response = await axios.get(`${config.apiBaseUrl}/api/interviewee/getByScheduleId/${scheduleId}`);
         const interviewData = response.data;
         
         if (role === 'interviewee') {

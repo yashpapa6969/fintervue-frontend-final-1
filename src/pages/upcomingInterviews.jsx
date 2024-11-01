@@ -15,6 +15,7 @@ function UpcomingInterviews() {
   const peers = useHMSStore(selectPeers);
   const userData = useAuthUser();
   const userRole = userData.role;
+  import config from "../config";
 
   useEffect(() => {
     if (userData.role === "interviewee") {
@@ -46,7 +47,7 @@ function UpcomingInterviews() {
 
       console.log('Payload being sent:', payload);
 
-      const endpoint = `https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/api/interviewee/getAcceptedInterviews`;
+      const endpoint = `${config.apiBaseUrl}/api/interviewee/getAcceptedInterviews`;
 
       const response = await axios.post(endpoint, payload);
       setUpcomingInterviews(response.data);

@@ -4,6 +4,7 @@ import { useState } from "react";
 import LoadingBar from "react-top-loading-bar";
 import { useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
+import config from "../config";
 
 import { FrontendIcon1, FrontendIcon2, FrontendIcon3, FrontendIcon4, FrontendIcon5, FrontendIcon6, FrontendIcon7, FrontendIcon8, FrontendIcon9, FrontendIcon10, FrontendIcon11, FrontendIcon12, FrontendIcon13, FrontendIcon14, FrontendIcon15 } from "../assests/Domain_images";
 import { useToast } from "@chakra-ui/react";
@@ -133,7 +134,7 @@ const SignupPage = () => {
     }
     try {
       setLoading(true);
-      const result = await axios.post("https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/api/interviewee/AddInterviewee", {
+      const result = await axios.post(`${config.apiBaseUrl}/api/interviewee/AddInterviewee`, {
         ...candidateData,
         skills: selectedKeySkills,
       });

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../assests/logo/logo4.jpeg";
+import config from "../config";
 
 import Navbar from "../components/navbar";
 import axios from "axios";
@@ -18,7 +19,7 @@ const LoginInterviewer = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/api/interviewer/Interviewerlogin",
+        `${config.apiBaseUrl}/api/interviewer/Interviewerlogin`,
         {
           email,
           password,

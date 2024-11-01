@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import useAuthHeader from 'react-auth-kit/hooks/useAuthHeader';
 import useAuthUser from 'react-auth-kit/hooks/useAuthUser';
+import config from "../config";
+
 function PendingInterviews() {
   const [pendingInterviews, setPendingInterviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,7 +22,7 @@ function PendingInterviews() {
   const fetchPendingInterviews = async () => {
     try {
       const response = await axios.get(
-        'https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/api/interviewee/getAllScheduledInterview',{
+        `${config.apiBaseUrl}/api/interviewee/getAllScheduledInterview`,{
           headers: {
             Authorization: authHeader, 
           },
@@ -38,7 +40,7 @@ function PendingInterviews() {
   const acceptInterview = async (interviewId) => {
     try {
       await axios.post(
-        'https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/api/interviewee/acceptInterviewRequest',
+        `${config.apiBaseUrl}/api/interviewee/acceptInterviewRequest`,
         {
           interviewer_id: interviewerId,
           interviewee_id: interviewId,

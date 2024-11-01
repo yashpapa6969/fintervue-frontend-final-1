@@ -15,6 +15,7 @@ import { NotFoundPage } from './pages/NotFoundPage';
 import ProductPage from './pages/ProductPage.jsx';
 import FinalInterviewPage from './pages/finalInterview.jsx';
 import AIAnalysisPage from './pages/AiAnalysis.jsx';
+import ProtectedRoute from './ProtectedRoute';
 
 const router = createBrowserRouter([
   {
@@ -31,11 +32,14 @@ const router = createBrowserRouter([
   },
  
     
-{
-  // In the route definition
-  path: "/analysis",
-  element: <AIAnalysisPage />,
-},
+  {
+    path: "/analysis",
+    element: (
+      <ProtectedRoute>
+        <AIAnalysisPage />
+      </ProtectedRoute>
+    ),
+  },
   {
     path: "/signup",
     element: <Lazy.SignUpPage />,
@@ -69,9 +73,14 @@ const router = createBrowserRouter([
     path: "/product",
     element: <ProductPage />,
   },
+ 
   {
-    path: "/product/ai_intervue",
-    element: <Lazy.AiIntervuePage />,
+    path: "/product/ai_intervue",  // Removed extra forward slash
+    element: (
+      <ProtectedRoute>
+        <Lazy.AiIntervuePage />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/product/resumeBuilder",

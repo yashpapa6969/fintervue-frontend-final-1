@@ -23,6 +23,7 @@ import {
 
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import config from '../config';
 
 const InterviewerSignupPage = () => {
   const toast = useToast();
@@ -224,7 +225,7 @@ const InterviewerSignupPage = () => {
     try {
       setLoading(true);
       const result = await axios.post(
-        "https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/api/interviewer/AddInterviewer",
+        `${config.apiBaseUrl}/api/interviewer/AddInterviewer`,
         interviewerData
       );
       if (result.status === 201) {

@@ -9,6 +9,7 @@ import Footer from "../components/landing_page/footer";
 import Navbar from "../components/common/Navbar";
 import DomainSelector from "../components/ai-interview/DomainSelector";
 import axios from "axios";
+import config from '../config';
 
 const AiIntervuePage = () => {
   const [startInterview, setStartInterview] = useState(false);
@@ -23,7 +24,7 @@ const AiIntervuePage = () => {
       setLoading(true);
       // First create AI analysis
       const userId = localStorage.getItem('userId');
-      const analysisResponse = await axios.post('https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/api/interviewee/create-ai-analysis', {
+      const analysisResponse = await axios.post(`${config.apiBaseUrl}/api/interviewee/create-ai-analysis`, {
         domain: domain.name,
         userId: userId
       });
@@ -34,7 +35,7 @@ const AiIntervuePage = () => {
       // Then fetch questions using the analysis ID
       const encodedDomain = encodeURIComponent(domain.name);
       const questionsResponse = await axios.post(
-        `https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/api/interviewee/getAIQuestionByDomain`,
+        `${config.apiBaseUrl}/api/interviewee/getAIQuestionByDomain`,
         {
           ai_analysis_id: aiAnalysisId,
           domain: domain.name

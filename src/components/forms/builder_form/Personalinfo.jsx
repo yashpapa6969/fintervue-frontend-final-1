@@ -5,6 +5,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import RequiredIndicator from "../../ui/RequiredIndicator";
 import { Tab, TabList, TabPanel, TabPanels, Tabs, Spinner } from "@chakra-ui/react";
+import config from '../../../config';
 
 const Personalinfo = () => {
   const { userData, setUserData } = useContext(StepperContext);
@@ -770,7 +771,7 @@ GitHub: \\href{{github}}{\\texttt{{github}}}
     try {
       setLoading(true);
       const response = await fetch(
-        "https://api.fintervue.com/latex",
+        `${config.mlBaseUrl}/latex`,
         {
           method: "POST",
           headers: {

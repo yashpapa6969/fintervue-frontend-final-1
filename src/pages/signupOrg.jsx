@@ -4,6 +4,7 @@ import { useToast } from "@chakra-ui/react";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import config from "../config";
 
 const SignupOrg = () => {
   const toast = useToast();
@@ -55,7 +56,7 @@ const SignupOrg = () => {
     }
     try {
       setLoading(true);
-      const result = await axios.post("https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/api/recruiter/createRecruiter", recruiterData);
+      const result = await axios.post(`${config.apiBaseUrl}/api/recruiter/createRecruiter`, recruiterData);
       if (result.status === 201) {
         toast({
           title: "Welcome",

@@ -4,6 +4,7 @@ import FlipText from "../components/ui/flip-text";
 import { BorderBeam } from "../components/ui/border-beam";
 import img1 from "../assests/resume_generator.png"; // Ensure the path is correct
 import Upload from "../components/common/Upload";
+import config from "../config";
 
 import { useToast,  Spinner, Container} from "@chakra-ui/react";
 import { marked } from "marked";
@@ -38,7 +39,7 @@ const [loading, setLoading] = useState(false);
     try {
       setLoading(true);
       const response = await axios.post(
-        "https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/api/interviewee/addResumeAnalysis",
+        `${config.mlBaseUrl}/api/interviewee/addResumeAnalysis`,
         formData,
         {
           headers: {

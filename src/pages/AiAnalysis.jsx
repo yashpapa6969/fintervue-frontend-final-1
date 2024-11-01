@@ -16,6 +16,7 @@ import {
 import ReactMarkdown from "react-markdown";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
+import config from '../config';
 
 const AIAnalysis = () => {
   const [analysisData, setAnalysisData] = useState(null);
@@ -35,12 +36,12 @@ const AIAnalysis = () => {
 
       try {
         const response = await axios.get(
-          `https://api.fintervue.com/api/interviewee/fetchAiInterviewAnalysis/${analysisId}`
+          `${config.mlBaseUrl}/api/interviewee/fetchAiInterviewAnalysis/${analysisId}`
         );
         
         if (response.data && response.data.processed_transcript) {
           await axios.post(
-            'https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/api/interviewee/updateAnalysis', 
+            `${config.apiBaseUrl}/api/interviewee/updateAnalysis`, 
             {
               ai_analysis_id:analysisId,
               analysis: response.data.processed_transcript

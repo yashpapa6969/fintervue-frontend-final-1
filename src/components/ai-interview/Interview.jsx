@@ -21,6 +21,7 @@ import { toBlobURL, fetchFile } from "@ffmpeg/util";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import RecordRTC from "recordrtc";
+import config from '../../config';
 
 
 // Updated MIME type dynamically based on browser compatibility
@@ -445,7 +446,7 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
       try {
         setLoading(true);
         const { data } = await axios.post(
-          "https://api.fintervue.com/dgProcessAudio",
+          `${config.mlBaseUrl}/dgProcessAudio`,
           formData,
           { headers: { "Content-Type": "multipart/form-data" } }
         );
@@ -513,7 +514,7 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
       };
 
 
-      const response = await axios.post('https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/api/interviewee/addOrUpdateAiAnalysisWithId', analysisData);
+      const response = await axios.post(`${config.apiBaseUrl}/api/interviewee/addOrUpdateAiAnalysisWithId`, analysisData);
 
       if (!response.data) {
         throw new Error('Failed to save analysis data');
