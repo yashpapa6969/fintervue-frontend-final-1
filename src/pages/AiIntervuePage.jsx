@@ -18,18 +18,34 @@ const AiIntervuePage = () => {
   const [loading, setLoading] = useState(false);
   const toast = useToast();
 
-  const getQuestionsByDomain = async (domainName) => {
+  const handleDomainSelect = async (domain) => {
     try {
       setLoading(true);
-      const encodedDomain = encodeURIComponent(domainName);
-      const response = await axios.get(
-        `http://localhost:2000/api/interviewee/getAIQuestionByDomain/${encodedDomain}`
+      // First create AI analysis
+      const userId = localStorage.getItem('userId');
+      const analysisResponse = await axios.post('https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/api/interviewee/create-ai-analysis', {
+        domain: domain.name,
+        userId: userId
+      });
+
+      const aiAnalysisId = analysisResponse.data.ai_analysis_id;
+      localStorage.setItem('ai_analysis_id', aiAnalysisId);
+
+      // Then fetch questions using the analysis ID
+      const encodedDomain = encodeURIComponent(domain.name);
+      const questionsResponse = await axios.post(
+        `https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/api/interviewee/getAIQuestionByDomain`,
+        {
+          ai_analysis_id: aiAnalysisId,
+          domain: domain.name
+        }
       );
 
-      if (response.data && Array.isArray(response.data) && response.data.length > 0) {
-        setQuestions(response.data);
-        setSelectedDomain(domainName);
-        return true;
+      if (questionsResponse.data && Array.isArray(questionsResponse.data) && questionsResponse.data.length > 0) {
+        setQuestions(questionsResponse.data);
+        setSelectedDomain(domain.name);
+        localStorage.setItem('selectedDomain', domain.name);
+        setStartInterview(true);
       } else {
         setQuestions([]);
         toast({
@@ -39,45 +55,18 @@ const AiIntervuePage = () => {
           duration: 3000,
           isClosable: true,
         });
-        return false;
       }
     } catch (error) {
-      console.error("Error fetching questions:", error);
+      console.error("Error in interview setup:", error);
       toast({
         title: "Error",
-        description: "Failed to fetch questions. Please try again later.",
+        description: "Failed to initialize interview. Please try again.",
         status: "error",
         duration: 5000,
         isClosable: true,
       });
-      return false;
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleDomainSelect = async (domain) => {
-    const success = await getQuestionsByDomain(domain.name);
-    if (success) {
-      try {
-        const userId = localStorage.getItem('userId');
-        
-        await axios.post('http://localhost:2000/api/interviewee/create-ai-analysis', {
-          domain: domain.name,
-          userId: userId
-        });
-        
-        setStartInterview(true);
-      } catch (error) {
-        console.error("Error creating AI analysis:", error);
-        toast({
-          title: "Error",
-          description: "Failed to initialize interview analysis. Please try again.",
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-        });
-      }
     }
   };
 
@@ -87,8 +76,8 @@ const AiIntervuePage = () => {
       <div className="w-full px-6">
         <AnimatePresence>
           {startInterview && questions.length > 0 ? (
-            <Interview 
-              audioOn={audioOn} 
+            <Interview
+              audioOn={audioOn}
               questions={questions}
               selectedDomain={selectedDomain}
             />

@@ -39,6 +39,14 @@ const AIAnalysis = () => {
         );
         
         if (response.data && response.data.processed_transcript) {
+          await axios.post(
+            'https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/api/interviewee/updateAnalysis', 
+            {
+              ai_analysis_id:analysisId,
+              analysis: response.data.processed_transcript
+            }
+          );
+
           setAnalysisData(response.data.processed_transcript);
         } else {
           setError("No analysis data available. Please try again later.");

@@ -70,7 +70,7 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
   // State variables to track tab and window switches
   const [tabChangeCount, setTabChangeCount] = useState(0);
   const [windowBlurCount, setWindowBlurCount] = useState(0);
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
   const [isQuestionAnswered, setIsQuestionAnswered] = useState(false);
   const [permissionStatus, setPermissionStatus] = useState({
     camera: false,
@@ -82,7 +82,7 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
 
   // Add debounce timeout ref
   const transcriptionDebounceRef = useRef(null);
-  
+
   // Add last transcription timestamp to prevent duplicates
   const lastTranscriptionTimeRef = useRef(null);
 
@@ -112,7 +112,7 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
         });
       }
     };
-    
+
     loadFFmpeg();
     return () => {
       // Cleanup on unmount
@@ -204,7 +204,7 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
       const videoTrack = mediaStream.getVideoTracks()[0];
       const audioTrack = audioOn ? mediaStream.getAudioTracks()[0] : null;
       const newStream = createMediaStreamFromTracks(videoTrack, audioTrack);
-      
+
       setStream(newStream);
       if (liveVideoFeed.current) {
         liveVideoFeed.current.srcObject = newStream;
@@ -250,7 +250,7 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
 
       // Initialize media stream after permissions are granted
       await initializeMediaStream();
-      
+
     } catch (error) {
       console.error("Error requesting permissions:", error);
       toast({
@@ -302,10 +302,10 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
 
       mediaRecorder.current = recorder;
       recorder.startRecording();
-      
+
       setRecordingStatus("recording");
       setRecordingTime(0);
-      
+
       // Start recording timer
       if (timerRef.current) {
         clearInterval(timerRef.current);
@@ -366,7 +366,7 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
       clearInterval(timerRef.current);
     }
   };
-  
+
 
   const extractAudio = async (videoBlob) => {
     if (!videoBlob) {
@@ -379,12 +379,12 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
       });
       return;
     }
-  
+
     try {
       const ffmpeg = ffmpegRef.current;
-  
+
       await ffmpeg.writeFile("input.webm", await fetchFile(videoBlob));
-  
+
       await ffmpeg.exec([
         "-i", "input.webm",
         "-vn",
@@ -392,16 +392,16 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
         "-q:a", "2",
         "output.mp3",
       ]);
-  
+
       const data = await ffmpeg.readFile("output.mp3");
       const audioBlob = new Blob([data.buffer], { type: "audio/mp3" });
-  
+
       setAudioBlobs([audioBlob]);
       await handleSubmit(audioBlob);
-  
+
       await ffmpeg.deleteFile("input.webm");
       await ffmpeg.deleteFile("output.mp3");
-  
+
       toast({
         title: "Audio Extracted and Cleaned Up",
         description: "Audio extracted and memory cleared.",
@@ -420,7 +420,7 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
       });
     }
   };
-  
+
   const handleSubmit = async (audioBlob) => {
     if (!audioBlob) {
       toast({
@@ -485,7 +485,7 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
         } else {
           await new Promise(resolve => setTimeout(resolve, 1000));
         }
-      }finally {
+      } finally {
         setLoading(false);
       }
     }
@@ -499,20 +499,22 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
       if (!currentQuestion || !transcriptions[questionNo]) return;
 
       const analysisData = {
-        questions: [{
-          questionId: currentQuestion.id,
-          questionText: currentQuestion.questionText,
-          transcription: transcriptions[questionNo],
-          answer: transcriptions[questionNo].map(t => t.Text).join(' ')
+        ai_analysis_id: localStorage.getItem('ai_analysis_id'),
+        questionIndex: questionNo,
+        fileData: [{
+          question: currentQuestion.questionText,
+          transcription: transcriptions[questionNo]
         }],
-        ai_analysis_id: selectedDomain, // Or however you're tracking the interview session
+        domain: selectedDomain,
+        userId: localStorage.getItem('userId'),
         tabChangeCount: tabChangeCount.toString(),
         windowBlurCount: windowBlurCount.toString(),
         isFinal
       };
 
-      const response = await axios.post('/api/ai-analysis', analysisData);
-      
+
+      const response = await axios.post('https://0nsq6xi7ub.execute-api.ap-south-1.amazonaws.com/api/interviewee/addOrUpdateAiAnalysisWithId', analysisData);
+
       if (!response.data) {
         throw new Error('Failed to save analysis data');
       }
@@ -541,7 +543,7 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
   const nextQuestion = async () => {
     // Send analysis data for current question before moving to next
     await sendAnalysisData(false);
-    
+
     setRecordedVideoBlob(null);
     setRecordedVideoURL(null);
     setQuestionNo((prev) => prev + 1);
@@ -549,7 +551,7 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
     setIsSubmitted(false);
     setIsQuestionAnswered(false);
     hasSpokenRef.current = false;
-    
+
     if (recordingStatus === "recording") {
       stopRecording();
     }
@@ -559,9 +561,9 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
   const submitFinalAnswers = async () => {
     try {
       await sendAnalysisData(true);
-      
+
       // Navigate to results or thank you page
-      navigate("/interview-complete");
+      navigate("/analysis");
     } catch (error) {
       console.error('Error submitting final answers:', error);
       toast({
@@ -593,10 +595,10 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
     }
 
     const utterance = new SpeechSynthesisUtterance(text);
-    
+
     // Set flag when TTS starts
     ttsInProgressRef.current = true;
-    
+
     utterance.onend = () => {
       // Reset flag when TTS ends
       ttsInProgressRef.current = false;
@@ -616,12 +618,12 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
   useEffect(() => {
     hasSpokenRef.current = false; // Reset the spoken ref on question change
   }, [questionNo]);
-  
+
   // Update the useEffect for question speaking
   useEffect(() => {
     if (
-      questions[questionNo]?.questionText && 
-      !hasSpokenRef.current && 
+      questions[questionNo]?.questionText &&
+      !hasSpokenRef.current &&
       selectedDomain &&
       recordingStatus !== "recording" &&
       !ttsInProgressRef.current // Add check for TTS in progress
@@ -634,7 +636,7 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
       }
 
       const utterance = new SpeechSynthesisUtterance(questions[questionNo].questionText);
-      
+
       // Set flag when TTS starts
       ttsInProgressRef.current = true;
 
@@ -660,7 +662,7 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
       hasSpokenRef.current = true;
     }
   }, [questions, questionNo, selectedDomain, audioOn, recordingStatus]);
-  
+
   useEffect(() => {
     const synth = window.speechSynthesis;
     if (synth) {
@@ -676,8 +678,8 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
   const handleTranscription = async (audioBlob) => {
     // Prevent duplicate transcriptions within 2 seconds
     const now = Date.now();
-    if (lastTranscriptionTimeRef.current && 
-        now - lastTranscriptionTimeRef.current < 2000) {
+    if (lastTranscriptionTimeRef.current &&
+      now - lastTranscriptionTimeRef.current < 2000) {
       console.log('Preventing duplicate transcription');
       return;
     }
@@ -701,9 +703,9 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
         // Your existing transcription logic here
         const formData = new FormData();
         formData.append("audio", audioBlob);
-        
+
         const response = await axios.post("/api/transcribe", formData);
-        
+
         // Update transcriptions state only if response contains new text
         if (response.data?.length > 0) {
           setTranscriptions(prev => {
@@ -742,7 +744,7 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      style={{ backgroundColor: "blue.700" }} 
+      style={{ backgroundColor: "blue.700" }}
     >
       {!selectedDomain ? (
         <MotionBox
@@ -763,14 +765,14 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
             placeholder="Search domains..."
             _focus={{ borderColor: "blue.700", boxShadow: "0 0 0 2px blue.300" }}
           />
-          <Grid 
+          <Grid
             templateColumns={{
               base: "repeat(1, 1fr)", // 1 column on mobile
               sm: "repeat(2, 1fr)", // 2 columns on small screens
               md: "repeat(3, 1fr)", // 3 columns on medium screens
               lg: "repeat(4, 1fr)", // 4 columns on larger screens
             }}
-            gap={8} 
+            gap={8}
             maxW="800px"
             width="100%"
           >
@@ -779,7 +781,7 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
                 <MotionBox
                   whileHover={{ scale: 1.05, boxShadow: "lg" }}
                   whileTap={{ scale: 0.95 }}
-                   transition="0.3s ease"
+                  transition="0.3s ease"
                 >
                   <Card
                     cursor="pointer"
@@ -833,7 +835,7 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
                 if (stream) {
                   stream.getTracks().forEach((track) => track.stop());
                 }
-                navigate("/"); 
+                navigate("/");
               }}
             >
               Exit Interview
@@ -893,66 +895,66 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
           )}
 
           {/* Transcription loading below the recorded video */}
-        {isSubmitting ? (
-          <Flex justify="center" align="center" mt={4}>
-            <Spinner size="lg" color="teal.500" />
-            <Text mt={4}>Transcribing...</Text>
-          </Flex>
-        ) : (
-          transcriptions[questionNo]?.length > 0 && (
-            <Box mb={4}>
-              <Text fontSize="lg" fontWeight="semibold" mb={2}>
-                Transcription
-              </Text>
-              <Box maxH="200px" overflowY="auto" p={4} bg="gray.50" borderRadius="md" boxShadow="sm">
-                {transcriptions[questionNo].map((item, index) => (
-                  <Box key={index} mb={2}>
-                    <Text fontSize="sm" color="purple.600">
-                      Start: {item.Start}, End: {item.End}
-                    </Text>
-                    <Text>
-                      <strong className={`text-purple-${(index + 1) % 2 === 0 ? "400" : "500"}`}>
-                        {index + 1}.
-                      </strong>{" "}
-                      {item.Text}
-                    </Text>
-                  </Box>
-                ))}
+          {isSubmitting ? (
+            <Flex justify="center" align="center" mt={4}>
+              <Spinner size="lg" color="teal.500" />
+              <Text mt={4}>Transcribing...</Text>
+            </Flex>
+          ) : (
+            transcriptions[questionNo]?.length > 0 && (
+              <Box mb={4}>
+                <Text fontSize="lg" fontWeight="semibold" mb={2}>
+                  Transcription
+                </Text>
+                <Box maxH="200px" overflowY="auto" p={4} bg="gray.50" borderRadius="md" boxShadow="sm">
+                  {transcriptions[questionNo].map((item, index) => (
+                    <Box key={index} mb={2}>
+                      <Text fontSize="sm" color="purple.600">
+                        Start: {item.Start}, End: {item.End}
+                      </Text>
+                      <Text>
+                        <strong className={`text-purple-${(index + 1) % 2 === 0 ? "400" : "500"}`}>
+                          {index + 1}.
+                        </strong>{" "}
+                        {item.Text}
+                      </Text>
+                    </Box>
+                  ))}
+                </Box>
               </Box>
-            </Box>
-          )
-        )}
-        <Flex justify="flex-end" mt={4}>
-          {questions.length === questionNo + 1 ? (
-            <Button colorScheme="purple" onClick={submitFinalAnswers}>
-              Submit Final Answers
-            </Button>
-          ) : transcriptions[questionNo]?.length > 0 ? (
-            <Button colorScheme="blue" onClick={nextQuestion}>
-              Next Question
-            </Button>
-          ) : null}
-        </Flex>
-
-        {/* Live Video Feed */}
-        <Box mt={6}>
-          <Text fontSize="lg" fontWeight="semibold" mb={2}>
-            Live Video Feed
-          </Text>
-          <Flex justify="center">
-            <video
-              ref={liveVideoFeed}
-              autoPlay
-              muted
-              className="w-full max-w-full rounded-md shadow-lg"
-              style={{ height: "550px", border: "2px solid #E2E8F0" }}
-            ></video>
+            )
+          )}
+          <Flex justify="flex-end" mt={4}>
+            {questions.length === questionNo + 1 ? (
+              <Button colorScheme="purple" onClick={submitFinalAnswers}>
+                Submit Final Answers
+              </Button>
+            ) : transcriptions[questionNo]?.length > 0 ? (
+              <Button colorScheme="blue" onClick={nextQuestion}>
+                Next Question
+              </Button>
+            ) : null}
           </Flex>
-        </Box>
-      </MotionBox>
-    )}
-  </MotionBox>
-);
+
+          {/* Live Video Feed */}
+          <Box mt={6}>
+            <Text fontSize="lg" fontWeight="semibold" mb={2}>
+              Live Video Feed
+            </Text>
+            <Flex justify="center">
+              <video
+                ref={liveVideoFeed}
+                autoPlay
+                muted
+                className="w-full max-w-full rounded-md shadow-lg"
+                style={{ height: "550px", border: "2px solid #E2E8F0" }}
+              ></video>
+            </Flex>
+          </Box>
+        </MotionBox>
+      )}
+    </MotionBox>
+  );
 };
 
 export default Interview;
