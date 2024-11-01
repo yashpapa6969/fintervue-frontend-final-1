@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Pie, Line } from "react-chartjs-2";
 import { Chart as ChartJS } from "chart.js/auto";
 import { motion } from "framer-motion";
-import Logo from "../assests/logo/logo.png";
+import Logo from "@/assests/logo/logo.png";
 import {
   FaTwitter,
   FaFacebook,
@@ -12,7 +12,7 @@ import {
   FaChartLine,
   FaBalanceScale,
 } from "react-icons/fa";
-import Navbar from "../components/Navbar";
+import Navbar from "@/components/Navbar";
 
 const jobRoles = [
   { title: "Financial Analyst", status: "Pending", icon: <FaMoneyBillWave /> },
