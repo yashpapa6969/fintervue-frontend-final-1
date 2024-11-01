@@ -12,7 +12,7 @@ import {
   FaChartLine,
   FaBalanceScale,
 } from "react-icons/fa";
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/navbar";
 
 const jobRoles = [
   { title: "Financial Analyst", status: "Pending", icon: <FaMoneyBillWave /> },
