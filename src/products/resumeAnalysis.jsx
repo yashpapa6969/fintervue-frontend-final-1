@@ -39,7 +39,7 @@ const [loading, setLoading] = useState(false);
     try {
       setLoading(true);
       const response = await axios.post(
-        `${config.mlBaseUrl}/api/interviewee/addResumeAnalysis`,
+        `${config.apiBaseUrl}/api/interviewee/addResumeAnalysis`,
         formData,
         {
           headers: {
