@@ -2,19 +2,26 @@ import React from 'react';
 import { motion, Variants } from 'framer-motion';
 import { cn } from '../../lib/utils';
 
+interface WordFadeInProps {
+  words?: string;
+  delay?: number;
+  variants?: Variants;
+  className?: string;
+}
+
 function WordFadeIn({
   words = '',
   delay = 0.35,
   variants = {
     hidden: { opacity: 0 },
-    visible: (i) => ({
+    visible: (i: number) => ({
       y: 0,
       opacity: 1,
       transition: { delay: i * delay },
     }),
   },
   className,
-}) {
+}: WordFadeInProps) {
   const _words = words.split(' ');
 
   return (
