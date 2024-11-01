@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Navbar from "../components/Navbar";
+import Navbar from "../components/navbar";
 import FlipText from "../components/ui/flip-text";
 import { BorderBeam } from "../components/ui/border-beam";
 import img1 from "../assests/resume_generator.png"; // Ensure the path is correct

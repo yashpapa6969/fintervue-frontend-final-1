@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../assests/logo/logo4.jpeg";
 
-import Navbar from "../components/Navbar";
+import Navbar from "../components/navbar";
 import axios from "axios";
-import useSignIn from "react-auth-kit/hooks/useSignIn";
+//import useSignIn from "react-auth-kit";
 
 const LoginInterviewer = () => {
   const [email, setEmail] = useState("");
@@ -12,7 +12,7 @@ const LoginInterviewer = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
 
-  const signIn = useSignIn();
+  //const signIn = useSignIn();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,7 +27,7 @@ const LoginInterviewer = () => {
 
       const { user } = response.data;
 
-      signIn({
+      /* signIn({
         auth: {
           token: response.data.token,
           type: "Bearer",
@@ -39,9 +39,9 @@ const LoginInterviewer = () => {
           email: user.email,
           role: "interviewer",
         },
-      });
+      }); */
 
-      localStorage.setItem("interviewer", JSON.stringify(user));
+      //localStorage.setItem("interviewer", JSON.stringify(user));
 
       navigate("/pendingInterviews"); // Replace with your desired route
     } catch (error) {

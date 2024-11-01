@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useToast } from "@chakra-ui/react";
 import LoadingBar from "react-top-loading-bar";
 import { FiChevronRight, FiChevronLeft } from "react-icons/fi";
-import Navbar from "../Navbar";
+import Navbar from "../navbar";
 import FlipText from "../ui/flip-text";
 
 import Resume1 from "../../assests/Resumes/Resume1.png";

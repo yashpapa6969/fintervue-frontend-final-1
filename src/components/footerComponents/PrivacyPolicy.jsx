@@ -1,6 +1,6 @@
 import { ChevronRight } from "lucide-react";
 import React from "react";
-import Navbar from "../Navbar";
+import Navbar from "../navbar";
 import resumeGen from "../../assests/resume_generator.png";
 import Button from "../button";
 

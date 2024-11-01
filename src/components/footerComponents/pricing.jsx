@@ -1,5 +1,5 @@
 import { FaCheck } from "react-icons/fa";
-import Navbar from "../Navbar";
+import Navbar from "../navbar";
 import { IoMdCheckmark } from "react-icons/io";
 
 const Pricing = () => {

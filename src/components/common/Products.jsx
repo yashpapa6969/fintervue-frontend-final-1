@@ -1,7 +1,8 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Modal from "react-modal";
-import Navbar from "../Navbar";
+import Navbar from "../navbar";
+
 // Import images
 import resumeAnalysisImage from "../../assests/icons/resume_analysis.jpg";
 import aiInterviewImage from "../../assests/ai_interview.jpg";
@@ -56,10 +57,19 @@ const ProductCard = ({
   imagePosition,
   imagelink,
   link,
+  isAuthenticated,
 }) => {
   const navigate = useNavigate();
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [formData, setFormData] = useState({ name: "", email: "", phone: "" });
+
+  const handleProductAccess = () => {
+    if (!isAuthenticated) {
+      navigate('/login/candidate', { state: { from: window.location.pathname } });
+      return;
+    }
+    openModal();
+  };
 
   const openModal = () => {
     setModalIsOpen(true);
@@ -77,7 +87,6 @@ const ProductCard = ({
   const handleSubmit = () => {
     const { name, email, phone } = formData;
     if (validateInput(name, email, phone)) {
-      alert("Details are valid! Proceeding to the product...");
       closeModal();
       navigate(link);
     }
@@ -93,10 +102,10 @@ const ProductCard = ({
         <h2 className="text-3xl font-bold tracking-tight">{title}</h2>
         <p className="text-lg text-gray-600">{description}</p>
         <button
-          className="mt-3 btn btn-lg bg-black text-white p-3 rounded-md"
-          onClick={openModal}
+          className="mt-3 btn btn-lg bg-black text-white p-3 rounded-md hover:bg-gray-800 transition-colors"
+          onClick={handleProductAccess}
         >
-          {buttonText}
+          {!isAuthenticated ? "Login to Access" : buttonText}
         </button>
       </div>
       <div className="w-full lg:w-1/2">
@@ -109,7 +118,7 @@ const ProductCard = ({
         </div>
       </div>
 
-      {/* Modal */}
+      {/* Modal - Only shown when authenticated */}
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
@@ -144,7 +153,7 @@ const ProductCard = ({
           />
           <button
             onClick={handleSubmit}
-            className="w-full mt-3 bg-blue-500 text-white p-3 rounded-md"
+            className="w-full mt-3 bg-blue-500 text-white p-3 rounded-md hover:bg-blue-600 transition-colors"
           >
             Verify
           </button>
@@ -155,6 +164,21 @@ const ProductCard = ({
 };
 
 const ProductSection = () => {
+  const navigate = useNavigate();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    // Check authentication status when component mounts
+    checkAuthStatus();
+  }, []);
+
+  const checkAuthStatus = () => {
+    // Replace this with your actual authentication check
+    // For example, checking for a valid token in localStorage
+    const token = localStorage.getItem('userToken');
+    setIsAuthenticated(!!token);
+  };
+
   return (
     <>
       <Navbar />
@@ -166,6 +190,7 @@ const ProductSection = () => {
           imagePosition="left"
           link="/product/ai_intervue"
           imagelink={aiInterviewImage}
+          isAuthenticated={isAuthenticated}
         />
 
         <div className="divider my-2 border-t border-gray-200"></div>
@@ -177,6 +202,7 @@ const ProductSection = () => {
           imagePosition="right"
           link="/product/resumeBuilder"
           imagelink={resumeBuilderImage}
+          isAuthenticated={isAuthenticated}
         />
 
         <div className="divider my-2 border-t border-gray-200"></div>
@@ -188,6 +214,7 @@ const ProductSection = () => {
           imagePosition="left"
           link="/product/resumeAnalysis"
           imagelink={resumeAnalysisImage}
+          isAuthenticated={isAuthenticated}
         />
       </div>
     </>
