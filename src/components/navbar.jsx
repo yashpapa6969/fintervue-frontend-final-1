@@ -293,3 +293,4 @@ export default function Navbar() {
   );
 }
 
+export default Navbar;
