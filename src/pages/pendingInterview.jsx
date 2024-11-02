@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import useAuthHeader from 'react-auth-kit/hooks/useAuthHeader';
-import useAuthUser from 'react-auth-kit/hooks/useAuthUser';
 import config from "../config";
 
 function PendingInterviews() {
@@ -12,8 +10,6 @@ function PendingInterviews() {
   const [acceptError, setAcceptError] = useState('');
   const navigate = useNavigate();
 
-  const authHeader = useAuthHeader()
-  const interviewerId = useAuthUser().uid;
 
   useEffect(()=>{
     fetchPendingInterviews()
@@ -23,9 +19,7 @@ function PendingInterviews() {
     try {
       const response = await axios.get(
         `${config.apiBaseUrl}/api/interviewee/getAllScheduledInterview`,{
-          headers: {
-            Authorization: authHeader, 
-          },
+       
         }
       );
       setPendingInterviews(response.data);

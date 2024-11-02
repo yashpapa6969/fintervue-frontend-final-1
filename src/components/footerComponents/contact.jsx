@@ -3,15 +3,17 @@ import worldMap from "../../assests/world.svg";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../navbar";
-
+import config from "../../config";
 const Contact = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
-    company: "",
+    company: "", 
     message: "",
   });
+
+  const [errors, setErrors] = useState({});
 
   // Handle form input change
   const handleInputChange = (e) => {
@@ -20,13 +22,88 @@ const Contact = () => {
       ...prevData,
       [name]: value,
     }));
+    // Clear error when user starts typing
+    if(errors[name]) {
+      setErrors(prev => ({...prev, [name]: ""}));
+    }
+  };
+
+  // Validate form
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!formData.fullName.trim()) {
+      newErrors.fullName = "Full name is required";
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+
+    if (!formData.company.trim()) {
+      newErrors.company = "Company name is required";
+    }
+
+    if (!formData.message.trim()) {
+      newErrors.message = "Message is required";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form Data Submitted:", formData);
-    navigate("/");
+    
+    if (!validateForm()) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`${config.apiBaseUrl}/send-email`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          to: 'fintervue.dev@gmail.com',
+          subject: `Contact Form Submission from ${formData.fullName}`,
+          textBody: `
+Name: ${formData.fullName}
+Email: ${formData.email}
+Company: ${formData.company}
+Message: ${formData.message}
+          `,
+          htmlBody: `
+<h2>New Contact Form Submission</h2>
+<p><strong>Name:</strong> ${formData.fullName}</p>
+<p><strong>Email:</strong> ${formData.email}</p>
+<p><strong>Company:</strong> ${formData.company}</p>
+<p><strong>Message:</strong></p>
+<p>${formData.message}</p>
+          `
+        }),
+      });
+
+      if (response.ok) {
+        alert("Thank you for your message! We'll get back to you soon.");
+        setFormData({
+          fullName: "",
+          email: "",
+          company: "",
+          message: "",
+        });
+        setErrors({});
+      } else {
+        throw new Error('Failed to send message');
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+      alert("Sorry, there was an error sending your message. Please try again later.");
+    }
   };
 
   return (
@@ -75,11 +152,12 @@ const Contact = () => {
                 <input
                   type="text"
                   name="fullName"
-                  className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-700 focus:border-blue-700 transition duration-300"
+                  className={`w-full p-3 border ${errors.fullName ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-700 focus:border-blue-700 transition duration-300`}
                   placeholder="Enter your name"
                   value={formData.fullName}
                   onChange={handleInputChange}
                 />
+                {errors.fullName && <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>}
               </div>
               <div>
                 <label className="block text-gray-700 font-medium mb-2">
@@ -88,11 +166,12 @@ const Contact = () => {
                 <input
                   type="email"
                   name="email"
-                  className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-700 focus:border-blue-700 transition duration-300"
+                  className={`w-full p-3 border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-700 focus:border-blue-700 transition duration-300`}
                   placeholder="contact@gmail.com"
                   value={formData.email}
                   onChange={handleInputChange}
                 />
+                {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
               </div>
               <div>
                 <label className="block text-gray-700 font-medium mb-2">
@@ -101,11 +180,12 @@ const Contact = () => {
                 <input
                   type="text"
                   name="company"
-                  className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-700 focus:border-blue-700 transition duration-300"
+                  className={`w-full p-3 border ${errors.company ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-700 focus:border-blue-700 transition duration-300`}
                   placeholder="Fintervue"
                   value={formData.company}
                   onChange={handleInputChange}
                 />
+                {errors.company && <p className="text-red-500 text-sm mt-1">{errors.company}</p>}
               </div>
               <div>
                 <label className="block text-gray-700 font-medium mb-2">
@@ -113,12 +193,13 @@ const Contact = () => {
                 </label>
                 <textarea
                   name="message"
-                  className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-700 focus:border-blue-700 transition duration-300"
+                  className={`w-full p-3 border ${errors.message ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-700 focus:border-blue-700 transition duration-300`}
                   placeholder="Type your message here"
                   value={formData.message}
                   onChange={handleInputChange}
                   rows="5"
                 ></textarea>
+                {errors.message && <p className="text-red-500 text-sm mt-1">{errors.message}</p>}
               </div>
               <button
                 type="submit"

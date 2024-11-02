@@ -42,7 +42,7 @@ const LoginInterviewer = () => {
         },
       }); */
 
-      //localStorage.setItem("interviewer", JSON.stringify(user));
+      localStorage.setItem("interviewer", JSON.stringify(user));
 
       navigate("/pendingInterviews"); // Replace with your desired route
     } catch (error) {

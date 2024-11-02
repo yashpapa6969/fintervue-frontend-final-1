@@ -3,26 +3,17 @@ import { useNavigate, useLocation } from "react-router-dom";
 import logo from "../assests/logo/logo4.jpeg";
 import Navbar from "../components/navbar";
 import axios from "axios";
-//import useSignIn from 'react-auth-kit/hooks/useSignIn';
-//import useIsAuthenticated from 'react-auth-kit/hooks/useIsAuthenticated';
 
 import config from '../config';
 
 const LoginInterviewee = () => {
-  //const isAuthenticated = useIsAuthenticated();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
-  //const signIn = useSignIn();
 
   const from = location.state?.from?.pathname || "/display";
-
-  // Redirect if already authenticated
-  // if (isAuthenticated()) {
-  //   navigate(from, { replace: true });
-  // }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -35,28 +26,12 @@ const LoginInterviewee = () => {
       );
       
       console.log("API Response:", response.data);
-      const { user, token } = response.data;
+      const { user } = response.data;
 
-      /* if (signIn({
-        auth: {
-          token: token,
-          expiresIn: 3600, // 1 hour
-          tokenType: "Bearer"
-        },
-        userState: {
-          email: user.email,
-          uid: user.interviewee_id,
-          name: user.firstName,
-          role: "interviewee"
-        },
-      })) {
-        // Successful sign-in
-        localStorage.setItem("interviewee", JSON.stringify(user));
-        console.log("Stored user data:", localStorage.getItem("interviewee"));
-        navigate(from, { replace: true });
-      } else {
-        setErrorMessage("Failed to sign in. Please check your credentials.");
-      } */
+      localStorage.setItem("interviewee", JSON.stringify(user));
+      console.log("Stored user data:", localStorage.getItem("interviewee"));
+      
+      navigate(from, { replace: true });
     } catch (error) {
       console.error("Login error:", error);
       setErrorMessage(

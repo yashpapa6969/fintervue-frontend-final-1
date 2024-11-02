@@ -57,17 +57,13 @@ const ProductCard = ({
   imagePosition,
   imagelink,
   link,
-  isAuthenticated,
 }) => {
   const navigate = useNavigate();
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [formData, setFormData] = useState({ name: "", email: "", phone: "" });
 
   const handleProductAccess = () => {
-    if (!isAuthenticated) {
-      navigate('/login/candidate', { state: { from: window.location.pathname } });
-      return;
-    }
+
     openModal();
   };
 
@@ -105,7 +101,6 @@ const ProductCard = ({
           className="mt-3 btn btn-lg bg-black text-white p-3 rounded-md hover:bg-gray-800 transition-colors"
           onClick={handleProductAccess}
         >
-          {!isAuthenticated ? "Login to Access" : buttonText}
         </button>
       </div>
       <div className="w-full lg:w-1/2">
@@ -165,19 +160,7 @@ const ProductCard = ({
 
 const ProductSection = () => {
   const navigate = useNavigate();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  useEffect(() => {
-    // Check authentication status when component mounts
-    checkAuthStatus();
-  }, []);
-
-  const checkAuthStatus = () => {
-    // Replace this with your actual authentication check
-    // For example, checking for a valid token in localStorage
-    const token = localStorage.getItem('userToken');
-    setIsAuthenticated(!!token);
-  };
 
   return (
     <>
@@ -190,7 +173,6 @@ const ProductSection = () => {
           imagePosition="left"
           link="/product/ai_intervue"
           imagelink={aiInterviewImage}
-          isAuthenticated={isAuthenticated}
         />
 
         <div className="divider my-2 border-t border-gray-200"></div>
@@ -202,7 +184,6 @@ const ProductSection = () => {
           imagePosition="right"
           link="/product/resumeBuilder"
           imagelink={resumeBuilderImage}
-          isAuthenticated={isAuthenticated}
         />
 
         <div className="divider my-2 border-t border-gray-200"></div>
@@ -214,7 +195,6 @@ const ProductSection = () => {
           imagePosition="left"
           link="/product/resumeAnalysis"
           imagelink={resumeAnalysisImage}
-          isAuthenticated={isAuthenticated}
         />
       </div>
     </>

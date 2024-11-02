@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import useAuthUser from 'react-auth-kit/hooks/useAuthUser';
 import Peer from './Peer';
+import config from "../config";
+
 import { useHMSActions, useHMSStore, selectPeers, selectIsConnectedToRoom } from '@100mslive/react-sdk';
 function UpcomingInterviews() {
   const [upcomingInterviews, setUpcomingInterviews] = useState([]);
@@ -15,7 +17,6 @@ function UpcomingInterviews() {
   const peers = useHMSStore(selectPeers);
   const userData = useAuthUser();
   const userRole = userData.role;
-  import config from "../config";
 
   useEffect(() => {
     if (userData.role === "interviewee") {

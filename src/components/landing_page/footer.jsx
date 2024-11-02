@@ -21,11 +21,12 @@ const Footer = () => {
             <AiFillInstagram className="hover:scale-125" />
           </Link>
 
-          <Link to={"https://www.instagram.com/fintervue/"}>
+          <Link to={"https://www.linkedin.com/company/fintervue/"}>
             <FaLinkedin className="hover:scale-125" />
           </Link>
-
-          <FaYoutube className="hover:scale-125" />
+          <Link to={"https://www.youtube.com/@fintervue"}>
+            <FaYoutube className="hover:scale-125" />
+          </Link>
         </div>
         <img src={Logo} alt="Logo" className="w-150 h-auto" />
       </div>

@@ -42,7 +42,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/signup",
-    element: <Lazy.SignUpPage />,
+    element: (
+      <ProtectedRoute requiresNoAuth>
+        <Lazy.SignUpPage />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/signup/candidate",
@@ -71,7 +75,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/product",
-    element: <ProductPage />,
+    element: (
+      <ProtectedRoute>
+        <ProductPage />
+      </ProtectedRoute>
+    ),
   },
  
   {
@@ -175,4 +183,3 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     </ChakraProvider>
   </React.StrictMode>
 );
-

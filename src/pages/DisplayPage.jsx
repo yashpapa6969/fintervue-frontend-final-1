@@ -6,14 +6,14 @@ import TopCompanies from '../job_display/topCompanies'
 // import CompanyList from '../job_display/CompanyList'
 // import JobRoleCard from '../job_display/CompanyList'
 import JobRoleList from '../job_display/JobRoleList'
-import useAuthUser from 'react-auth-kit/hooks/useAuthUser'
+// import useAuthUser from 'react-auth-kit/hooks/useAuthUser'
 
 const DisplayPage = () => {
-  const user= useAuthUser()
+  // const user= useAuthUser()
   return (
     <div>
       <Navbar />
-      {user.uid}
+      {/* {user.uid} */}
       <Hero />
       <TopCompanies />
       {/* <CompanyList/> */}
