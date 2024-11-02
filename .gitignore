@@ -1,7 +1,7 @@
 # Dependencies
 /node_modules
 /packages
-
+/dist
 # Compiled files
 *.o
 *.pyc
