@@ -39,7 +39,6 @@ const InterviewerSignupPage = () => {
     firstName: "",
     lastName: "",
     phoneNumber: "",
-    profilePic: "",
     resume: "",
     email: "",
     password: "",
@@ -224,9 +223,37 @@ const InterviewerSignupPage = () => {
 
     try {
       setLoading(true);
+      
+      // Create FormData object
+      const formData = new FormData();
+      
+      // Add all the interviewer data fields
+      Object.keys(interviewerData).forEach(key => {
+        if (key === 'availability') {
+          // Handle nested availability object
+          formData.append('availableDays', JSON.stringify(interviewerData.availability.availableDays));
+          formData.append('availableTimeSlots', JSON.stringify(interviewerData.availability.availableTimeSlots));
+        } else if (key === 'industryExpertise') {
+          // Handle array
+          formData.append('industryExpertise', JSON.stringify(interviewerData.industryExpertise));
+        } else if (key === 'resume') {
+          // Handle resume file - only append if a file exists
+          if (interviewerData[key] instanceof File) {
+            formData.append('resume', interviewerData[key], interviewerData[key].name);
+          }
+        } else {
+          formData.append(key, interviewerData[key]);
+        }
+      });
+
       const result = await axios.post(
         `${config.apiBaseUrl}/api/interviewer/AddInterviewer`,
-        interviewerData
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
       );
       if (result.status === 201) {
         toast({
@@ -236,7 +263,7 @@ const InterviewerSignupPage = () => {
           status: "success",
           isClosable: true,
         });
-        navigate("/product");
+        navigate("/login/interviewer");
         return;
       }
     } catch (error) {
@@ -258,6 +285,42 @@ const InterviewerSignupPage = () => {
       status: "error",
       isClosable: true,
     });
+  };
+
+  // Update the handleFileChange function to properly handle file objects
+  const handleFileChange = (key, event) => {
+    const file = event.target.files[0];
+    if (file) {
+      // Validate file type if it's a resume
+      if (key === 'resume') {
+        const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+        if (!allowedTypes.includes(file.type)) {
+          toast({
+            title: "Invalid file type",
+            description: "Please upload a PDF or Word document",
+            status: "error",
+            isClosable: true,
+          });
+          return;
+        }
+        // Optional: Check file size (e.g., 5MB limit)
+        const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+        if (file.size > maxSize) {
+          toast({
+            title: "File too large",
+            description: "Please upload a file smaller than 5MB",
+            status: "error",
+            isClosable: true,
+          });
+          return;
+        }
+      }
+      
+      setInterviewerData(prevData => ({
+        ...prevData,
+        [key]: file
+      }));
+    }
   };
 
   return (
@@ -351,6 +414,7 @@ const InterviewerSignupPage = () => {
             <InterviewerSignupForm
               formData={interviewerData}
               handleChange={handleChange}
+              handleFileChange={handleFileChange}
               errors={errors}
             />
           </div>

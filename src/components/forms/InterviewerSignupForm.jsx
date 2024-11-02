@@ -3,14 +3,35 @@ import { FormControl, FormErrorMessage, FormLabel, Input, InputGroup } from "@ch
 
 const InterviewerSignupForm = ({ formData, handleChange, errors }) => {
   const [dragOver, setDragOver] = useState(false);
-  const fileInputRef = useRef(null); // Ref for the file input
+  const [fileError, setFileError] = useState("");
+  const fileInputRef = useRef(null);
+
+  // Validate file type and size
+  const validateFile = (file) => {
+    const allowedTypes = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ];
+    const maxSize = 5 * 1024 * 1024; // 5MB
+
+    if (!allowedTypes.includes(file.type)) {
+      setFileError("Please upload a PDF or Word document (.pdf, .doc, .docx)");
+      return false;
+    }
+    if (file.size > maxSize) {
+      setFileError("File size must be less than 5MB");
+      return false;
+    }
+    setFileError("");
+    return true;
+  };
 
   // Handle resume upload
   const handleResumeUpload = (e) => {
-    const resumeFile = e.target.files[0];
-    if (resumeFile) {
-      const resumeURL = URL.createObjectURL(resumeFile); // Temporary URL for the file
-      handleChange("resume", resumeURL); // Update formData with the resume URL
+    const file = e.target.files[0];
+    if (file && validateFile(file)) {
+      handleChange("resume", file); // Store the actual file instead of URL
     }
   };
 
@@ -28,9 +49,8 @@ const InterviewerSignupForm = ({ formData, handleChange, errors }) => {
     e.preventDefault();
     setDragOver(false);
     const file = e.dataTransfer.files[0];
-    if (file) {
-      const resumeURL = URL.createObjectURL(file); // Temporary URL for the file
-      handleChange("resume", resumeURL); // Update formData with the resume URL
+    if (file && validateFile(file)) {
+      handleChange("resume", file);
     }
   };
 
@@ -130,33 +150,41 @@ const InterviewerSignupForm = ({ formData, handleChange, errors }) => {
         {errors?.password && <FormErrorMessage>{errors.password}</FormErrorMessage>}
       </FormControl>
 
-      {/* Drag-and-Drop Resume Upload */}
-      <div
-        className={`w-full p-4 border-2 border-dashed ${
-          dragOver ? "border-green-500" : "border-gray-300"
-        } rounded-md transition-all duration-300 hover:bg-gray-100 cursor-pointer`}
-        onDrop={handleDrop}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onClick={handleClickUpload}
-      >
-        <p className="text-center text-gray-600">Drag & Drop your resume here, or click to upload.</p>
-        <input
-          type="file"
-          accept=".pdf,.doc,.docx"
-          className="hidden"
-          ref={fileInputRef}
-          onChange={handleResumeUpload}
-        />
-      </div>
+      {/* Updated Resume Upload */}
+      <FormControl isInvalid={!!fileError}>
+        <FormLabel className="font-medium text-gray-700">Resume</FormLabel>
+        <div
+          className={`w-full p-4 border-2 border-dashed ${
+            dragOver ? "border-green-500" : fileError ? "border-red-500" : "border-gray-300"
+          } rounded-md transition-all duration-300 hover:bg-gray-100 cursor-pointer`}
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onClick={handleClickUpload}
+        >
+          <p className="text-center text-gray-600">
+            Drag & Drop your resume here, or click to upload
+            <br />
+            <span className="text-sm text-gray-500">
+              Accepted formats: PDF, DOC, DOCX (max 5MB)
+            </span>
+          </p>
+          <input
+            type="file"
+            accept=".pdf,.doc,.docx"
+            className="hidden"
+            ref={fileInputRef}
+            onChange={handleResumeUpload}
+          />
+        </div>
+        {fileError && <FormErrorMessage>{fileError}</FormErrorMessage>}
+      </FormControl>
 
-      {/* Resume Preview */}
+      {/* Updated Resume Preview */}
       {formData?.resume && (
-        <div className="mt-4">
-          <p>Resume Uploaded:</p>
-          <a href={formData.resume} target="_blank" rel="noopener noreferrer" className="text-blue-600">
-            View Resume
-          </a>
+        <div className="mt-4 p-3 bg-gray-50 rounded-md">
+          <p className="font-medium">Resume Uploaded:</p>
+          <p className="text-sm text-gray-600">{formData.resume.name}</p>
         </div>
       )}
 

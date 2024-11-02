@@ -23,7 +23,7 @@ const AiIntervuePage = () => {
     try {
       setLoading(true);
       // First create AI analysis
-      const userId = localStorage.getItem('inter');
+      const userId = localStorage.getItem('userId');
       const analysisResponse = await axios.post(`${config.apiBaseUrl}/api/interviewee/create-ai-analysis`, {
         domain: domain.name,
         userId: userId

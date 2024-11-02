@@ -24,8 +24,8 @@ const SignupPage = () => {
   const [candidateData, setCandidateData] = useState({
     firstName: "",
     lastName: "",
-    profilePic: "",
-    resume: "",
+    profilePic: null,
+    resume: null,
     email: "",
     password: "",
     linkedInProfile: "",
@@ -42,10 +42,17 @@ const SignupPage = () => {
   });
 
   const handleChange = (key, value) => {
-    setCandidateData((prevData) => ({
-      ...prevData,
-      [key]: value,
-    }));
+    if (key === 'resume' || key === 'profilePic') {
+      setCandidateData((prevData) => ({
+        ...prevData,
+        [key]: value instanceof FileList ? value[0] : value,
+      }));
+    } else {
+      setCandidateData((prevData) => ({
+        ...prevData,
+        [key]: value,
+      }));
+    }
   };
 
   const profiles = [
@@ -134,10 +141,34 @@ const SignupPage = () => {
     }
     try {
       setLoading(true);
-      const result = await axios.post(`${config.apiBaseUrl}/api/interviewee/AddInterviewee`, {
-        ...candidateData,
-        skills: selectedKeySkills,
+      
+      const formData = new FormData();
+      
+      Object.keys(candidateData).forEach(key => {
+        if (key !== 'resume' && key !== 'profilePic') {
+          formData.append(key, candidateData[key]);
+        }
       });
+      
+      if (candidateData.resume) {
+        formData.append('resume', candidateData.resume);
+      }
+      if (candidateData.profilePic) {
+        formData.append('profilePic', candidateData.profilePic);
+      }
+      
+      formData.append('skills', JSON.stringify(selectedKeySkills));
+
+      const result = await axios.post(
+        `${config.apiBaseUrl}/api/interviewee/AddInterviewee`, 
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+
       if (result.status === 201) {
         toast({
           title: "Welcome",
@@ -146,7 +177,7 @@ const SignupPage = () => {
           status: "success",
           isClosable: true,
         });
-        navigate("/");
+        navigate("/login/candidate");
         return;
       }
     } catch (error) {

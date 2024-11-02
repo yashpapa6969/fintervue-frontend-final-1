@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import useAuthUser from 'react-auth-kit/hooks/useAuthUser';
 import Peer from './Peer';
 import config from "../config";
 
@@ -10,46 +9,46 @@ function UpcomingInterviews() {
   const [upcomingInterviews, setUpcomingInterviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [userId, setUserId] = useState(null);     // State for user ID
+  const [userId, setUserId] = useState(null);
+  const [userData, setUserData] = useState(null);
   const isConnected = useHMSStore(selectIsConnectedToRoom);
   const navigate = useNavigate();
   const hmsActions = useHMSActions();
   const peers = useHMSStore(selectPeers);
-  const userData = useAuthUser();
-  const userRole = userData.role;
 
   useEffect(() => {
-    if (userData.role === "interviewee") {
-      setUserId(userData.uid);
-      console.log('Interviewee data:', userData);
-    } else if (userData.role === "interviewer") {
-      setUserId(userData.uid);
-      console.log('Interviewer data:', userData);
-    } else {
-      return;
+    const userType = localStorage.getItem('userType');
+    const storedUserData = JSON.parse(localStorage.getItem(userType) || '{}');
+    
+    setUserData(storedUserData);
+    
+    if (userType === "interviewer") {
+      setUserId(storedUserData.interviewer_id);
+      console.log('Interviewer data:', storedUserData);
+    } else if (userType === "interviewee") {
+      setUserId(storedUserData.interviewee_id);
+      console.log('Interviewee data:', storedUserData);
     }
-  }, [navigate]);
+  }, []);
 
   useEffect(() => {
-    if (userRole && userId) {
+    if (userData && userId) {
       fetchUpcomingInterviews();
     }
-  }, [userRole, userId]);
+  }, [userData, userId]);
 
   const fetchUpcomingInterviews = async () => {
     try {
-      console.log('UserRole:', userRole);
-      console.log('UserId:', userId);
-
+      const userType = localStorage.getItem('userType');
+      
       const payload = {
-        interviewer_id: userRole === 'interviewer' ? userId : null,
-        interviewee_id: userRole === 'interviewee' ? userId : null,
+        interviewer_id: userType === 'interviewer' ? userId : null,
+        interviewee_id: userType === 'interviewee' ? userId : null,
       };
 
       console.log('Payload being sent:', payload);
 
       const endpoint = `${config.apiBaseUrl}/api/interviewee/getAcceptedInterviews`;
-
       const response = await axios.post(endpoint, payload);
       setUpcomingInterviews(response.data);
       setLoading(false);
@@ -61,22 +60,14 @@ function UpcomingInterviews() {
   };
 
   const joinInterview = async (interview) => {
-    console.log(interview)
-    let userName = '';
-    let authToken;
-    let role = userRole;
-    if (role === 'interviewee') {
-      userName = 'Interviewee';
-      authToken = interview.auth_interviewee;
-    } else if (role === 'interviewer') {
-      userName = 'Interviewer';
-      authToken = interview.auth_interviewer;
-    }
-    console.log(interview)
+    const userType = localStorage.getItem('userType');
+    let userName = userType === 'interviewee' ? 'Interviewee' : 'Interviewer';
+    let authToken = userType === 'interviewee' ? interview.auth_interviewee : interview.auth_interviewer;
+
     try {
-      await hmsActions.join({ userName, authToken});
+      await hmsActions.join({ userName, authToken });
     } catch (e) {
-      console.error(e)
+      console.error(e);
     }
   };
 

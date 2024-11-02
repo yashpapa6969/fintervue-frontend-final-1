@@ -35,7 +35,7 @@ const router = createBrowserRouter([
   {
     path: "/analysis",
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute requiresNoAuth={false}>
         <AIAnalysisPage />
       </ProtectedRoute>
     ),
@@ -43,7 +43,7 @@ const router = createBrowserRouter([
   {
     path: "/signup",
     element: (
-      <ProtectedRoute requiresNoAuth>
+      <ProtectedRoute requiresNoAuth={true}>
         <Lazy.SignUpPage />
       </ProtectedRoute>
     ),
@@ -83,9 +83,9 @@ const router = createBrowserRouter([
   },
  
   {
-    path: "/product/ai_intervue",  // Removed extra forward slash
+    path: "/product/ai_intervue",  
     element: (
-      <ProtectedRoute>
+      <ProtectedRoute requiresNoAuth={false}>
         <Lazy.AiIntervuePage />
       </ProtectedRoute>
     ),
