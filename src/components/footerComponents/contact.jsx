@@ -63,33 +63,36 @@ const Contact = () => {
     }
 
     try {
-      const response = await fetch(`${config.apiBaseUrl}/send-email`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          to: 'fintervue.dev@gmail.com',
-          subject: `Contact Form Submission from ${formData.fullName}`,
-          textBody: `
-Name: ${formData.fullName}
-Email: ${formData.email}
-Company: ${formData.company}
-Message: ${formData.message}
-          `,
-          htmlBody: `
-<h2>New Contact Form Submission</h2>
-<p><strong>Name:</strong> ${formData.fullName}</p>
-<p><strong>Email:</strong> ${formData.email}</p>
-<p><strong>Company:</strong> ${formData.company}</p>
-<p><strong>Message:</strong></p>
-<p>${formData.message}</p>
-          `
-        }),
-      });
+    // ek api create kr for storing contact us details 
 
-      if (response.ok) {
+//       const response = await fetch(`${config.apiBaseUrl}/send-email`, {
+//         method: 'POST',
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify({
+//           to: 'fintervue.dev@gmail.com',
+//           subject: `Contact Form Submission from ${formData.fullName}`,
+//           textBody: `
+// Name: ${formData.fullName}
+// Email: ${formData.email}
+// Company: ${formData.company}
+// Message: ${formData.message}
+//           `,
+//           htmlBody: `
+// <h2>New Contact Form Submission</h2>
+// <p><strong>Name:</strong> ${formData.fullName}</p>
+// <p><strong>Email:</strong> ${formData.email}</p>
+// <p><strong>Company:</strong> ${formData.company}</p>
+// <p><strong>Message:</strong></p>
+// <p>${formData.message}</p>
+//           `
+//         }),
+//       });
+
+      // if (response.ok) {
         alert("Thank you for your message! We'll get back to you soon.");
+        console.log(formData);
         setFormData({
           fullName: "",
           email: "",
@@ -97,9 +100,9 @@ Message: ${formData.message}
           message: "",
         });
         setErrors({});
-      } else {
-        throw new Error('Failed to send message');
-      }
+      // } else {
+        // throw new Error('Failed to send message');
+      // }
     } catch (error) {
       console.error('Error sending message:', error);
       alert("Sorry, there was an error sending your message. Please try again later.");
@@ -122,7 +125,7 @@ Message: ${formData.message}
             </p>
             <div className="mb-6 text-gray-800 space-y-2">
               <p>fintervue.dev@gmail.com</p>
-              <p>+91 999 9999 999</p>
+              <p>+91 99721 39318</p>
             </div>
             <div className="relative">
               <img
@@ -131,7 +134,7 @@ Message: ${formData.message}
                 className="w-full h-auto object-cover rounded-md shadow-md"
               />
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="bg-blue-700 text-white px-4 py-2 rounded-md shadow-lg transform transition-transform duration-300 hover:scale-105">
+                <div className="bg-blue-700 text-white px-4 py-2 ml-40 rounded-md shadow-lg transform transition-transform duration-300 hover:scale-105">
                   We are here
                 </div>
               </div>
@@ -147,17 +150,21 @@ Message: ${formData.message}
             <form onSubmit={handleSubmit} className="relative z-10 space-y-6">
               <div>
                 <label className="block text-gray-700 font-medium mb-2">
-                  Full name
+                  Name
                 </label>
                 <input
                   type="text"
                   name="fullName"
-                  className={`w-full p-3 border ${errors.fullName ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-700 focus:border-blue-700 transition duration-300`}
+                  className={`w-full p-3 border ${
+                    errors.fullName ? "border-red-500" : "border-gray-300"
+                  } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-700 focus:border-blue-700 transition duration-300`}
                   placeholder="Enter your name"
                   value={formData.fullName}
                   onChange={handleInputChange}
                 />
-                {errors.fullName && <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>}
+                {errors.fullName && (
+                  <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>
+                )}
               </div>
               <div>
                 <label className="block text-gray-700 font-medium mb-2">
@@ -166,26 +173,34 @@ Message: ${formData.message}
                 <input
                   type="email"
                   name="email"
-                  className={`w-full p-3 border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-700 focus:border-blue-700 transition duration-300`}
+                  className={`w-full p-3 border ${
+                    errors.email ? "border-red-500" : "border-gray-300"
+                  } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-700 focus:border-blue-700 transition duration-300`}
                   placeholder="contact@gmail.com"
                   value={formData.email}
                   onChange={handleInputChange}
                 />
-                {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+                {errors.email && (
+                  <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+                )}
               </div>
               <div>
                 <label className="block text-gray-700 font-medium mb-2">
-                  Company
+                  Company/Individual
                 </label>
                 <input
                   type="text"
                   name="company"
-                  className={`w-full p-3 border ${errors.company ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-700 focus:border-blue-700 transition duration-300`}
+                  className={`w-full p-3 border ${
+                    errors.company ? "border-red-500" : "border-gray-300"
+                  } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-700 focus:border-blue-700 transition duration-300`}
                   placeholder="Fintervue"
                   value={formData.company}
                   onChange={handleInputChange}
                 />
-                {errors.company && <p className="text-red-500 text-sm mt-1">{errors.company}</p>}
+                {errors.company && (
+                  <p className="text-red-500 text-sm mt-1">{errors.company}</p>
+                )}
               </div>
               <div>
                 <label className="block text-gray-700 font-medium mb-2">
@@ -193,16 +208,21 @@ Message: ${formData.message}
                 </label>
                 <textarea
                   name="message"
-                  className={`w-full p-3 border ${errors.message ? 'border-red-500' : 'border-gray-300'} rounded-md focus:outline-none focus:ring-2 focus:ring-blue-700 focus:border-blue-700 transition duration-300`}
+                  className={`w-full p-3 border ${
+                    errors.message ? "border-red-500" : "border-gray-300"
+                  } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-700 focus:border-blue-700 transition duration-300`}
                   placeholder="Type your message here"
                   value={formData.message}
                   onChange={handleInputChange}
                   rows="5"
                 ></textarea>
-                {errors.message && <p className="text-red-500 text-sm mt-1">{errors.message}</p>}
+                {errors.message && (
+                  <p className="text-red-500 text-sm mt-1">{errors.message}</p>
+                )}
               </div>
               <button
                 type="submit"
+                onClick={handleSubmit}
                 className="w-full py-3 bg-blue-700 text-white font-medium rounded-md hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-800 transition duration-300 transform hover:scale-105"
               >
                 Submit

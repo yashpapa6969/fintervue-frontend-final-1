@@ -1,16 +1,19 @@
 {
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ],
   "compilerOptions": {
-    "allowJs": true,
-    "checkJs": false,
-    "noEmit": true,
-    "jsx": "react", // if using React
-    "module": "ESNext",
-    "target": "ES6",
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "skipLibCheck": true, // Skip type checking of declaration files
-    "strict": true // Enable strict type-checking options
-  },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules"] // Exclude node_modules from compilation
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    }
+  }
 }
