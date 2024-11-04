@@ -8,7 +8,7 @@ const SignupForm = ({ formData, handleChange }) => {
   };
 
   return (
-      <div className="flex flex-col gap-4 px-6 md:px-8 lg:px-10 w-full max-w-2xl mx-auto">
+      <div className="flex flex-col gap-4 px-2 md:px-2 lg:px-10 w-full  ">
       {/* Header */}
       <div className="text-center space-y-2">
         <h3 className="text-4xl font-extrabold text-blue-700 tracking-wide">

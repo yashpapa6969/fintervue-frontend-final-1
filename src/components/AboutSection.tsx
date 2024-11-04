@@ -4,7 +4,7 @@
 // // import resumeGen from "../../assests/resume_generator.png";
 // // import Button from "../button";
 
-import * as React from "react";
+
 
 // // const About = () => {
 // //   return (
@@ -154,6 +154,7 @@ import * as React from "react";
 // };
 
 // export default About;
+import Logo1 from '@/assests/illus11.jpg'
 
 const AboutSection = () => {
   return (
@@ -171,7 +172,9 @@ const AboutSection = () => {
       <div className="mx-auto text-center w-full md:px-7">
         <div className="">
           <div className="w-full justify-center flex items-center">
-            <div className="relative w-full md:h-[300px] aspect-square rounded-md bg-gray-200 animate-pulse"></div>
+            {/* <div className="relative w-full md:h-[300px] aspect-square rounded-md bg-gray-200 animate-pulse"> */}
+              <img src={Logo1} alt="" style={{ width: "auto", height: "300px" }} />
+            {/* </div> */}
           </div>
         </div>
       </div>

@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import resumeAnalysisImage from "../../assests/icons/resume_analysis.jpg";
 import aiInterviewImage from "../../assests/ai_interview.jpg";
 import resumeBuilderImage from "../../assests/icons/resumeBuilder.jpg";
+import Footer from "../landing_page/footer";
 
 
 // const customStyles = {
@@ -260,6 +261,7 @@ const ProductSection = () => {
           imagelink={resumeAnalysisImage}
         />
       </div>
+      <Footer/>
     </>
   );
 };

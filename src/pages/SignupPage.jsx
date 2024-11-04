@@ -203,57 +203,15 @@ const SignupPage = () => {
 
   return (
     <div className="h-full overflow-auto w-full flex items-start">
-      <LoadingBar color="blue" progress={33.33 * (currentStep - 1)} />
+     
 
-      {/* Left Sidebar */}
-      <div className="hidden md:flex flex-col h-screen overflow-auto gap-8 items-center justify-center w-1/3 bg-gray-50 p-8 shadow-md">
-        <div className="w-full flex flex-col gap-4">
-          <div className="flex items-center">
-            {currentStep > 1 && (
-              <Check className="bg-blue-700 p-1 h-6 w-6 rounded-full text-white" />
-            )}
-            <h3 className="ml-2 font-bold text-2xl text-blue-700 tracking-wide">
-              Step 1
-            </h3>
-          </div>
-          <p className="ml-8 text-lg text-gray-600 font-light">
-            Choose your Domain.
-          </p>
-        </div>
-
-        <div className="w-full flex flex-col gap-4">
-          <div className="flex items-center">
-            {currentStep > 2 && (
-              <Check className="bg-blue-700 p-1 h-6 w-6 rounded-full text-white" />
-            )}
-            <h3 className="ml-2 font-bold text-2xl text-blue-700 tracking-wide">
-              Step 2
-            </h3>
-          </div>
-          <p className="ml-8 text-lg text-gray-600 font-light">
-            Enter your details.
-          </p>
-        </div>
-
-        <div className="w-full flex flex-col gap-4">
-          <div className="flex items-center">
-            {currentStep >= 3 && (
-              <Check className="bg-blue-700 p-1 h-6 w-6 rounded-full text-white" />
-            )}
-            <h3 className="ml-2 font-bold text-2xl text-blue-700 tracking-wide">
-              Step 3
-            </h3>
-          </div>
-          <p className="ml-8 text-lg text-gray-600 font-light">
-            Complete Registration.
-          </p>
-        </div>
-      </div>
+      
+     
 
       {/* Main Content */}
-      <div className="w-full md:w-2/3 h-full px-6 md:px-20 flex flex-col items-center justify-center pb-24">
+      <div className="w-full  h-full px-6 md:px-20 flex flex-col items-center justify-center pb-24">
         {currentStep === 1 ? (
-          <div className="flex flex-col items-center w-full max-w-[800px] h-[90vh] overflow-y-auto gap-8 mt-10">
+          <div className="flex flex-col items-center w-full  h-[90vh] overflow-y-auto gap-8 mt-10">
             <h1 className="text-4xl font-extrabold text-blue-700 tracking-wide">
               Step 1:{" "}
               <span className="text-blue-900">Choose your Domain</span>
@@ -295,7 +253,7 @@ const SignupPage = () => {
             </div>
           </div>
         ) : currentStep === 2 ? (
-          <div className="flex flex-col items-center w-full max-w-[800px] h-auto gap-6 mt-12 pb-24">
+          <div className="flex flex-col items-center w-full  h-auto gap-6 mt-12 pb-24">
             {/* Header */}
             <div className="text-center space-y-2">
               <h3 className="text-4xl font-extrabold text-blue-700 tracking-wide">
@@ -367,7 +325,7 @@ const SignupPage = () => {
             </div>
           </div>
         ) : (
-          <div className="m-10 p-10 flex flex-col items-center justify-center w-full max-w-[800px] gap-6 pb-24">
+          <div className="m-10 p-10 flex flex-col items-center justify-center w-full  gap-6 pb-24">
             <SignupForm formData={candidateData} handleChange={handleChange} />
             <button
               disabled={loading}
