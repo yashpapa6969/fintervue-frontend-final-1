@@ -97,7 +97,7 @@ const LoginInterviewee = () => {
                     Remember me
                   </label>
                 </div>
-                <a href="#" className="text-sm text-blue-600 hover:underline">
+                <a href="/forgotpw" className="text-sm text-blue-600 hover:underline">
                   Forgot your password?
                 </a>
               </div>

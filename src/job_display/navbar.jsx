@@ -62,9 +62,9 @@ import Logo from "../assests/logo/logo.png";
             >
               Get started
             </Link>
-            <button className="bg-gray-900 text-white px-4 py-2 rounded-md text-sm font-medium">
+            {/* <button className="bg-gray-900 text-white px-4 py-2 rounded-md text-sm font-medium">
               Jobs portal
-            </button>
+            </button> */}
           </div>
           <div className="md:hidden">
             <button
@@ -121,12 +121,12 @@ import Logo from "../assests/logo/logo.png";
               </Link>
             </div>
             <div className="flex items-center px-5">
-              <Link
+              {/* <Link
                 to="/signup"
                 className="text-gray-800 text-center bg-white border border-gray-950 px-4 py-2 rounded-md text-sm font-medium mr-2 w-full"
               >
                 Jobs portal
-              </Link>
+              </Link> */}
             </div>
           </div>
         </div>

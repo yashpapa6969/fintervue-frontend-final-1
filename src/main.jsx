@@ -16,6 +16,8 @@ import ProductPage from './pages/ProductPage.jsx';
 import FinalInterviewPage from './pages/finalInterview.jsx';
 import AIAnalysisPage from './pages/AiAnalysis.jsx';
 import ProtectedRoute from './ProtectedRoute';
+import ForgotPassword from './pages/ForgotPassword';
+
 
 const router = createBrowserRouter([
   {
@@ -30,8 +32,7 @@ const router = createBrowserRouter([
     path: "/meeting",
     element: <Lazy.MeetingPage />,
   },
- 
-    
+
   {
     path: "/analysis",
     element: (
@@ -43,9 +44,9 @@ const router = createBrowserRouter([
   {
     path: "/signup",
     element: (
-      <ProtectedRoute requiresNoAuth>
+     // <ProtectedRoute requiresNoAuth>
         <Lazy.SignUpPage />
-      </ProtectedRoute>
+     // </ProtectedRoute>
     ),
   },
   {
@@ -59,6 +60,10 @@ const router = createBrowserRouter([
   {
     path: "/signup/organisation",
     element: <Lazy.SignupOrgPage />,
+  },
+  {
+    path: "/forgotpw",
+    element:<ForgotPassword/>,
   },
   {
     path: "/signup/interviewer",
@@ -81,9 +86,9 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
- 
+
   {
-    path: "/product/ai_intervue",  // Removed extra forward slash
+    path: "/product/ai_intervue", // Removed extra forward slash
     element: (
       <ProtectedRoute>
         <Lazy.AiIntervuePage />
@@ -150,7 +155,7 @@ const router = createBrowserRouter([
     path: "/pendingInterviews",
     element: <Lazy.PendingInterviews />,
   },
-  
+
   {
     path: "product/resumeSelect",
     element: <Lazy.ResumeSelect />,
@@ -163,12 +168,12 @@ const router = createBrowserRouter([
     path: "/upcomingInterviews",
     element: <Lazy.UpcomingInterviews />,
   },
-  
-{
-  // In the route definition
-  path: "/finalInterviewPage",
-  element: <FinalInterviewPage />,
-}
+
+  {
+    // In the route definition
+    path: "/finalInterviewPage",
+    element: <FinalInterviewPage />,
+  },
 ]);
 
 
