@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../navbar";
 import config from "../../config";
+import Footer from "../landing_page/footer";
 const Contact = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -112,17 +113,18 @@ const Contact = () => {
   return (
     <>
       <Navbar />
-      <div className="flex flex-col justify-center items-center min-h-screen bg-blue-100">
+      <div className="flex flex-col justify-center items-center min-h-screen bg-gray-50">
         <div className="bg-white shadow-lg rounded-lg p-8 grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl">
           {/* Left Section */}
           <div className="flex flex-col justify-center">
-            <h1 className="text-4xl font-bold text-blue-700 mb-4">
-              Contact Us
-            </h1>
-            <p className="text-gray-600 mb-6">
+            <div className="text-3xl md:text-4xl lg:text-5xl py-6 font-bold tracking-tighter text-center bg-gradient-to-b from-black to-[#002499] text-transparent bg-clip-text">
+              CONTACT US
+            </div>
+            <div className=" text-md mb-8 md:text-md">
               We are always looking for ways to improve our products and
               services. Reach out to us and let us know how we can assist you.
-            </p>
+            </div>
+            
             <div className="mb-6 text-gray-800 space-y-2">
               <p>fintervue.dev@gmail.com</p>
               <p>+91 99721 39318</p>
@@ -134,7 +136,7 @@ const Contact = () => {
                 className="w-full h-auto object-cover rounded-md shadow-md"
               />
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="bg-blue-700 text-white px-4 py-2 ml-40 rounded-md shadow-lg transform transition-transform duration-300 hover:scale-105">
+                <div className="bg-black text-white px-4 py-2 ml-40 rounded-md shadow-lg transform transition-transform duration-300 hover:scale-105">
                   We are here
                 </div>
               </div>
@@ -144,7 +146,7 @@ const Contact = () => {
           {/* Right Section */}
           <div className="bg-white p-6 rounded-lg shadow-md relative">
             <div
-              className="absolute inset-0 bg-opacity-10 bg-blue-700"
+              className="absolute inset-0 bg-opacity-10 bg-blue-300"
               style={{ backgroundImage: "url(../../assests/grid.png)" }}
             ></div>
             <form onSubmit={handleSubmit} className="relative z-10 space-y-6">
@@ -223,7 +225,7 @@ const Contact = () => {
               <button
                 type="submit"
                 onClick={handleSubmit}
-                className="w-full py-3 bg-blue-700 text-white font-medium rounded-md hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-800 transition duration-300 transform hover:scale-105"
+                className="w-full py-3 bg-black text-white font-medium rounded-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-700 transition duration-300 transform hover:scale-105"
               >
                 Submit
               </button>
@@ -231,6 +233,7 @@ const Contact = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </>
   );
 };

@@ -1,85 +1,88 @@
 import { Link } from "react-router-dom";
-import Logo from "../../assests/logo/logo2.png";
-import {
-  FaLinkedin,
-  FaPinterest,
-  FaTiktok,
-  FaXTwitter,
-  FaYoutube,
-} from "react-icons/fa6";
-import { AiFillInstagram } from "react-icons/ai";
-import { MdOutlineArrowOutward } from "react-icons/md";
-import Toc from "./TOC";
+import { Instagram, Linkedin, Youtube } from "lucide-react";
+import * as React from "react";
+import Logo from "../../assests/logo/favicon.png"
 
-const Footer = () => {
+export default function Footer() {
   return (
-    <div className="flex flex-col md:flex-row bg-black text-white p-16 gap-8 justify-between md:px-20 xl:px-44">
-      <div className="flex flex-col gap-8 text-gray-300/85 max-w-[300px] items-center">
-        <div className="flex gap-4 text-2xl cursor-pointer">
-          <FaXTwitter className="hover:scale-125" />
-          <Link to={"https://www.instagram.com/fintervue/"}>
-            <AiFillInstagram className="hover:scale-125" />
-          </Link>
+    <footer className="bg-gray-100 text-gray-600 py-8 w-full">
+      <div className="container mx-auto px-4">
+        <div className="flex flex-wrap justify-between items-center">
+          {/* Logo and company name */}
+          <div className="w-full md:w-1/3 mb-6 md:mb-0">
+            <Link to="/" className="flex items-center">
+              <div className="w-10 h-10 bg-gray-300 rounded-full mr-3 flex items-center justify-center">
+                <span className="text-xl font-bold text-gray-600">
+                  <img src={Logo} alt="Logo" />
+                </span>
+              </div>
+              <span className="text-xl font-semibold">Fintervue</span>
+            </Link>
+          </div>
 
-          <Link to={"https://www.linkedin.com/company/fintervue/"}>
-            <FaLinkedin className="hover:scale-125" />
-          </Link>
-          <Link to={"https://www.youtube.com/@fintervue"}>
-            <FaYoutube className="hover:scale-125" />
-          </Link>
+          {/* Navigation Links */}
+          <div className="w-full md:w-1/3 mb-6 md:mb-0">
+            <ul className="flex justify-around items-center space-x-4">
+              <li>
+                <Link
+                  to="/about"
+                  className="text-gray-700 hover:bg-gray-200 px-3 py-2 rounded-md text-sm font-medium relative after:absolute after:bg-blue-700 after:h-[2px] after:w-0 after:bottom-[-4px] after:left-0 after:transition-all after:duration-300 hover:after:w-full"
+                >
+                  About
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/product"
+                  className="text-gray-700 hover:bg-gray-200 px-3 py-2 rounded-md text-sm font-medium relative after:absolute after:bg-blue-700 after:h-[2px] after:w-0 after:bottom-[-4px] after:left-0 after:transition-all after:duration-300 hover:after:w-full"
+                >
+                  Services
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/contact"
+                  className="text-gray-700 hover:bg-gray-200 px-3 py-2 rounded-md text-sm font-medium relative after:absolute after:bg-blue-700 after:h-[2px] after:w-0 after:bottom-[-4px] after:left-0 after:transition-all after:duration-300 hover:after:w-full"
+                >
+                  Contact
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Social Media Links */}
+          <div className="w-full md:w-1/3 flex justify-around md:justify-end space-x-4">
+            <Link
+              to="https://www.instagram.com/fintervue/"
+              className="text-gray-600 hover:text-gray-900 hover:scale-110 transition-all"
+            >
+              <Instagram size={26} />
+              <span className="sr-only">Instagram</span>
+            </Link>
+            <Link
+              to="https://www.linkedin.com/company/fintervue/"
+              className="text-gray-600 hover:text-gray-900 hover:scale-110 transition-all"
+            >
+              <Linkedin size={26} />
+              <span className="sr-only">LinkedIn</span>
+            </Link>
+            <Link
+              to="https://www.youtube.com/@fintervue"
+              className="text-gray-600 hover:text-gray-900 hover:scale-110 transition-all"
+            >
+              <Youtube size={26} />
+              <span className="sr-only">YouTube</span>
+            </Link>
+          </div>
         </div>
-        <img src={Logo} alt="Logo" className="w-150 h-auto" />
-      </div>
 
-      <div className="flex flex-col gap-4">
-        <div className="font-bold text-lg">Product</div>
-        <div className="cursor-pointer text-gray-300/85">Features</div>
-        <div className="cursor-pointer text-gray-300/85">Integrations</div>
-        <div className="cursor-pointer text-gray-300/85">Updates</div>
-        <div className="cursor-pointer text-gray-300/85">FAQ</div>
-        <a href="/Pricing">
-          <div className="cursor-pointer text-gray-300/85">Pricing</div>
-        </a>
+        {/* Copyright */}
+        <div className="mt-8 text-sm text-center">
+          <p>
+            &copy; {new Date().getFullYear()} Your Company. All rights reserved.
+          </p>
+        </div>
       </div>
-      <div className="flex flex-col gap-4">
-        <div className="font-bold text-lg">Company</div>
-        <a href="/about">
-          <div className="cursor-pointer text-gray-300/85">About</div>
-        </a>
-        <div className="cursor-pointer text-gray-300/85">Blog</div>
-        <div className="cursor-pointer text-gray-300/85">Careers</div>
-        <div className="cursor-pointer text-gray-300/85">Manifesto</div>
-        <div className="cursor-pointer text-gray-300/85">Press</div>
-        <a href="/Contact">
-          <div className="cursor-pointer text-gray-300/85">Contact</div>
-        </a>
-      </div>
-      <div className="flex flex-col gap-4">
-        <div className="font-bold text-lg">Resources</div>
-        <div className="cursor-pointer text-gray-300/85">Examples</div>
-        <div className="cursor-pointer text-gray-300/85">Community</div>
-        <div className="cursor-pointer text-gray-300/85">Guides</div>
-        <div className="cursor-pointer text-gray-300/85">Docs</div>
-      </div>
-      <div className="flex flex-col gap-4">
-        <div className="font-bold text-lg">Legal</div>
-        <a href="/PrivacyPolicy">
-          <div className="cursor-pointer text-gray-300/85">Privacy Policy</div>
-        </a>
-        <a href="/TOC">
-          <div className="cursor-pointer text-gray-300/85">
-            Terms and Conditions
-          </div>
-        </a>
-        <a href="/RefundsAndCancellation">
-          <div className="cursor-pointer text-gray-300/85">
-            Refunds And Cancellation
-          </div>
-        </a>
-        <div className="cursor-pointer text-gray-300/85">Security</div>
-      </div>
-    </div>
+    </footer>
   );
-};
-
-export default Footer;
+}

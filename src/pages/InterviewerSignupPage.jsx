@@ -143,19 +143,22 @@ const InterviewerSignupPage = () => {
     return (
       <div className="flex flex-col lg:flex-row gap-8 mt-6">
         <div className="w-full">
-          <h2 className="text-lg font-semibold mb-4">Choose your available days</h2>
-          <div className="grid grid-cols-3 gap-4">
+          <h2 className="text-lg font-semibold mb-4">
+            Choose your available days
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
             {daysOfWeek.map((day) => (
               <button
                 key={day}
                 onClick={() => toggleDaySelection(day)}
-                className={`px-3 py-2 rounded-md border-2 text-base font-medium transition-all duration-300 inline-block 
-                  ${
-                    selectedDays.includes(day)
-                      ? "bg-blue-700 text-white"
-                      : "bg-white text-gray-600 hover:bg-gray-100"
-                  } border-blue-700`}
-                style={{ width: "auto", whiteSpace: "nowrap" }}
+                className={`px-3 py-2 rounded-md border-2 text-sm sm:text-base font-medium transition-all duration-300 
+            ${
+              selectedDays.includes(day)
+                ? "bg-blue-700 text-white"
+                : "bg-white text-gray-600 hover:bg-gray-100"
+            } 
+            border-blue-700`}
+                style={{ width: "100%", whiteSpace: "nowrap" }}
               >
                 {day}
               </button>
@@ -164,19 +167,24 @@ const InterviewerSignupPage = () => {
         </div>
 
         <div className="w-full">
-          <h2 className="text-lg font-semibold mb-4">Choose your available time slots</h2>
-          <div className="grid grid-cols-2 gap-4">
+          <h2 className="text-lg font-semibold mb-4">
+            Choose your available time slots
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             {timeSlots.map((slot) => (
               <button
                 key={slot}
                 onClick={() => toggleTimeSlotSelection(slot)}
-                className={`px-4 py-2 rounded-md border-2 text-base font-medium transition-all duration-300 transform ${
-                  selectedTimeSlots.includes(slot)
-                    ? "bg-blue-700 text-white border-blue-700 shadow-md"
-                    : "bg-white text-gray-600 border-blue-700 hover:bg-gray-100 hover:scale-105"
-                }`}
+                className={`px-3 py-2 rounded-md border-2 text-sm sm:text-base font-medium transition-all duration-300 transform 
+            ${
+              selectedTimeSlots.includes(slot)
+                ? "bg-blue-700 text-white border-blue-700 shadow-md"
+                : "bg-white text-gray-600 border-blue-700 hover:bg-gray-100 hover:scale-105"
+            }`}
                 style={{
                   transitionTimingFunction: "ease-in-out",
+                  width: "100%",
+                  whiteSpace: "nowrap",
                 }}
               >
                 {slot}
@@ -325,8 +333,8 @@ const InterviewerSignupPage = () => {
 
   return (
     <div className="h-full overflow-auto w-full flex items-start">
-      <LoadingBar color="blue" progress={33.33 * (currentStep - 1)} />
-
+      {/* <LoadingBar color="blue" progress={33.33 * (currentStep - 1)} /> */}
+{/* 
       <div className="hidden md:flex flex-col h-screen overflow-auto gap-8 items-center justify-center w-1/3 bg-gray-50 p-8">
         <div className="w-full flex flex-col gap-4">
           <div className="flex items-center">
@@ -346,17 +354,17 @@ const InterviewerSignupPage = () => {
           </div>
           <p className="ml-8 text-xl text-gray-600">Enter your details.</p>
         </div>
-      </div>
+      </div> */}
 
-      <div className="w-full md:w-2/3 mt-4 min-h-full px-6 md:px-20 flex items-center justify-center">
+      <div className="w-full  mt-4 min-h-full px-6 md:px-20 flex items-center justify-center">
         {currentStep === 1 ? (
-          <div className="flex flex-col items-center w-full max-w-[800px] h-[90vh] overflow-y-auto gap-8">
+          <div className="flex flex-col items-center w-full  h-[90vh] overflow-y-auto gap-8">
             <h1 className="text-3xl md:text-4xl font-extrabold text-blue-700 tracking-wide">
               Step 1:{" "}
               <span className="text-blue-900">Choose your Domain</span>
             </h1>
             <p className="text-lg md:text-xl text-gray-500 font-light">
-              Crack your next finance-interview with us
+              Join us as an interviewer
             </p>
 
             <div className="w-full">
@@ -393,14 +401,14 @@ const InterviewerSignupPage = () => {
             </div>
           </div>
         ) : currentStep === 2 ? (
-          <div className="flex flex-col items-center w-full max-w-[800px] h-full overflow-y-auto gap-8 px-4 md:px-0">
+          <div className="flex flex-col items-center w-full  h-full overflow-y-auto gap-8 px-4 md:px-0">
           {/* Header */}
           <div className="text-center space-y-2">
             <h3 className="text-3xl md:text-4xl font-extrabold text-blue-700 tracking-wide">
               Complete your <span className="text-blue-900">Fintervue Profile</span>
             </h3>
             <p className="text-lg md:text-xl text-gray-500 font-light">
-              Search & apply to finance jobs from here
+              Help to choose candidates for finance jobs 
             </p>
           </div>
 
@@ -410,7 +418,7 @@ const InterviewerSignupPage = () => {
           </div>
 
           {/* Signup Form */}
-          <div className="w-full max-w-[800px]">
+          <div className="w-full ">
             <InterviewerSignupForm
               formData={interviewerData}
               handleChange={handleChange}
