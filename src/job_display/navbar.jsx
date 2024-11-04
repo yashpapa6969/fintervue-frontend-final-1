@@ -38,7 +38,7 @@ import Logo from "../assests/logo/logo.png";
                   to="/product"
                   className="text-gray-700 hover:bg-gray-200 px-3 py-2 rounded-md text-sm font-medium relative after:absolute after:bg-blue-700 after:h-[2px] after:w-0 after:bottom-[-4px] after:left-0 after:transition-all after:duration-300 hover:after:w-full"
                 >
-                  Product
+                  Products
                 </Link>
                 <Link
                   to="/pricing"
