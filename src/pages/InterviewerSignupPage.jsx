@@ -21,16 +21,13 @@ import {
  FrontendIcon15,
 } from "../assests/Domain_images";
 
-
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import config from '../config';
 
-
 const InterviewerSignupPage = () => {
  const toast = useToast();
  const navigate = useNavigate();
-
 
  const [loading, setLoading] = useState(false);
  const [currentStep, setCurrentStep] = useState(1);
@@ -54,6 +51,34 @@ const InterviewerSignupPage = () => {
  });
  const [errors, setErrors] = useState({});
 
+ // Check if user has selected required options in the current step
+ const validateCurrentStep = () => {
+   if (currentStep === 1 && selectedProcesses.length === 0) {
+     toast({
+       title: "Selection Required",
+       description: "Please select at least one domain to proceed.",
+       status: "warning",
+       isClosable: true,
+     });
+     return false;
+   }
+   if (currentStep === 2 && (selectedDays.length === 0 || selectedTimeSlots.length === 0)) {
+     toast({
+       title: "Selection Required",
+       description: "Please select your availability before proceeding.",
+       status: "warning",
+       isClosable: true,
+     });
+     return false;
+   }
+   return true;
+ };
+
+ const handleNextClick = () => {
+   if (validateCurrentStep()) {
+     setCurrentStep((prevStep) => prevStep + 1);
+   }
+ };
 
  const handleDomainSelection = (profileId) => {
    setSelectedProcesses((prevSelected) => {
@@ -69,19 +94,16 @@ const InterviewerSignupPage = () => {
    });
  };
 
-
  const updateIndustryExpertise = (updatedSelections) => {
    const selectedDomains = profiles
      .filter((profile) => updatedSelections.includes(profile.id))
      .map((profile) => profile.name);
-
 
    setInterviewerData((prevData) => ({
      ...prevData,
      industryExpertise: selectedDomains,
    }));
  };
-
 
  const validateForm = () => {
    const newErrors = {};
@@ -341,123 +363,112 @@ const InterviewerSignupPage = () => {
 
 
  return (
-   <div className="h-full min-h-screen flex items-center justify-center p-4 bg-gray-50">
-     <div className="w-full max-w-[1200px] flex flex-col items-center justify-center bg-white shadow-xl p-8 rounded-lg">
-       <LoadingBar color="blue" progress={33.33 * (currentStep - 1)} />
+  <div className="h-full min-h-screen flex items-center justify-center p-4 bg-gray-50">
+    <div className="w-full max-w-[1200px] flex flex-col items-center justify-center bg-white shadow-xl p-8 rounded-lg">
+      <LoadingBar color="blue" progress={33.33 * (currentStep - 1)} />
 
+      {currentStep === 1 ? (
+        <div className="flex flex-col items-center w-full gap-6">
+          <h1 className="text-3xl md:text-4xl font-extrabold text-blue-700">
+            Step 1: <span className="text-blue-900">Choose Your Expertise</span>
+          </h1>
+          <p className="text-lg md:text-xl text-gray-500 font-light">
+            Build your profile to conduct finance interviews and share your knowledge
+          </p>
 
-       {currentStep === 1 ? (
-         <div className="flex flex-col items-center w-full gap-6">
-           <h1 className="text-3xl md:text-4xl font-extrabold text-blue-700">
-             Step 1: <span className="text-blue-900">Choose Your Expertise</span>
-           </h1>
-           <p className="text-lg md:text-xl text-gray-500 font-light">
-             Build your profile to conduct finance interviews and share your knowledge
-           </p>
+          <div className="w-full">
+            <input
+              type="text"
+              placeholder="Search Domain"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full p-3 border-2 border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all"
+            />
+          </div>
 
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 w-full p-5">
+            {filteredProfiles.map((profile) => (
+              <div
+                key={profile.id}
+                onClick={() => handleDomainSelection(profile.id)}
+                className={`border-2 ${
+                  selectedProcesses.includes(profile.id)
+                    ? "border-blue-600 bg-blue-50"
+                    : "border-gray-200"
+                } rounded-lg cursor-pointer p-4 flex flex-col items-center transition-transform hover:scale-105 hover:shadow-md`}
+              >
+                <img
+                  src={profile.icon}
+                  alt={profile.name}
+                  className="w-12 h-12 mb-2"
+                />
+                <h3 className="text-center text-sm md:text-lg font-semibold text-gray-800">
+                  {profile.name}
+                </h3>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : currentStep === 2 ? (
+        <div className="flex flex-col items-center w-full gap-6">
+          <div className="text-center space-y-2">
+            <h3 className="text-3xl md:text-4xl font-extrabold text-blue-700">
+              Complete Your <span className="text-blue-900">Fintervue Profile</span>
+            </h3>
+            <p className="text-lg md:text-xl text-gray-500 font-light">
+              Help organizations find the right finance talent
+            </p>
+          </div>
 
-           <div className="w-full">
-             <input
-               type="text"
-               placeholder="Search Domain"
-               value={searchTerm}
-               onChange={(e) => setSearchTerm(e.target.value)}
-               className="w-full p-3 border-2 border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all"
-             />
-           </div>
+          <div className="w-full">
+            <AvailabilitySelector />
+          </div>
 
+          <div className="w-full max-w-[800px]">
+            <InterviewerSignupForm
+              formData={interviewerData}
+              handleChange={handleChange}
+              handleFileChange={handleFileChange}
+              errors={errors}
+            />
+          </div>
+        </div>
+      ) : null}
 
-           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 w-full p-5">
-             {filteredProfiles.map((profile) => (
-               <div
-                 key={profile.id}
-                 onClick={() => handleDomainSelection(profile.id)}
-                 className={`border-2 ${
-                   selectedProcesses.includes(profile.id)
-                     ? "border-blue-600 bg-blue-50"
-                     : "border-gray-200"
-                 } rounded-lg cursor-pointer p-4 flex flex-col items-center transition-transform hover:scale-105 hover:shadow-md`}
-               >
-                 <img
-                   src={profile.icon}
-                   alt={profile.name}
-                   className="w-12 h-12 mb-2"
-                 />
-                 <h3 className="text-center text-sm md:text-lg font-semibold text-gray-800">
-                   {profile.name}
-                 </h3>
-               </div>
-             ))}
-           </div>
-         </div>
-       ) : currentStep === 2 ? (
-         <div className="flex flex-col items-center w-full gap-6">
-           <div className="text-center space-y-2">
-             <h3 className="text-3xl md:text-4xl font-extrabold text-blue-700">
-               Complete Your <span className="text-blue-900">Fintervue Profile</span>
-             </h3>
-             <p className="text-lg md:text-xl text-gray-500 font-light">
-               Help organizations find the right finance talent
-             </p>
-           </div>
-
-
-           <div className="w-full">
-             <AvailabilitySelector />
-           </div>
-
-
-           <div className="w-full max-w-[800px]">
-             <InterviewerSignupForm
-               formData={interviewerData}
-               handleChange={handleChange}
-               handleFileChange={handleFileChange}
-               errors={errors}
-             />
-           </div>
-         </div>
-       ) : (
-         <div>
-           <h1></h1>
-         </div>
-       )}
-
-
-       <div className="flex justify-center gap-4 mt-8">
-         {currentStep > 1 && (
-           <button
-             onClick={() => setCurrentStep(currentStep - 1)}
-             className="py-3 px-6 text-blue-600 border bg-white border-blue-600 text-lg rounded-lg transition-all hover:bg-blue-50"
-           >
-             Back
-           </button>
-         )}
-         {currentStep < 2 && (
-           <button
-             onClick={() => setCurrentStep(currentStep + 1)}
-             className="py-3 px-6 text-white bg-blue-700 text-lg rounded-lg transition-all hover:bg-blue-800"
-           >
-             Next
-           </button>
-         )}
-         {currentStep === 2 && (
-           <button
-             disabled={loading}
-             onClick={handleSubmit}
-             className="py-3 px-6 text-white bg-blue-700 text-lg rounded-lg flex items-center justify-center gap-2 transition-all hover:bg-blue-800"
-           >
-             {loading ? (
-               <Loader2 size={20} className="animate-spin" />
-             ) : (
-               "Sign Up"
-             )}
-           </button>
-         )}
-       </div>
-     </div>
-   </div>
- );
+      <div className="fixed bottom-6 right-6 flex gap-4 w-15 md:w-auto px-4 md:px-0">
+        {currentStep > 1 && (
+          <button
+            onClick={() => setCurrentStep(currentStep - 1)}
+            className="py-3 px-4 text-blue-500 border bg-white border-blue-500 w-full md:w-40 text-lg rounded-2xl transition-transform hover:scale-105"
+          >
+            Back
+          </button>
+        )}
+        {currentStep < 2 && (
+          <button
+            onClick={handleNextClick}
+            className="py-3 px-4 text-white bg-blue-700 font-bold w-full md:w-40 text-lg rounded-2xl transition-transform hover:scale-105"
+          >
+            Next
+          </button>
+        )}
+        {currentStep === 2 && (
+          <button
+            disabled={loading}
+            onClick={handleSubmit}
+            className="py-3 text-white bg-blue-700 font-bold w-full md:w-40 text-lg rounded-2xl flex items-center justify-center gap-4 transition-transform hover:scale-105"
+          >
+            {loading ? (
+              <Loader2 size={20} className="animate-spin" />
+            ) : (
+              "Sign Up"
+            )}
+          </button>
+        )}
+      </div>
+    </div>
+  </div>
+);
 };
-
 
 export default InterviewerSignupPage;

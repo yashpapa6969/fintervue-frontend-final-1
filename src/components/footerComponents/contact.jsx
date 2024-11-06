@@ -136,10 +136,16 @@ const Contact = () => {
                 className="w-full h-auto object-cover rounded-md shadow-md"
               />
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="bg-black text-white px-4 py-2 ml-40 rounded-md shadow-lg transform transition-transform duration-300 hover:scale-105">
+                <a
+                  href="https://www.bing.com/maps?where=6038+Prestige+Shantiniketan+Whitefield+bangalore%2C+bangalore%2C+karnataka+560048%2C+IN&cp=12.989907%7E77.701076&lvl=17.4"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-black text-white px-4 py-2 ml-40 rounded-md shadow-lg transform transition-transform duration-300 hover:scale-105"
+                >
                   We are here
-                </div>
+                </a>
               </div>
+
             </div>
           </div>
 
