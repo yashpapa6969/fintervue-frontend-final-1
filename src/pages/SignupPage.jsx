@@ -5,22 +5,35 @@ import LoadingBar from "react-top-loading-bar";
 import { useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import config from "../config";
-
-import { FrontendIcon1, FrontendIcon2, FrontendIcon3, FrontendIcon4, FrontendIcon5, FrontendIcon6, FrontendIcon7, FrontendIcon8, FrontendIcon9, FrontendIcon10, FrontendIcon11, FrontendIcon12, FrontendIcon13, FrontendIcon14, FrontendIcon15 } from "../assests/Domain_images";
+import {
+  FrontendIcon1,
+  FrontendIcon2,
+  FrontendIcon3,
+  FrontendIcon4,
+  FrontendIcon5,
+  FrontendIcon6,
+  FrontendIcon7,
+  FrontendIcon8,
+  FrontendIcon9,
+  FrontendIcon10,
+  FrontendIcon11,
+  FrontendIcon12,
+  FrontendIcon13,
+  FrontendIcon14,
+  FrontendIcon15,
+} from "../assests/Domain_images";
 import { useToast } from "@chakra-ui/react";
 import axios from "axios";
 
 const SignupPage = () => {
   const toast = useToast();
   const navigate = useNavigate();
-
   const [loading, setLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedProcess, setSelectedProcess] = useState("");
   const [selectedYearsOfExperience, setSelectedYearsOfExperience] = useState(null);
   const [selectedKeySkills, setSelectedKeySkills] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-
   const [candidateData, setCandidateData] = useState({
     firstName: "",
     lastName: "",
@@ -31,18 +44,18 @@ const SignupPage = () => {
     linkedInProfile: "",
     city: "",
     preferredCity: "",
-    currentEmploymentStatus: "",  // enum: ['employed', 'unemployed', 'student', 'freelancer']
-    expectedCompensation: null,   // number
+    currentEmploymentStatus: "",
+    expectedCompensation: null,
     skills: [""],
     preferredJobRoles: [""],
     industry: "",
     profileVisibility: true,
     anonymized: false,
-    interviewScores: []
+    interviewScores: [],
   });
 
   const handleChange = (key, value) => {
-    if (key === 'resume' || key === 'profilePic') {
+    if (key === "resume" || key === "profilePic") {
       setCandidateData((prevData) => ({
         ...prevData,
         [key]: value instanceof FileList ? value[0] : value,
@@ -121,12 +134,31 @@ const SignupPage = () => {
     });
   };
 
-  const canRegister = !!candidateData.email
-    && !!candidateData.password
-    && !!candidateData.firstName
-    && !!candidateData.lastName
-    && !!candidateData.linkedInProfile
-    && !!candidateData.resume;
+  const canRegister =
+    !!candidateData.email &&
+    !!candidateData.password &&
+    !!candidateData.firstName &&
+    !!candidateData.lastName &&
+    !!candidateData.linkedInProfile &&
+    !!candidateData.resume;
+
+  const handleNextStep = () => {
+    if (
+      (currentStep === 1 && !selectedProcess) ||
+      (currentStep === 2 && !selectedYearsOfExperience) ||
+      (currentStep === 2 && selectedKeySkills.length === 0)
+    ) {
+      toast({
+        title: "Incomplete Selection",
+        description: "Please make a selection before proceeding to the next step.",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+      });
+    } else {
+      setCurrentStep((prevStep) => prevStep + 1);
+    }
+  };
 
   const handleSubmit = async () => {
     if (!canRegister) {
@@ -141,30 +173,24 @@ const SignupPage = () => {
     }
     try {
       setLoading(true);
-      
       const formData = new FormData();
-      
-      Object.keys(candidateData).forEach(key => {
-        if (key !== 'resume' && key !== 'profilePic') {
+      Object.keys(candidateData).forEach((key) => {
+        if (key !== "resume" && key !== "profilePic") {
           formData.append(key, candidateData[key]);
         }
       });
-      
-      if (candidateData.resume) {
-        formData.append('resume', candidateData.resume);
-      }
-      if (candidateData.profilePic) {
-        formData.append('profilePic', candidateData.profilePic);
-      }
-      
-      formData.append('skills', JSON.stringify(selectedKeySkills));
+
+      if (candidateData.resume) formData.append("resume", candidateData.resume);
+      if (candidateData.profilePic) formData.append("profilePic", candidateData.profilePic);
+
+      formData.append("skills", JSON.stringify(selectedKeySkills));
 
       const result = await axios.post(
-        `${config.apiBaseUrl}/api/interviewee/AddInterviewee`, 
+        `${config.apiBaseUrl}/api/interviewee/AddInterviewee`,
         formData,
         {
           headers: {
-            'Content-Type': 'multipart/form-data',
+            "Content-Type": "multipart/form-data",
           },
         }
       );
@@ -199,24 +225,20 @@ const SignupPage = () => {
       status: "error",
       isClosable: true,
     });
-  }
+  };
 
   return (
-    <div className="h-full overflow-auto w-full flex items-start">
-     
-
-      
-     
-
+    <div className="h-full overflow-auto w-full flex items-center justify-center p-4 bg-gray-50 min-h-screen">
       {/* Main Content */}
-      <div className="w-full  h-full px-6 md:px-20 flex flex-col items-center justify-center pb-24">
+      <div className="w-full max-w-[1200px] flex flex-col items-center justify-center bg-white shadow-xl p-8 rounded-lg">
+        <LoadingBar color="blue" progress={33.33 * (currentStep - 1)} />
+
         {currentStep === 1 ? (
-          <div className="flex flex-col items-center w-full  h-[90vh] overflow-y-auto gap-8 mt-10">
-            <h1 className="text-4xl font-extrabold text-blue-700 tracking-wide">
-              Step 1:{" "}
-              <span className="text-blue-900">Choose your Domain</span>
+          <div className="flex flex-col items-center w-full gap-6">
+            <h1 className="text-3xl md:text-4xl font-extrabold text-blue-700">
+              Step 1: <span className="text-blue-900">Choose your Domain</span>
             </h1>
-            <p className="text-xl text-gray-500 font-light">
+            <p className="text-lg md:text-xl text-gray-500 font-light">
               Crack your next finance-interview with us
             </p>
 
@@ -226,26 +248,22 @@ const SignupPage = () => {
                 placeholder="Search Domain"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full p-3 border-2 border-blue-300 rounded-md focus:ring-4 focus:ring-blue-200 transition-all duration-300"
+                className="w-full p-3 border-2 border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all"
               />
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-6 w-full overflow-y-auto p-5">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 w-full p-5">
               {filteredProfiles.map((profile) => (
                 <div
                   key={profile.id}
                   onClick={() => setSelectedProcess(profile.id)}
-                  className={`border-2 ${selectedProcess === profile.id
-                    ? "border-blue-600"
-                    : "border-gray-300"
-                    } rounded-md cursor-pointer p-4 flex flex-col items-center`}
+                  className={`border-2 ${
+                    selectedProcess === profile.id ? "border-blue-600 bg-blue-50"
+                    : "border-gray-200"
+                  } rounded-lg cursor-pointer p-4 flex flex-col items-center transition-transform hover:scale-105 hover:shadow-md`}
                 >
-                  <img
-                    src={profile.icon}
-                    alt={profile.name}
-                    className="w-12 h-12 mb-2"
-                  />
-                  <h3 className="text-center text-lg font-semibold text-gray-800">
+                  <img src={profile.icon} alt={profile.name} className="w-12 h-12 mb-2" />
+                  <h3 className="text-center text-sm md:text-lg font-semibold text-gray-800">
                     {profile.name}
                   </h3>
                 </div>
@@ -253,8 +271,7 @@ const SignupPage = () => {
             </div>
           </div>
         ) : currentStep === 2 ? (
-          <div className="flex flex-col items-center w-full  h-auto gap-6 mt-12 pb-24">
-            {/* Header */}
+          <div className="flex flex-col items-center w-full gap-6 mt-12 pb-24">
             <div className="text-center space-y-2">
               <h3 className="text-4xl font-extrabold text-blue-700 tracking-wide">
                 Mention your Choices
@@ -264,7 +281,6 @@ const SignupPage = () => {
               </p>
             </div>
 
-            {/* Job Location Preferences */}
             <div className="w-full">
               <h2 className="text-xl font-semibold mb-3">Select Job Location Preferences</h2>
               <div className="flex flex-wrap gap-3">
@@ -284,7 +300,6 @@ const SignupPage = () => {
               </div>
             </div>
 
-            {/* Years of Experience */}
             <div className="w-full">
               <h2 className="text-xl font-semibold mb-3">Select Years of Experience</h2>
               <div className="flex flex-wrap gap-3">
@@ -304,7 +319,6 @@ const SignupPage = () => {
               </div>
             </div>
 
-            {/* Key Skills Selection */}
             <div className="w-full">
               <h2 className="text-xl font-semibold mb-3">Select Key Skills</h2>
               <div className="flex flex-wrap gap-3">
@@ -324,18 +338,22 @@ const SignupPage = () => {
               </div>
             </div>
           </div>
-        ) : (
-          <div className="m-10 p-10 flex flex-col items-center justify-center w-full  gap-6 pb-24">
-            <SignupForm formData={candidateData} handleChange={handleChange} />
-            <button
-              disabled={loading}
-              onClick={handleSubmit}
-              className="py-3 text-white bg-blue-700 font-bold w-full md:w-40 text-lg rounded-2xl flex items-center justify-center gap-4 transition-transform hover:scale-105"
-            >
-              {loading ? <Loader2 size={20} className="animate-spin" /> : "Sign up"}
-            </button>
+        ) : currentStep === 3 ? (
+          <div className="flex flex-col items-center w-full gap-6">
+            <div className="text-center space-y-2">
+              <h3 className="text-3xl md:text-4xl font-extrabold text-blue-700">
+                Complete your <span className="text-blue-900">Fintervue Profile</span>
+              </h3>
+              <p className="text-lg md:text-xl text-gray-500 font-light">
+                Search & apply to finance jobs from here
+              </p>
+            </div>
+
+            <div className="w-full max-w-[800px]">
+              <SignupForm formData={candidateData} handleChange={handleChange} />
+            </div>
           </div>
-        )}
+        ) : null}
 
         <div className="fixed bottom-6 right-6 flex gap-4 w-15 md:w-auto px-4 md:px-0">
           {currentStep > 1 && (
@@ -348,10 +366,19 @@ const SignupPage = () => {
           )}
           {currentStep < 3 && (
             <button
-              onClick={() => setCurrentStep(currentStep + 1)}
+              onClick={handleNextStep}
               className="py-3 px-4 text-white bg-blue-700 font-bold w-full md:w-40 text-lg rounded-2xl transition-transform hover:scale-105"
             >
               Next
+            </button>
+          )}
+          {currentStep === 3 && (
+            <button
+              disabled={loading}
+              onClick={handleSubmit}
+              className="py-3 text-white bg-blue-700 font-bold w-full md:w-40 text-lg rounded-2xl flex items-center justify-center gap-4 transition-transform hover:scale-105"
+            >
+              {loading ? <Loader2 size={20} className="animate-spin" /> : "Sign up"}
             </button>
           )}
         </div>
