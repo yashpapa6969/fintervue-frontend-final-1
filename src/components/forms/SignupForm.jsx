@@ -62,7 +62,7 @@ const SignupForm = ({ formData, handleChange }) => {
   };
 
   const handleClickUpload = () => {
-    fileInputRef.current.click(); // Programmatically trigger the file input on div click
+    fileInputRef.current.click();
   };
 
   return (

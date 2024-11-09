@@ -361,18 +361,12 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
       // Upload to S3
       try {
         await uploadToS3(recordedBlob, questionNo);
-        
-        // If upload successful, proceed to next question
-        if (questionNo + 1 < questions.length) {
-          nextQuestion();
+
+        // If it's the last question, navigate to analysis
+        if (questionNo === questions.length - 1) {
+          navigate("/analysis");
         } else {
-          toast({
-            title: "Interview Complete",
-            description: "Please review your answers and submit.",
-            status: "success",
-            duration: 3000,
-            isClosable: true,
-          });
+          nextQuestion();
         }
       } catch (error) {
         console.error('Upload error:', error);
@@ -402,14 +396,19 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
   // Update uploadToS3 function to use addOrUpdateAiAnalysisWithId
   const uploadToS3 = async (blob, questionNumber) => {
     try {
+      setLoading(true);
+
       // Create unique filename using UUID
       const filename = `${uuidv4()}-q${questionNumber}.webm`;
       
-      // Create FormData
+      // Create FormData and properly append the audio blob
       const formData = new FormData();
-      formData.append('audio', blob, filename);
       
-      // Add required fields for addOrUpdateAiAnalysisWithId
+      // Ensure blob is properly formatted with correct MIME type
+      const audioBlob = new Blob([blob], { type: 'audio/webm;codecs=opus' });
+      formData.append('audio', audioBlob, filename);
+      
+      // Add required metadata
       formData.append('ai_analysis_id', localStorage.getItem('ai_analysis_id'));
       formData.append('questionIndex', questionNumber);
       formData.append('domain', selectedDomain);
@@ -421,32 +420,58 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
       const fileData = [{
         question: questions[questionNumber].questionText,
         questionId: questions[questionNumber].id,
-        // transcription will be added by backend
       }];
       formData.append('fileData', JSON.stringify(fileData));
-      
-      // Make API call to your backend using the existing endpoint
+
+      // Upload to S3 via API
       const response = await axios.post(
-        `${config.apiBaseUrl}/api/interviewee/addOrUpdateAiAnalysisWithId`, 
+        `${config.apiBaseUrl}/api/interviewee/addOrUpdateAiAnalysisWithId`,
         formData,
         {
           headers: {
             'Content-Type': 'multipart/form-data',
+          },
+          onUploadProgress: (progressEvent) => {
+            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            console.log(`Upload progress: ${percentCompleted}%`);
           }
         }
       );
 
-      return response.data.audioUrl; // Assuming your API returns the processed audio URL
+      // Check for successful response with proper data structure
+      if (!response.data || (!response.data.fileData && !response.data.fileData[0].audio)) {
+        throw new Error('Upload failed - invalid response format');
+      }
+
+      // Get the audio URL from the response
+      const audioUrl = response.data.fileData[0].audio;
+      if (!audioUrl) {
+        throw new Error('Upload failed - no audio URL returned');
+      }
+
+      // Show success message
+      toast({
+        title: "Upload Successful",
+        description: "Your answer has been recorded",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+
+      return audioUrl;
+
     } catch (error) {
       console.error('Error uploading to S3:', error);
       toast({
         title: "Upload Error",
-        description: "Failed to upload audio recording",
+        description: error.message || "Failed to upload audio recording. Please try again.",
         status: "error",
         duration: 5000,
         isClosable: true,
       });
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -536,54 +561,6 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
     }
   };
 
-  // Update submitFinalAnswers function
-  const submitFinalAnswers = async () => {
-    try {
-      // Create final submission FormData
-      const formData = new FormData();
-      formData.append('ai_analysis_id', localStorage.getItem('ai_analysis_id'));
-      formData.append('questionIndex', questionNo);
-      formData.append('domain', selectedDomain);
-      formData.append('userId', localStorage.getItem('userId'));
-      formData.append('tabChangeCount', tabChangeCount.toString());
-      formData.append('windowBlurCount', windowBlurCount.toString());
-      formData.append('isFinal', 'true');
-      
-      const fileData = [{
-        question: questions[questionNo].questionText,
-        questionId: questions[questionNo].id,
-        // transcription will be added by backend
-      }];
-      formData.append('fileData', JSON.stringify(fileData));
-
-      const response = await axios.post(
-        `${config.apiBaseUrl}/api/interviewee/addOrUpdateAiAnalysisWithId`,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          }
-        }
-      );
-
-      if (!response.data) {
-        throw new Error('Failed to submit final answers');
-      }
-
-      // Navigate to results page
-      navigate("/analysis");
-    } catch (error) {
-      console.error('Error submitting final answers:', error);
-      toast({
-        title: "Submission Error",
-        description: "Failed to submit final answers. Please try again.",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    }
-  };
-
   const handleQuestionAnswered = () => {
     setIsQuestionAnswered(true);
   };
@@ -662,7 +639,7 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
       };
 
       if (!audioOn) {
-        startRecording();
+        startRecording(); 
       } else {
         synth.speak(utterance);
       }
@@ -867,13 +844,7 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
               </Box>
             ) : null
           )}
-          <Flex justify="flex-end" mt={4}>
-            {questions.length === questionNo + 1 ? (
-              <Button colorScheme="purple" onClick={submitFinalAnswers}>
-                Submit Final Answers
-              </Button>
-            ) : null}
-          </Flex>
+      
 
           {/* Live Video Feed */}
           <Box mt={6}>

@@ -6,28 +6,28 @@ const JobRoleCard = ({ job }) => {
   const [showPopup, setShowPopup] = useState(false);
 
   return (
-    <div className="border bg-white rounded-lg shadow-md hover:bg-blue-100 transition-transform transform hover:scale-105 duration-200 p-10">
+    <div className="border bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200 p-6">
       <BoxReveal boxColor={"#5046e6"} duration={0.5}>
-        <div className="flex items-center mb-4">
+        <div className="flex items-center mb-6">
           <img
             src={job.logo}
-            alt={job.name}
-            className="h-12 w-12 rounded-full"
+            alt={`${job.name} logo`}
+            className="h-14 w-14 rounded-full"
           />
           <div className="ml-4">
-            <h3 className="text-xl font-bold hover:text-2xl transition-all duration-200">
+            <h3 className="text-xl font-semibold text-gray-900 mb-1">
               {job.name}
             </h3>
-            <p className="text-gray-500 hover:text-lg transition-all duration-200">
+            <p className="text-sm text-gray-600">
               {job.employees} employees
             </p>
           </div>
         </div>
-        <p className="mb-4 hover:text-lg transition-all duration-200">
+        <p className="mb-6 text-gray-700 leading-relaxed max-w-[65ch]">
           {job.description}
         </p>
-        <div className="text-gray-800 font-semibold mb-2">Skills Required:</div>
-        <ul className="list-disc ml-6 mb-4">
+        <h4 className="text-gray-900 font-medium mb-3">Required Skills</h4>
+        <ul className="list-disc ml-6 mb-6 space-y-1">
           {job.skills.map((skill, index) => (
             <li key={index} className="text-gray-600">
               {skill}
@@ -36,9 +36,11 @@ const JobRoleCard = ({ job }) => {
         </ul>
         <button
           onClick={() => setShowPopup(true)}
-          className="inline-block px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition-colors duration-200"
+          className="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white font-medium rounded-lg
+            hover:bg-blue-700 transition-colors duration-200 focus:ring-2 focus:ring-offset-2 
+            focus:ring-blue-500 focus:outline-none"
         >
-          Apply
+          Apply Now
         </button>
       </BoxReveal>
 

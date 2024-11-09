@@ -16,43 +16,54 @@ const Hero = () => {
     offset: ["start end", "end start"],
   });
 
-  const translateY = useTransform(scrollYProgress, [0, 1], [150, -150]);
-
-  // console.log("HeroImage:", HeroImage);
-  // console.log("HalfTorus:", HalfTorus);
+  const translateY = useTransform(scrollYProgress, [0, 1], [100, -100]);
 
   return (
     <section
       ref={heroRef}
-      className="p-8 pb-16 md:p-10 lg:p-20 font-medium bg-gradient-to-tr from-[#001E80] via-[#e4eaff]  overflow-x-clip md:items-center gap-3"
+      className="p-8 pb-16 md:p-12 lg:p-20 bg-gradient-to-tr from-[#001E80] via-[#e4eaff] to-white overflow-x-clip"
     >
-      <div className="md:flex items-center justify-center gap-16">
-        <div className="md:w-[478px]">
-          <div className="text-5xl md:text-7xl font-black my-7 bg-gradient-to-b from-black to-[#002499] text-transparent bg-clip-text tracking-tighter">
+      <div className="max-w-7xl mx-auto md:flex items-center justify-between gap-16">
+        <div className="md:w-[520px] space-y-6">
+          <h1 className="text-4xl md:text-6xl font-bold leading-tight bg-gradient-to-b from-[#1a1a1a] to-[#002499] text-transparent bg-clip-text">
             Ace your next finance interview with Fintervue.
-          </div>
-          <div className="text-xl lg:text-2xl tracking-tighter opacity-85">
-            One stop shop for aspiring finance professionals, industry veterans
-            and corporate behemoths to achieve their goals.
-          </div>
+          </h1>
+          <p className="text-lg md:text-xl text-gray-700 leading-relaxed">
+            A one-stop solution for aspiring finance professionals, industry veterans,
+            and corporate leaders to reach new heights.
+          </p>
 
-          <div className="flex items-center gap-3 mt-6 text-lg">
-            <Link to={"/signup/interviewer"}>
-              <Button text="Join as interviewer" />
+          <div className="flex flex-col sm:flex-row gap-4 pt-4">
+          <Link to="/signup/interviewer" aria-label="Join as interviewer" className="w-full sm:w-auto">
+              <Button
+                text="Join as interviewer"
+                className="w-full sm:w-auto bg-[#1E90FF] text-white shadow-lg 
+                hover:bg-[#1C86EE] hover:shadow-[#1E90FF]/20 hover:-translate-y-0.5
+                active:translate-y-0 active:shadow-md
+                transition-all duration-200 ease-in-out
+                font-semibold tracking-wide"
+              />
             </Link>
-            <Link to={"/signup/candidate"}>
-              <Button text="Join as interviewee " />
+            <Link to="/signup/candidate" aria-label="Join as interviewee" className="w-full sm:w-auto">
+              <Button
+                text="Join as interviewee"
+                className="w-full sm:w-auto bg-white text-[#1E90FF] border-2 border-[#1E90FF]
+                shadow-lg hover:shadow-[#1E90FF]/20 hover:-translate-y-0.5 
+                hover:bg-[#1E90FF]/5 active:bg-[#1E90FF]/10
+                active:translate-y-0 active:shadow-md
+                transition-all duration-200 ease-in-out
+                font-semibold tracking-wide"
+              />
             </Link>
           </div>
         </div>
-        <div className="pt-12 md:pt-0 md:h-[648px] md:w-[648px] relative">
+
+        <div className="mt-12 md:mt-0 md:w-[580px] relative">
           <motion.img
             src={HeroImage.src || HeroImage}
             alt="Hero Image"
-            className="md:absolute md:h-full md:w-auto md:max-w-none"
-            animate={{
-              translateY,
-            }}
+            className="w-full h-auto md:max-w-none object-contain"
+            style={{ translateY }}
             transition={{
               repeat: Infinity,
               repeatType: "mirror",
@@ -60,7 +71,6 @@ const Hero = () => {
               ease: "easeInOut",
             }}
           />
-         
         </div>
       </div>
     </section>
