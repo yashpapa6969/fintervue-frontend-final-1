@@ -13,13 +13,13 @@ import axios from "axios";
 const ResumeAnalysis = () => {
   const [file, setFile] = useState(null);
   const [analysis, setAnalysis] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [resumeScores, setResumeScores] = useState(null);
   const toast = useToast();
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
   };
-
-const [loading, setLoading] = useState(false); 
 
   const handleSubmit = async () => {
     if (!file) {
@@ -48,17 +48,9 @@ const [loading, setLoading] = useState(false);
         }
       );
 
-      if (loading) {
-        return (
-          <Container centerContent>
-            <Spinner size="xl" color="teal.500" />
-            <Text mt={4}>Loading analysis data...</Text>
-          </Container>
-        );
-      }
-
-      const { analysis } = response.data;
+      const { analysis, score } = response.data;
       setAnalysis(analysis);
+      setResumeScores(score);
       toast({
         title: "Upload successful.",
         description: "Your resume has been analyzed.",
@@ -122,6 +114,7 @@ const [loading, setLoading] = useState(false);
             onFileChange={handleFileChange} 
             onSubmit={handleSubmit} 
             loading={loading}  // Passed loading state here
+            scores={resumeScores} // Pass the scores object here
           />
         </div>
 

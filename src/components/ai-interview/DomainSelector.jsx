@@ -19,6 +19,9 @@ import {
     const [allDomains] = useState([
       { name: "finance", description: "Finance Engineer" },
       { name: "SAP", description: "SAP Developer" },
+      { name: "Financial Risk Management", description: "Financial Risk Management" },
+      { name: "Financial Analyst", description: "Financial Analyst" },
+      { name: "Business Analyst", description: "Business Analyst" }
     ]);
   
     const filteredDomains = useMemo(() => {
@@ -29,31 +32,39 @@ import {
   
     return (
       <MotionBox
-        className="flex flex-col items-center"
-        initial={{ scale: 0.8 }}
-        animate={{ scale: 1 }}
-        transition={{ duration: 0.5 }}
-        px={{ base: 4, md: 6 }}
-        pb={{ base: 20, md: 24 }}
-        pt={{ base: 4, md: 6 }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        px={{ base: 4, md: 8 }}
+        py={{ base: 6, md: 10 }}
         minH="100vh"
         w="100%"
+        bg="gray.50"
       >
         <Box 
           w="100%" 
           maxW="1200px"
           mx="auto"
-          flex="1"
           display="flex"
           flexDirection="column"
           alignItems="center"
         >
+          <Text
+            fontSize={{ base: "2xl", md: "3xl" }}
+            fontWeight="bold"
+            mb={4}
+            textAlign="center"
+            color="gray.800"
+          >
+            Select Your Domain
+          </Text>
+          
           <SearchBox 
             value={searchDomainValue}
             onChange={setSearchDomainValue}
             placeholder="Search domains..."
-            mb={6}
-            maxW={{ base: "100%", md: "400px" }}
+            mb={8}
+            maxW={{ base: "100%", md: "500px" }}
           />
           
           <Grid 
@@ -61,43 +72,46 @@ import {
               base: "repeat(1, 1fr)",
               sm: "repeat(2, 1fr)", 
               md: "repeat(3, 1fr)",
-              lg: "repeat(4, 1fr)",
+              lg: "repeat(3, 1fr)",
             }}
-            gap={{ base: 4, md: 6, lg: 8 }}
+            gap={6}
             width="100%"
-            flex="1"
             alignContent="start"
           >
             {Array.isArray(filteredDomains) && filteredDomains.map((domain, index) => (
               <GridItem key={`domain-${index}`}>
                 <MotionBox
-                  whileHover={{ scale: 1.05, boxShadow: "lg" }}
-                  whileTap={{ scale: 0.95 }}
-                  transition="0.3s ease"
+                  whileHover={{ scale: 1.03, boxShadow: "lg" }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ duration: 0.2 }}
                 >
                   <Card
                     cursor={loading ? "not-allowed" : "pointer"}
                     onClick={() => !loading && onDomainSelect(domain)}
                     opacity={loading ? 0.7 : 1}
                     height="100%"
+                    borderRadius="lg"
+                    boxShadow="sm"
+                    _hover={{ borderColor: "blue.500" }}
                   >
-                    <CardBody>
+                    <CardBody p={6}>
                       <Flex 
                         direction="column" 
                         align="start"
                         height="100%"
+                        gap={2}
                       >
                         <Text 
                           fontSize={{ base: "lg", md: "xl" }}
-                          fontWeight="semibold" 
-                          mb={1} 
-                          color="blue.700"
+                          fontWeight="bold"
+                          color="gray.800"
                         >
                           {domain.name}
                         </Text>
                         <Text 
                           color="gray.600"
                           fontSize={{ base: "sm", md: "md" }}
+                          lineHeight="tall"
                         >
                           {domain.description}
                         </Text>
@@ -110,8 +124,15 @@ import {
           </Grid>
 
           {loading && (
-            <Flex justify="center" mt={4}>
-              <Spinner size="xl" color="blue.500" />
+            <Flex 
+              justify="center" 
+              mt={8} 
+              p={4} 
+              bg="white" 
+              borderRadius="md"
+              boxShadow="sm"
+            >
+              <Spinner size="xl" color="blue.500" thickness="3px" />
             </Flex>
           )}
         </Box>

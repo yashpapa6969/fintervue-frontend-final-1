@@ -22,6 +22,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import RecordRTC from "recordrtc";
 import config from '../../config';
+import { v4 as uuidv4 } from 'uuid';
 
 
 // Updated MIME type dynamically based on browser compatibility
@@ -79,15 +80,6 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
   });
 
   // Add a flag to prevent duplicate transcriptions
-  const transcriptionInProgressRef = useRef(false);
-
-  // Add debounce timeout ref
-  const transcriptionDebounceRef = useRef(null);
-
-  // Add last transcription timestamp to prevent duplicates
-  const lastTranscriptionTimeRef = useRef(null);
-
-  // Add a ref to track TTS status
   const ttsInProgressRef = useRef(false);
 
   // Load FFmpeg
@@ -339,86 +331,122 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
     };
   }, [stream]);
 
-  const stopRecording = () => {
-    if (mediaRecorder.current && recordingStatus === "recording") {
-      mediaRecorder.current.stopRecording(() => {
-        try {
-          const blob = mediaRecorder.current.getBlob();
-          if (!blob) {
-            throw new Error("No video data available");
-          }
-          const videoUrl = URL.createObjectURL(blob);
-          setRecordedVideoBlob(blob);
-          setRecordedVideoURL(videoUrl);
-          setVideoBlobs((prevBlobs) => [...prevBlobs, blob]);
-          extractAudio(blob);
-        } catch (error) {
-          console.error("Error stopping recording:", error);
-          toast({
-            title: "Recording Error",
-            description: "Failed to stop recording. Please try again.",
-            status: "error",
-            duration: 5000,
-            isClosable: true
-          });
-        }
-      });
-      setRecordingStatus("inactive");
-      clearInterval(timerRef.current);
-    }
-  };
-
-
-  const extractAudio = async (videoBlob) => {
-    if (!videoBlob) {
-      toast({
-        title: "No Video Recorded",
-        description: "Please record a video before extracting audio.",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
+  // Update stopRecording function
+  const stopRecording = async () => {
+    if (!mediaRecorder.current || mediaRecorder.current.state !== "recording") {
+      console.log('No active recording');
       return;
     }
 
     try {
-      const ffmpeg = ffmpegRef.current;
+      setRecordingStatus("inactive");
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
 
-      await ffmpeg.writeFile("input.webm", await fetchFile(videoBlob));
+      // Set loading state
+      setLoading(true);
 
-      await ffmpeg.exec([
-        "-i", "input.webm",
-        "-vn",
-        "-acodec", "libmp3lame",
-        "-q:a", "2",
-        "output.mp3",
-      ]);
-
-      const data = await ffmpeg.readFile("output.mp3");
-      const audioBlob = new Blob([data.buffer], { type: "audio/mp3" });
-
-      setAudioBlobs([audioBlob]);
-      await handleSubmit(audioBlob);
-
-      await ffmpeg.deleteFile("input.webm");
-      await ffmpeg.deleteFile("output.mp3");
-
-      toast({
-        title: "Audio Extracted and Cleaned Up",
-        description: "Audio extracted and memory cleared.",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
+      // Stop the recording and get the blob
+      const recordedBlob = await new Promise((resolve) => {
+        mediaRecorder.current.stopRecording(() => {
+          const blob = mediaRecorder.current.getBlob();
+          setRecordedVideoBlob(blob);
+          setRecordedVideoURL(URL.createObjectURL(blob));
+          setIsQuestionAnswered(true);
+          resolve(blob);
+        });
       });
+
+      // Upload to S3
+      try {
+        await uploadToS3(recordedBlob, questionNo);
+        
+        // If upload successful, proceed to next question
+        if (questionNo + 1 < questions.length) {
+          nextQuestion();
+        } else {
+          toast({
+            title: "Interview Complete",
+            description: "Please review your answers and submit.",
+            status: "success",
+            duration: 3000,
+            isClosable: true,
+          });
+        }
+      } catch (error) {
+        console.error('Upload error:', error);
+        toast({
+          title: "Upload Error",
+          description: "Failed to upload recording. Please try again.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
+
     } catch (error) {
-      console.error("Error extracting audio:", error);
+      console.error("Error stopping recording:", error);
       toast({
-        title: "Extraction Error",
-        description: "Failed to extract audio from the video.",
+        title: "Recording Error",
+        description: "Failed to stop recording.",
         status: "error",
         duration: 5000,
         isClosable: true,
       });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Update uploadToS3 function to use addOrUpdateAiAnalysisWithId
+  const uploadToS3 = async (blob, questionNumber) => {
+    try {
+      // Create unique filename using UUID
+      const filename = `${uuidv4()}-q${questionNumber}.webm`;
+      
+      // Create FormData
+      const formData = new FormData();
+      formData.append('audio', blob, filename);
+      
+      // Add required fields for addOrUpdateAiAnalysisWithId
+      formData.append('ai_analysis_id', localStorage.getItem('ai_analysis_id'));
+      formData.append('questionIndex', questionNumber);
+      formData.append('domain', selectedDomain);
+      formData.append('userId', localStorage.getItem('userId'));
+      formData.append('tabChangeCount', tabChangeCount.toString());
+      formData.append('windowBlurCount', windowBlurCount.toString());
+      
+      // Add question data
+      const fileData = [{
+        question: questions[questionNumber].questionText,
+        questionId: questions[questionNumber].id,
+        // transcription will be added by backend
+      }];
+      formData.append('fileData', JSON.stringify(fileData));
+      
+      // Make API call to your backend using the existing endpoint
+      const response = await axios.post(
+        `${config.apiBaseUrl}/api/interviewee/addOrUpdateAiAnalysisWithId`, 
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          }
+        }
+      );
+
+      return response.data.audioUrl; // Assuming your API returns the processed audio URL
+    } catch (error) {
+      console.error('Error uploading to S3:', error);
+      toast({
+        title: "Upload Error",
+        description: "Failed to upload audio recording",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+      throw error;
     }
   };
 
@@ -493,58 +521,8 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
     setIsSubmitting(false);
   };
 
-  // Add new function to send analysis data
-  const sendAnalysisData = async (isFinal = false) => {
-    try {
-      const currentQuestion = questions[questionNo];
-      if (!currentQuestion || !transcriptions[questionNo]) return;
-
-      const analysisData = {
-        ai_analysis_id: localStorage.getItem('ai_analysis_id'),
-        questionIndex: questionNo,
-        fileData: [{
-          question: currentQuestion.questionText,
-          transcription: transcriptions[questionNo]
-        }],
-        domain: selectedDomain,
-        userId: localStorage.getItem('userId'),
-        tabChangeCount: tabChangeCount.toString(),
-        windowBlurCount: windowBlurCount.toString(),
-        isFinal
-      };
-
-
-      const response = await axios.post(`${config.apiBaseUrl}/api/interviewee/addOrUpdateAiAnalysisWithId`, analysisData);
-
-      if (!response.data) {
-        throw new Error('Failed to save analysis data');
-      }
-
-      toast({
-        title: "Analysis Saved",
-        description: isFinal ? "Final analysis submitted successfully" : "Question analysis saved",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
-
-    } catch (error) {
-      console.error('Error saving analysis:', error);
-      toast({
-        title: "Error",
-        description: "Failed to save analysis data",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    }
-  };
-
-  // Update nextQuestion function
-  const nextQuestion = async () => {
-    // Send analysis data for current question before moving to next
-    await sendAnalysisData(false);
-
+  // Update nextQuestion function to remove separate analysis call
+  const nextQuestion = () => {
     setRecordedVideoBlob(null);
     setRecordedVideoURL(null);
     setQuestionNo((prev) => prev + 1);
@@ -558,12 +536,41 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
     }
   };
 
-  // Update or add submitFinalAnswers function
+  // Update submitFinalAnswers function
   const submitFinalAnswers = async () => {
     try {
-      await sendAnalysisData(true);
+      // Create final submission FormData
+      const formData = new FormData();
+      formData.append('ai_analysis_id', localStorage.getItem('ai_analysis_id'));
+      formData.append('questionIndex', questionNo);
+      formData.append('domain', selectedDomain);
+      formData.append('userId', localStorage.getItem('userId'));
+      formData.append('tabChangeCount', tabChangeCount.toString());
+      formData.append('windowBlurCount', windowBlurCount.toString());
+      formData.append('isFinal', 'true');
+      
+      const fileData = [{
+        question: questions[questionNo].questionText,
+        questionId: questions[questionNo].id,
+        // transcription will be added by backend
+      }];
+      formData.append('fileData', JSON.stringify(fileData));
 
-      // Navigate to results or thank you page
+      const response = await axios.post(
+        `${config.apiBaseUrl}/api/interviewee/addOrUpdateAiAnalysisWithId`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          }
+        }
+      );
+
+      if (!response.data) {
+        throw new Error('Failed to submit final answers');
+      }
+
+      // Navigate to results page
       navigate("/analysis");
     } catch (error) {
       console.error('Error submitting final answers:', error);
@@ -674,62 +681,6 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
       }
     }
   }, [audioOn]);
-
-  // Add function to handle transcription with debouncing and duplicate prevention
-  const handleTranscription = async (audioBlob) => {
-    // Prevent duplicate transcriptions within 2 seconds
-    const now = Date.now();
-    if (lastTranscriptionTimeRef.current &&
-      now - lastTranscriptionTimeRef.current < 2000) {
-      console.log('Preventing duplicate transcription');
-      return;
-    }
-
-    // Clear any pending debounced transcription
-    if (transcriptionDebounceRef.current) {
-      clearTimeout(transcriptionDebounceRef.current);
-    }
-
-    // Set debounce timeout
-    transcriptionDebounceRef.current = setTimeout(async () => {
-      if (transcriptionInProgressRef.current) {
-        console.log('Transcription already in progress');
-        return;
-      }
-
-      try {
-        transcriptionInProgressRef.current = true;
-        lastTranscriptionTimeRef.current = now;
-
-        // Your existing transcription logic here
-        const formData = new FormData();
-        formData.append("audio", audioBlob);
-
-        const response = await axios.post("/api/transcribe", formData);
-
-        // Update transcriptions state only if response contains new text
-        if (response.data?.length > 0) {
-          setTranscriptions(prev => {
-            const updated = [...prev];
-            updated[questionNo] = response.data;
-            return updated;
-          });
-        }
-
-      } catch (error) {
-        console.error('Transcription error:', error);
-        toast({
-          title: "Error",
-          description: "Failed to transcribe audio",
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-        });
-      } finally {
-        transcriptionInProgressRef.current = false;
-      }
-    }, 500); // 500ms debounce delay
-  };
 
   if (!loaded) {
     return (
@@ -855,17 +806,14 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
               <Button
                 onClick={startRecording}
                 colorScheme="green"
-                isDisabled={
-                  (questionNo === 0 && recordingStatus === "recording") || // Disable while recording the first question
-                  (questionNo > 0 && (!isQuestionAnswered || recordingStatus === "recording")) // Disable for subsequent questions until answered
-                }
+                isDisabled={loading || recordingStatus === "recording"}
               >
                 Start Recording
               </Button>
               <Button
                 onClick={stopRecording}
                 colorScheme="red"
-                isDisabled={recordingStatus !== "recording"}
+                isDisabled={loading || recordingStatus !== "recording"}
               >
                 Stop Recording
               </Button>
@@ -876,6 +824,12 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
                 <>
                   <Spinner size="sm" color="red.500" />
                   <Text color="red.500">Recording: {recordingTime}s</Text>
+                </>
+              )}
+              {loading && (
+                <>
+                  <Spinner size="sm" color="blue.500" />
+                  <Text color="blue.500">Processing recording...</Text>
                 </>
               )}
             </Flex>
@@ -902,37 +856,21 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
               <Text mt={4}>Transcribing...</Text>
             </Flex>
           ) : (
-            transcriptions[questionNo]?.length > 0 && (
+            audioBlobs[questionNo] ? (
               <Box mb={4}>
                 <Text fontSize="lg" fontWeight="semibold" mb={2}>
-                  Transcription
+                  Audio
                 </Text>
                 <Box maxH="200px" overflowY="auto" p={4} bg="gray.50" borderRadius="md" boxShadow="sm">
-                  {transcriptions[questionNo].map((item, index) => (
-                    <Box key={index} mb={2}>
-                      <Text fontSize="sm" color="purple.600">
-                        Start: {item.Start}, End: {item.End}
-                      </Text>
-                      <Text>
-                        <strong className={`text-purple-${(index + 1) % 2 === 0 ? "400" : "500"}`}>
-                          {index + 1}.
-                        </strong>{" "}
-                        {item.Text}
-                      </Text>
-                    </Box>
-                  ))}
+                  {audioBlobs[questionNo]}
                 </Box>
               </Box>
-            )
+            ) : null
           )}
           <Flex justify="flex-end" mt={4}>
             {questions.length === questionNo + 1 ? (
               <Button colorScheme="purple" onClick={submitFinalAnswers}>
                 Submit Final Answers
-              </Button>
-            ) : transcriptions[questionNo]?.length > 0 ? (
-              <Button colorScheme="blue" onClick={nextQuestion}>
-                Next Question
               </Button>
             ) : null}
           </Flex>

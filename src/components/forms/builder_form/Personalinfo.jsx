@@ -18,6 +18,19 @@ const Personalinfo = () => {
     if (section) {
       const updatedSection = [...userData[section]];
       if (index !== undefined) {
+        if (field === 'startDate' || field === 'endDate') {
+          const item = updatedSection[index];
+          const startDate = field === 'startDate' ? value : item.startDate;
+          const endDate = field === 'endDate' ? value : item.endDate;
+          
+          if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+            toast.error('Start date cannot be after end date', {
+              position: "top-right",
+            });
+            return;
+          }
+        }
+        
         updatedSection[index] = { ...updatedSection[index], [field]: value };
       }
       setUserData({ ...userData, [section]: updatedSection });
@@ -86,6 +99,34 @@ const Personalinfo = () => {
 
     // If there are no errors, return true; otherwise, return false
     return Object.keys(newErrors).length === 0;
+  };
+
+  const sanitizeLatex = (text) => {
+    if (typeof text !== "string") {
+      console.error("Expected a string for LaTeX sanitization, but got:", text);
+      return "";
+    }
+    
+    const replacements = {
+      '\\': '\\textbackslash{}',
+      '{': '\\{',
+      '}': '\\}',
+      '$': '\\$',
+      '&': '\\&',
+      '#': '\\#',
+      '^': '\\textasciicircum{}',
+      '_': '\\_',
+      '~': '\\textasciitilde{}',
+      '%': '\\%',
+      '<': '\\textless{}',
+      '>': '\\textgreater{}',
+      '|': '\\textbar{}',
+      '"': '\\textquotedbl{}',
+      "'": '\\textquotesingle{}',
+      '`': '\\textasciigrave{}'
+    };
+
+    return text.replace(/[\\{}$&#^_~%<>|"'`]/g, char => replacements[char]);
   };
 
   const resumeTemplate1 = `
@@ -521,7 +562,7 @@ GitHub: \\href{{github}}{\\texttt{{github}}}
         );
         return "";
       }
-      return text.replace(/\n/g, "\\\\");
+      return sanitizeLatex(text).replace(/\n/g, "\\\\");
     };
 
     const generateListContent = (items) => {
@@ -609,7 +650,6 @@ GitHub: \\href{{github}}{\\texttt{{github}}}
   };
 
   const populateTemplate = (template, data) => {
-    // Replace newlines with double backslashes for LaTeX
     const replaceNewlines = (text) => {
       if (typeof text !== "string") {
         console.error(
@@ -618,8 +658,10 @@ GitHub: \\href{{github}}{\\texttt{{github}}}
         );
         return "";
       }
-      return text.replace(/\n/g, "\\\\");
+      return sanitizeLatex(text).replace(/\n/g, "\\\\");
     };
+
+  
 
     // Replace {VAR{key}} placeholders first
     template = template.replace(/\{VAR\{([^}]+)\}\}/g, (match, key) => {
@@ -697,7 +739,7 @@ GitHub: \\href{{github}}{\\texttt{{github}}}
         );
         return "";
       }
-      return text.replace(/\n/g, "\\\\");
+      return sanitizeLatex(text).replace(/\n/g, "\\\\");
     };
 
     // Replacing general placeholders like {name}, {email}, etc.

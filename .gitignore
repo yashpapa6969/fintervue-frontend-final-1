@@ -26,6 +26,7 @@
 *.swo
 *.sublime-workspace
 *.sublime-project
+package-lock.json     
 
 # OS generated files
 .DS_Store

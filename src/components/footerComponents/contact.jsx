@@ -66,32 +66,32 @@ const Contact = () => {
     try {
     // ek api create kr for storing contact us details 
 
-//       const response = await fetch(`${config.apiBaseUrl}/send-email`, {
-//         method: 'POST',
-//         headers: {
-//           'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify({
-//           to: 'fintervue.dev@gmail.com',
-//           subject: `Contact Form Submission from ${formData.fullName}`,
-//           textBody: `
-// Name: ${formData.fullName}
-// Email: ${formData.email}
-// Company: ${formData.company}
-// Message: ${formData.message}
-//           `,
-//           htmlBody: `
-// <h2>New Contact Form Submission</h2>
-// <p><strong>Name:</strong> ${formData.fullName}</p>
-// <p><strong>Email:</strong> ${formData.email}</p>
-// <p><strong>Company:</strong> ${formData.company}</p>
-// <p><strong>Message:</strong></p>
-// <p>${formData.message}</p>
-//           `
-//         }),
-//       });
+      const response = await fetch(`${config.apiBaseUrl}/send-email`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          to: 'fintervue.dev@gmail.com',
+          subject: `Contact Form Submission from ${formData.fullName}`,
+          textBody: `
+Name: ${formData.fullName}
+Email: ${formData.email}
+Company: ${formData.company}
+Message: ${formData.message}
+          `,
+          htmlBody: `
+<h2>New Contact Form Submission</h2>
+<p><strong>Name:</strong> ${formData.fullName}</p>
+<p><strong>Email:</strong> ${formData.email}</p>
+<p><strong>Company:</strong> ${formData.company}</p>
+<p><strong>Message:</strong></p>
+<p>${formData.message}</p>
+          `
+        }),
+      });
 
-      // if (response.ok) {
+      if (response.ok) {
         alert("Thank you for your message! We'll get back to you soon.");
         console.log(formData);
         setFormData({
@@ -101,9 +101,9 @@ const Contact = () => {
           message: "",
         });
         setErrors({});
-      // } else {
-        // throw new Error('Failed to send message');
-      // }
+      } else {
+        throw new Error('Failed to send message');
+      }
     } catch (error) {
       console.error('Error sending message:', error);
       alert("Sorry, there was an error sending your message. Please try again later.");

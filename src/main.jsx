@@ -178,13 +178,11 @@ const router = createBrowserRouter([
 
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <ChakraProvider>
-      <HMSRoomProvider>
-        <Suspense fallback={<Loader />}>
-          <RouterProvider router={router} />
-        </Suspense>
-      </HMSRoomProvider>
-    </ChakraProvider>
-  </React.StrictMode>
+  <ChakraProvider>
+    <HMSRoomProvider>
+      <Suspense fallback={<Loader />}>
+        <RouterProvider router={router} />
+      </Suspense>
+    </HMSRoomProvider>
+  </ChakraProvider>
 );
