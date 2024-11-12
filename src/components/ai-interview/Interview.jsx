@@ -425,7 +425,7 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
 
       // Upload to S3 via API
       const response = await axios.post(
-        `${config.apiBaseUrl}/api/interviewee/addOrUpdateAiAnalysisWithId`,
+        `${config.uploadBaseUrl}/api/interviewee/addOrUpdateAiAnalysisWithId`,
         formData,
         {
           headers: {
@@ -439,13 +439,17 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
       );
 
       // Check for successful response with proper data structure
-      if (!response.data || (!response.data.fileData && !response.data.fileData[0].audio)) {
+      if (!response.data) {
         throw new Error('Upload failed - invalid response format');
       }
-
+      const updated_analysis = response.data; // Assuming the response contains the updated analysis
+      const jsonResponse = {
+          "matched_count": updated_analysis.matched_count,
+          "modified_count": updated_analysis.modified_count,
+          "message": "Analysis updated successfully."
+      };
       // Get the audio URL from the response
-      const audioUrl = response.data.fileData[0].audio;
-      if (!audioUrl) {
+      if (!jsonResponse) {
         throw new Error('Upload failed - no audio URL returned');
       }
 
@@ -458,7 +462,7 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
         isClosable: true,
       });
 
-      return audioUrl;
+      return jsonResponse;
 
     } catch (error) {
       console.error('Error uploading to S3:', error);
