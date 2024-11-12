@@ -18,57 +18,105 @@ import {
 } from "@/components/ui/input-otp";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
+import config from '../config';
 
 const ForgotPassword = () => {
-  const [step, setStep] = useState(1); // Step 1: Email, Step 2: OTP, Step 3: Reset Password
+  const [step, setStep] = useState(1);
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [isOpen, setIsOpen] = useState(true);
-const navigate = useNavigate();
-  // Function to handle "Send OTP" button
-  const handleSendOtp = () => {
-    // Code to send OTP to the email entered
-    // Example: API call to backend to send OTP
-    setStep(2);
+  const navigate = useNavigate();
+
+  const handleSendOtp = async () => {
+    if (!email) {
+      alert("Please enter a valid email address.");
+      return;
+    }
+    try {
+      const response = await fetch(`${config.apiBaseUrl}/api/send-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      if (response.ok) {
+        setStep(2);
+      } else {
+        const errorData = await response.json();
+        console.error("Error details:", errorData);
+        alert("Error sending OTP: " + (errorData.message || "Unknown error"));
+      }
+    } catch (error) {
+      console.error("Network error:", error);
+      alert("Network error. Please try again later.");
+    }
   };
 
-  // Function to handle "Verify OTP" button
-  const handleVerifyOtp = () => {
-    // Code to verify the OTP entered
-    // Example: API call to verify OTP
-    setStep(3);
+  const handleVerifyOtp = async () => {
+    if (!otp) {
+      alert("Please enter the OTP sent to your email.");
+      return;
+    }
+    try {
+      const response = await fetch(`${config.apiBaseUrl}/api/verify-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, otp }),
+      });
+      if (response.ok) {
+        setStep(3);
+      } else {
+        alert('Invalid OTP. Please try again.');
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Error verifying OTP. Please try again.");
+    }
   };
 
-  // Function to handle "Reset Password" button
-  const handleResetPassword = () => {
-    // Code to reset the password
-    // Example: API call to update the password
-    alert("Password successfully changed!");
-    navigate('/signup');
+  const handleResetPassword = async () => {
+    if (!newPassword || !confirmPassword) {
+      alert("Both password fields are required.");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      alert("Passwords do not match. Please try again.");
+      return;
+    }
+    try {
+      const response = await fetch(`${config.apiBaseUrl}/api/reset-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, newPassword }),
+      });
+      if (response.ok) {
+        alert('Password successfully changed!');
+        navigate('/signup');
+      } else {
+        alert("Error resetting password. Please try again.");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Error resetting password. Please try again.");
+    }
   };
- 
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md p-6 bg-white rounded shadow-lg">
         {step === 1 && (
-          <div
-          //onClick={handleSendOtp}
-          className='flex flex-col gap-3 items-center'
-          >
+          <div className='flex flex-col gap-3 items-center'>
             <h1 className='text-2xl font-bold '>Change your password </h1>
             <Dialog>
               <DialogTrigger asChild>
-                <Button  >Change</Button>
+                <Button>Change</Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                  <DialogTitle>Change your password </DialogTitle>
+                  <DialogTitle>Change your password</DialogTitle>
                   <DialogDescription>
-                    Make changes to your profile here. Give your email addresss
-                    through which you have registered to fintervue.
+                    Provide your registered email address.
                   </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
@@ -77,14 +125,16 @@ const navigate = useNavigate();
                       Email
                     </Label>
                     <Input
-                      id="Email"
-                      defaultValue="xyz@gmail.com"
+                      id="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="xyz@gmail.com"
                       className="col-span-3"
                     />
                   </div>
                 </div>
                 <DialogFooter>
-                  <Button type="submit" onClick={handleSendOtp}>
+                  <Button onClick={handleSendOtp}>
                     Get OTP
                   </Button>
                 </DialogFooter>
@@ -96,7 +146,7 @@ const navigate = useNavigate();
         {step === 2 && (
           <div className="flex flex-col gap-3 items-center">
             <h1 className="font-bold text-lg my-3">Enter your OTP</h1>
-            <InputOTP maxLength={6}>
+            <InputOTP maxLength={6} value={otp} onChange={(e) => setOtp(e.target.value)}>
               <InputOTPGroup>
                 <InputOTPSlot index={0} />
                 <InputOTPSlot index={1} />
@@ -122,7 +172,7 @@ const navigate = useNavigate();
                 <DialogHeader>
                   <DialogTitle>Change your password</DialogTitle>
                   <DialogDescription>
-                    Add your new password for the current email address.
+                    Add your new password.
                   </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
@@ -132,7 +182,9 @@ const navigate = useNavigate();
                     </Label>
                     <Input
                       id="password"
-                      defaultValue=""
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
                       className="col-span-3"
                     />
                   </div>
@@ -142,13 +194,15 @@ const navigate = useNavigate();
                     </Label>
                     <Input
                       id="confirm-password"
-                      defaultValue=""
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
                       className="col-span-3"
                     />
                   </div>
                 </div>
                 <DialogFooter>
-                  <Button type="submit" onClick={handleResetPassword}>
+                  <Button onClick={handleResetPassword}>
                     Submit
                   </Button>
                 </DialogFooter>
