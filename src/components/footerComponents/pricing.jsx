@@ -60,7 +60,7 @@ const Pricing = () => {
               <span className="font-extrabold text-5xl">₹4,999</span>
               <span className="font-semibold text-gray-600">/month</span>
               <br />
-              <span className="font-extrabold text-3xl mt-2">₹59,999</span>
+              <span className="font-extrabold text-3xl mt-2">₹49,999</span>
               <span className="font-semibold text-gray-600">/year</span>
             </div>
             <button className="text-black font-medium mb-8 bg-white py-1.5 w-full rounded-lg cursor-pointer transition-transform duration-200 hover:bg-gray-300 hover:shadow-lg active:scale-95">
@@ -85,7 +85,7 @@ const Pricing = () => {
               <span className="font-extrabold text-5xl">₹8,333</span>
               <span className="font-semibold text-gray-600">/month</span>
               <br />
-              <span className="font-extrabold text-3xl mt-2">₹99,999</span>
+              <span className="font-extrabold text-3xl mt-2">₹89,999</span>
               <span className="font-semibold text-gray-600">/year</span>
             </div>
             <button className="text-white mb-8 bg-black py-1.5 w-full rounded-lg cursor-pointer transition-transform duration-200 hover:bg-gray-800 hover:shadow-lg active:scale-95">
