@@ -21,9 +21,11 @@ const PreResumeForm = ({ setExperienceLevel, setDomain }) => {
         <span className="font-semibold">Choose your domain</span>
         <Select mt={2} onChange={(e) => setDomain(e.target.value)}>
           <option defaultValue={""}>What is your domain?</option>
-          <option value={"finance1"}>Finance 1</option>
-          <option value={"finance2"}>Finance 2</option>
-          <option value={"finance3"}>Finance 3</option>
+          <option value={"finance1"}>Corporate finance</option>
+          <option value={"finance2"}>Banking</option>
+          <option value={"finance3"}>Accounting</option>
+          <option value={"finance4"}>Investment</option>
+          <option value={"finance5"}>Financial analyst</option>
         </Select>
       </div>
     </div>

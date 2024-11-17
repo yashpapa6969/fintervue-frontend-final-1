@@ -1,36 +1,53 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { StepperContext } from "../../../context/StepperContext";
 import ShimmerButton from "../../ui/shimmer-button";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import RequiredIndicator from "../../ui/RequiredIndicator";
 import { Tab, TabList, TabPanel, TabPanels, Tabs, Spinner } from "@chakra-ui/react";
-import config from '../../../config';
+import Ajv from "ajv";
 
 const Personalinfo = () => {
   const { userData, setUserData } = useContext(StepperContext);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [selectedResumeType, setSelectedResumeType] = useState("classic");
+  const [schema, setSchema] = useState(null);
 
+  const ajv = new Ajv();
+
+  // Define a custom "phone" format
+  ajv.addFormat("phone", {
+    type: "string",
+    validate: (phoneNumber) =>
+      /^\+?[1-9]\d{1,14}$/.test(phoneNumber), // E.164 international phone format
+  });
+  
+  ajv.addFormat("color", {
+    type: "string",
+    validate: (color) =>
+      /^#([0-9A-Fa-f]{3}){1,2}$|^rgb\((\d{1,3},\s?){2}\d{1,3}\)$/.test(color),
+  });
+  
+ 
   const handleChange = (e, index, section, field) => {
     const { value } = e.target;
 
     if (section) {
-      const updatedSection = [...userData[section]];
+      const updatedSection = [...(userData[section] || [])];
       if (index !== undefined) {
-        if (field === 'startDate' || field === 'endDate') {
+        if (field === "startDate" || field === "endDate") {
           const item = updatedSection[index];
-          const startDate = field === 'startDate' ? value : item.startDate;
-          const endDate = field === 'endDate' ? value : item.endDate;
-          
+          const startDate = field === "startDate" ? value : item.startDate;
+          const endDate = field === "endDate" ? value : item.endDate;
+
           if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
-            toast.error('Start date cannot be after end date', {
+            toast.error("Start date cannot be after end date", {
               position: "top-right",
             });
             return;
           }
         }
-        
         updatedSection[index] = { ...updatedSection[index], [field]: value };
       }
       setUserData({ ...userData, [section]: updatedSection });
@@ -39,19 +56,9 @@ const Personalinfo = () => {
     }
   };
 
-  const addExperience = () => {
-    const updatedExperience = [...(userData.experience || []), {}];
-    setUserData({ ...userData, experience: updatedExperience });
-  };
-
-  const addProject = () => {
-    const updatedProjects = [...(userData.projects || []), {}];
-    setUserData({ ...userData, projects: updatedProjects });
-  };
-
-  const addEducation = () => {
-    const updatedEducation = [...(userData.education || []), {}];
-    setUserData({ ...userData, education: updatedEducation });
+  const addSectionItem = (section) => {
+    const updatedSection = [...(userData[section] || []), {}];
+    setUserData({ ...userData, [section]: updatedSection });
   };
 
   const addSkill = () => {
@@ -72,17 +79,12 @@ const Personalinfo = () => {
 
   const validateForm = () => {
     const newErrors = {};
-
-    // Check if required fields are empty
     if (!userData.name) newErrors.name = "Name is required.";
     if (!userData.email) newErrors.email = "Email is required.";
     if (!userData.phone) newErrors.phone = "Phone number is required.";
-
     if (!userData.jobRole) newErrors.jobRole = "Job role is required.";
-
-    // Check for at least one experience, education, and project
     if (!userData.experience || userData.experience.length === 0) {
-      newErrors.experience = "At least one experience is required.";
+      newErrors.experience = "At least one experience entry is required.";
     }
     if (!userData.education || userData.education.length === 0) {
       newErrors.education = "At least one education entry is required.";
@@ -90,750 +92,287 @@ const Personalinfo = () => {
     if (!userData.projects || userData.projects.length === 0) {
       newErrors.projects = "At least one project is required.";
     }
-    if (!userData.skills || userData.skills.length === 0) {
-      newErrors.skills = "At least one project is required.";
+    if (!userData.skills || userData.skills.trim().length === 0) {
+      newErrors.skills = "At least one skill is required.";
     }
-
-    // Set the errors state with the validation results
     setErrors(newErrors);
-
-    // If there are no errors, return true; otherwise, return false
     return Object.keys(newErrors).length === 0;
   };
 
-  const sanitizeLatex = (text) => {
-    if (typeof text !== "string") {
-      console.error("Expected a string for LaTeX sanitization, but got:", text);
-      return "";
-    }
-    
-    const replacements = {
-      '\\': '\\textbackslash{}',
-      '{': '\\{',
-      '}': '\\}',
-      '$': '\\$',
-      '&': '\\&',
-      '#': '\\#',
-      '^': '\\textasciicircum{}',
-      '_': '\\_',
-      '~': '\\textasciitilde{}',
-      '%': '\\%',
-      '<': '\\textless{}',
-      '>': '\\textgreater{}',
-      '|': '\\textbar{}',
-      '"': '\\textquotedbl{}',
-      "'": '\\textquotesingle{}',
-      '`': '\\textasciigrave{}'
-    };
-
-    return text.replace(/[\\{}$&#^_~%<>|"'`]/g, char => replacements[char]);
-  };
-
-  const resumeTemplate1 = `
-  \\documentclass[letterpaper,11pt]{article}
-\\usepackage{latexsym}
-\\usepackage[empty]{fullpage}
-\\usepackage{titlesec}
-\\usepackage{marvosym}
-\\usepackage[usenames,dvipsnames]{color}
-\\usepackage{verbatim}
-\\usepackage{enumitem}
-\\usepackage[hidelinks]{hyperref}
-\\usepackage{fancyhdr}
-\\usepackage[english]{babel}
-\\usepackage{tabularx}
-\\usepackage{fontawesome5}
-\\usepackage{xcolor}
-\\usepackage{multicol}
-\\setlength{\\multicolsep}{-3.0pt}
-\\setlength{\\columnsep}{-1pt}
-\\input{glyphtounicode}
-
-\\pagestyle{fancy}
-\\fancyhf{} 
-\\fancyfoot{}
-\\renewcommand{\\headrulewidth}{0pt}
-\\renewcommand{\\footrulewidth}{0pt}
-
-\\addtolength{\\oddsidemargin}{-0.6in}
-\\addtolength{\\evensidemargin}{-0.5in}
-\\addtolength{\\textwidth}{1.19in}
-\\addtolength{\\topmargin}{-.7in}
-\\addtolength{\\textheight}{1.4in}
-
-\\urlstyle{same}
-
-\\raggedbottom
-\\raggedright
-\\setlength{\\tabcolsep}{0in}
-\\definecolor{deepblue}{RGB}{0,51,151}
-\\definecolor{darkblue}{RGB}{0,0,139}
-
-\\titleformat{\\section}{\\color{darkblue}
-  \\vspace{-4pt}\\scshape\\raggedright\\large\\bfseries
-}{}{0em}{}[\\color{black}\\titlerule \\vspace{-5pt}]
-
-\\pdfgentounicode=1
-
-\\newcommand{\\resumeItem}[1]{
-  \\item\\small{
-    {#1 \\vspace{-2pt}}
-  }
-}
-
-\\newcommand{\\resumeSubheading}[4]{
-  \\vspace{-2pt}\\item
-    \\begin{tabular*}{1.0\\textwidth}[t]{l@{\\extracolsep{\\fill}}r}
-      \\textbf{#1} & \\textbf{\\small #2} \\\\
-      \\color{deepblue}\\textit{\\small#3} & \\textit{\\small #4} \\\\
-    \\end{tabular*}\\vspace{-7pt}
-}
-
-\\newcommand{\\resumeProjectHeading}[3]{
-    \\item
-    \\begin{tabular*}{1.001\\textwidth}{l@{\\extracolsep{\\fill}}r}
-      \\small#1 & \\textbf{\\small #3} \\\\
-    \\end{tabular*}\\vspace{-7pt}
-    \\resumeItemListStart
-        \\resumeItem{#2}
-    \\resumeItemListEnd
-}
-
-\\newcommand{\\resumeSubItem}[1]{\\resumeItem{#1}\\vspace{-4pt}}
-
-\\renewcommand\\labelitemi{$\\vcenter{\\hbox{\\tiny$\\bullet$}}$}
-\\renewcommand\\labelitemii{$\\vcenter{\\hbox{\\tiny$\\bullet$}}$}
-
-\\newcommand{\\resumeSubHeadingListStart}{\\begin{itemize}[leftmargin=0.0in, label={}]}
-\\newcommand{\\resumeSubHeadingListEnd}{\\end{itemize}}
-\\newcommand{\\resumeItemListStart}{\\begin{itemize}}
-\\newcommand{\\resumeItemListEnd}{\\end{itemize}\\vspace{-5pt}}
-
-\\begin{document}
-
-\\begin{center}
-    {\\Huge \\scshape \\color{darkblue}{name}} \\\\ \\vspace{+10pt}
-    \\small \\raisebox{-0.1\\height}\\faPhone\\ {phone} ~ \\href{mailto:{email}}{\\raisebox{-0.2\\height}\\faEnvelope\\  \\underline{{email}}} ~
-    \\href{{linkedin}}{\\raisebox{-0.2\\height}\\faLinkedin\\ \\underline{{linkedin}}}
-    \\vspace{-3pt}
-\\end{center}
-
-\\section{Summary}
-  \\resumeItemListStart
-    \\resumeItem{{summary}}
-  \\resumeItemListEnd
-
-\\section{Education}
-  \\resumeSubHeadingListStart
-    {education}
-  \\resumeSubHeadingListEnd
-
-\\section{Experience}
-  \\resumeSubHeadingListStart
-    {experience}
-  \\resumeSubHeadingListEnd
-
-
-
-\\section{Projects}
-  \\resumeSubHeadingListStart
-    {projects}
-  \\resumeSubHeadingListEnd
-
-\\section{Technical Skills}
- \\begin{itemize}[leftmargin=0.15in, label={}]
-    \\small{\\item{
-     \\textbf{Skills}{: {skills}} \\\\
-    }}
- \\end{itemize}
-
-\\section{Achievements}
-  \\resumeSubHeadingListStart
-    \\resumeItem{{achievements}}
-  \\resumeSubHeadingListEnd
-
-\\end{document}
-`;
-
-  const resumeTemplate2 = `
-\\documentclass[11pt]{article}
-\\usepackage[margin=1in, a4paper]{geometry}
-\\setcounter{secnumdepth}{0}
-\\usepackage{titlesec}
-\\usepackage{enumitem}
-\\usepackage{hyperref} % This package is required for hyperlinks
-
-\\titlespacing{\\section}{0pt}{*1}{*1}
-\\titlespacing{\\subsection}{0pt}{*0}{*0}
-\\titlespacing{\\subsubsection}{0pt}{*0}{*0}
-\\titleformat{\\section}{\\large\\bfseries\\uppercase}{}{0pt}{}[\\titlerule]
-\\titleformat*{\\subsubsection}{\\large\\itshape}
-\\setlist[itemize]{noitemsep,left=0pt}
-\\pagestyle{empty}
-\\pdfgentounicode=1
-
-\\begin{document}
-\\begin{center}
-\\begin{minipage}{0.5\\textwidth}
-{\\Huge\\bfseries
-\\textnormal{{name}}
-} \\\\ \\medskip
-{\\textnormal{{jobRole}}}
-\\end{minipage} \\hfill
-\\begin{minipage}{0.4\\textwidth}
-\\raggedleft
-Email: \\href{mailto:{email}}{\\texttt{{email}}} \\\\
-Mobile: \\href{tel:{phone}}{\\texttt{{phone}}} \\\\
-LinkedIn: \\href{{linkedin}}{\\texttt{{linkedin}}} \\\\
-GitHub: \\href{{github}}{\\texttt{{github}}}
-\\end{minipage}
-\\end{center}
-
-\\vspace{20pt}
-
-\\section{Education}
-{educationDetails}
-
-\\vspace{20pt}
-
-\\section{Experience}
-{experienceDetails}
-
-\\vspace{20pt}
-
-\\section{Certification \\& Awards}
-\\begin{itemize}[left=0pt, itemsep=0pt]
-\\item {achievements}
-\\end{itemize}
-
-\\vspace{20pt}
-
-\\section{Skills \\& Interests}
-\\begin{itemize}[itemsep=0pt]
-\\item {skills}
-\\end{itemize}
-
-\\vspace{20pt}
-
-\\section{Projects}
-{projectDetails}
-
-\\end{document}
-`;
-
-  const populateTemplate2 = (template, data) => {
-    const replaceNewlines = (text) => {
-      if (typeof text !== "string") {
-        console.error(
-          "Expected a string for newline replacement, but got:",
-          text
-        );
-        return "";
-      }
-      return text.replace(/\n/g, "\\\\");
-    };
-
-    // General placeholder replacement
-    for (let key in data) {
-      if (typeof data[key] !== "object") {
-        template = template.replace(
-          new RegExp(`\\{${key}\\}`, "g"),
-          replaceNewlines(data[key])
-        );
-      }
-    }
-
-    // Section-specific content generation
-    const generateSectionContent = (items, type) => {
-      return items
-        .map((item) => {
-          switch (type) {
-            case "experience":
-              return `\\subsection{${item.jobRole || ""}, ${
-                item.companyName || ""
-              } \\hfill ${item.startDate || ""} -- ${
-                item.endDate || ""
-              }}\n${replaceNewlines(item.summary || "")}`;
-            case "education":
-              return `\\subsection{${item.degree || ""}, ${
-                item.institution || ""
-              } \\hfill ${item.startDate || ""} -- ${
-                item.endDate || ""
-              }}\n${replaceNewlines(item.description || "")}`;
-            case "projects":
-              return `\\subsection{${item.name || ""} \\hfill ${
-                item.date || ""
-              }}\n${replaceNewlines(item.summary || "")}`;
-            default:
-              return "";
-          }
-        })
-        .join("\n\\vspace{10pt}\n");
-    };
-
-    template = template.replace(
-      "{experienceDetails}",
-      generateSectionContent(data.experience, "experience")
-    );
-    template = template.replace(
-      "{educationDetails}",
-      generateSectionContent(data.education, "education")
-    );
-    template = template.replace(
-      "{projectDetails}",
-      generateSectionContent(data.projects, "projects")
-    );
-
-    return template;
-  };
-
-  const resumeTemplate3 = `
-\\documentclass[11pt]{article}
-\\usepackage[T1]{fontenc}
-\\usepackage{geometry}
-\\geometry{
-  a4paper,
-  top=1.8cm,
-  bottom=1in,
-  left=2.5cm,
-  right=2.5cm
-}
-
-\\setcounter{secnumdepth}{0}
-\\pdfgentounicode=1
-\\usepackage[dvipsnames]{xcolor}
-\\colorlet{icnclr}{gray}
-\\usepackage{enumitem}
-\\setlist[itemize]{
-  noitemsep,
-  left=0pt
-}
-\\setlist[description]{itemsep=0pt}
-\\setlist[enumerate]{align=left, itemsep=0pt}
-
-\\usepackage{titlesec}
-\\titlespacing{\\section}{0pt}{*1}{*1}
-\\titlespacing{\\subsection}{0pt}{*0}{*0}
-\\titlespacing{\\subsubsection}{0pt}{*0}{*0}
-\\titleformat{\\section}{\\color{Sepia}\\large\\bfseries\\uppercase}{}{0pt}{}[\\ruleafter]
-\\titleformat{\\subsection}{\\large\\bfseries}{}{0pt}{}
-\\titleformat{\\subsubsection}{\\large\\bfseries}{}{0pt}{\\vspace{-1.5ex}}
-
-\\usepackage{xhfill}
-\\newcommand\\ruleafter[1]{#1~\\xrfill[.5ex]{1pt}[gray]}
-
-\\newif\\ifRemVS
-\\newcommand{\\rvs}{
-  \\ifRemVS
-  \\vspace{-1.5ex}
-  \\fi
-  \\global\\RemVSfalse
-}
-
-\\usepackage{fontawesome5}
-\\usepackage[bookmarks=false]{hyperref}
-\\hypersetup{
-  colorlinks=true,
-  urlcolor=Sepia,
-  pdftitle={My Resume},
-}
-
-\\usepackage[page]{totalcount}
-\\usepackage{fancyhdr}
-\\pagestyle{fancy}
-\\renewcommand{\\headrulewidth}{0pt}
-\\fancyhf{}
-\\cfoot{\\color{darkgray} My Resume -- Page \\thepage{} of \\totalpages}
-
-\\begin{document}
-
-\\begin{center}
-    {\\fontsize{36}{36}\\selectfont \\textnormal{Name}} \\par
-    \\bigskip
-
-    {\\color{icnclr}\\texttt{@}} \\href{mailto:{email}}{{email}}
-    \\hspace{0.5em} $|$ \\hspace{0.5em}
-    {\\color{icnclr}\\texttt{\\faPhone}} \\href{tel:{phone}}{{phone}}
-
-    \\hspace{0.5em} $|$ \\hspace{0.5em}
-    {\\color{icnclr}\\faLinkedinIn} \\href{{linkedin}}{{linkedin}}
-\\end{center}
-
-\\vspace{20pt}
-
-\\section{Education}
-\\subsection{Institution Name, Degree, Year}
-{educationDetails}
-
-\\vspace{20pt}
-
-\\section{Experience}
-\\subsection{Job Title, Company Name, Dates}
-{experienceDetails}
-
-\\vspace{20pt}
-
-\\section{Skills}
-\\begin{itemize}
-\\item {skills}
-\\end{itemize}
-
-\\vspace{20pt}
-
-\\section{Projects}
-\\subsection{Project Name, Date}
-{projectDetails}
-
-\\vspace{20pt}
-
-\\section{Certifications \\& Awards}
-\\begin{enumerate}[itemsep=0pt]
-\\item {achievements}
-\\end{enumerate}
-
-\\end{document}
-`;
-
-  const resumeTemplate4 = `
-\\documentclass{article}
-\\usepackage{charter}
-\\usepackage{tgadventor}
-\\usepackage[letterspace=100]{microtype}
-\\usepackage{soul}
-\\usepackage[margin=1.5in,bottom=1.2in]{geometry}
-\\setcounter{secnumdepth}{0}
-\\usepackage{titlesec}
-\\titlespacing{\\section}{0pt}{4ex}{1ex}
-\\titlespacing{\\subsection}{0pt}{*1}{*0.5}
-\\titlespacing{\\subsubsection}{0pt}{*0.5}{*1}
-\\titleformat*{\\section}{\\titlerule\\smallskip\\footnotesize\\sffamily\\lsstyle\\uppercase}
-\\titleformat*{\\subsection}{\\Large}
-\\titleformat*{\\subsubsection}{\\large\\itshape}
-\\usepackage{enumitem}
-\\setlist[itemize]{left=0pt..2em,itemsep=0pt}
-\\usepackage{hyperref}
-\\usepackage{fancyhdr}
-\\pagestyle{fancy}
-\\renewcommand{\\headrulewidth}{0pt}
-\\fancyhf{}
-\\cfoot{\\sffamily\\lsstyle\\footnotesize MILKY R\\'ESUM\\'E — PAGE \\thepage{} OF 2}
-
-\\begin{document}
-\\begin{center}
-{\\sffamily\\LARGE\\bfseries \\so{{name}}} \\par\\bigskip
-\\sffamily\\footnotesize \\href{{linkedin}}{\\texttt{{linkedin}}} \\\\ \\medskip
-\\href{tel:{phone}}{\\texttt{{phone}}} \\quad \\href{mailto:{email}}{\\texttt{{email}}} \\par\\bigskip
-\\end{center}
-
-\\vspace{20pt}
-
-\\section{Education}
-{educationDetails}
-
-\\vspace{20pt}
-
-\\section{Business Experience}
-{experienceDetails}
-
-\\vspace{20pt}
-
-\\section{Skills}
-{skillsDetails}
-
-\\vspace{20pt}
-
-\\section{Achievements}
-{achievementsDetails}
-
-\\vspace{20pt}
-
-\\section{Projects}
-{projectsDetails}
-
-\\end{document}
-`;
-
-  const populateTemplate4 = (template, data) => {
-    const replaceNewlines = (text) => {
-      if (typeof text !== "string") {
-        console.error(
-          "Expected a string for newline replacement, but got:",
-          text
-        );
-        return "";
-      }
-      return sanitizeLatex(text).replace(/\n/g, "\\\\");
-    };
-
-    const generateListContent = (items) => {
-      if (!Array.isArray(items) || items.length === 0) {
-        return ""; // Return an empty string if no items are provided
-      }
-      return (
-        `\\begin{itemize}\n` +
-        items.map((item) => `\\item ${replaceNewlines(item)}`).join("\n") +
-        `\n\\end{itemize}`
-      );
-    };
-
-    const generateSubsectionContent = (items, type) => {
-      if (!Array.isArray(items) || items.length === 0) {
-        console.warn(`No items found for ${type}: ${items}`);
-        return ""; // Return an empty string if no items are provided
-      }
-
-      return items
-        .map((item) => {
-          switch (type) {
-            case "experience":
-              return `\\subsection{${item.jobRole || ""}, ${
-                item.companyName || ""
-              } \\hfill ${item.startDate || ""} -- ${
-                item.endDate || ""
-              }}\n${replaceNewlines(item.summary || "")}`;
-            case "education":
-              return `\\subsection{${item.degree || ""}, ${
-                item.institution || ""
-              } \\hfill ${item.startDate || ""} -- ${
-                item.endDate || ""
-              }}\n${replaceNewlines(item.description || "")}`;
-            case "projects":
-              return `\\subsection{${item.name || ""} \\hfill ${
-                item.date || ""
-              }}\n${replaceNewlines(item.description || "")}`;
-            default:
-              return "";
-          }
-        })
-        .join("\n");
-    };
-
-    // Convert skills and achievements strings to arrays if they are comma-separated
-    const skillsArray = data.skills
-      ? data.skills.split(",").map((skill) => skill.trim())
-      : [];
-    const achievementsArray = data.achievements
-      ? data.achievements.split(",").map((achievement) => achievement.trim())
-      : [];
-    // General placeholder replacement
-    template = template.replace("{name}", replaceNewlines(data.name || ""));
-    template = template.replace(
-      "{linkedin}",
-      replaceNewlines(data.linkedin || "")
-    );
-    template = template.replace("{phone}", replaceNewlines(data.phone || ""));
-    template = template.replace("{email}", replaceNewlines(data.email || ""));
-
-    // Replace each section with its generated content
-    template = template.replace(
-      "{educationDetails}",
-      generateSubsectionContent(data.education, "education")
-    );
-    template = template.replace(
-      "{experienceDetails}",
-      generateSubsectionContent(data.experience, "experience")
-    );
-    template = template.replace(
-      "{skillsDetails}",
-      generateListContent(skillsArray)
-    );
-    template = template.replace(
-      "{achievementsDetails}",
-      generateListContent(achievementsArray)
-    );
-    template = template.replace(
-      "{projectsDetails}",
-      generateSubsectionContent(data.projects, "projects")
-    );
-
-    return template;
-  };
-
-  const populateTemplate = (template, data) => {
-    const replaceNewlines = (text) => {
-      if (typeof text !== "string") {
-        console.error(
-          "Expected a string for newline replacement, but got:",
-          text
-        );
-        return "";
-      }
-      return sanitizeLatex(text).replace(/\n/g, "\\\\");
-    };
-
+  // const fetchSchema = async () => {
+  //   try {
+  //     const response = await fetch(
+  //       "https://raw.githubusercontent.com/sinaatalay/rendercv/main/schema.json"
+  //     );
+  //     if (!response.ok) {
+  //       throw new Error(`Failed to fetch schema: ${response.status}`);
+  //     }
+  //     const schemaJson = await response.json();
+  //     setSchema(schemaJson);
+  //   } catch (error) {
+  //     console.error("Schema fetch error:", error.message);
+  //     toast.error(
+  //       `Failed to fetch validation schema: ${error.message}. Please check your internet connection and try again.`,
+  //       { position: "top-right" }
+  //     );
+  //   }
+  // };
   
 
-    // Replace {VAR{key}} placeholders first
-    template = template.replace(/\{VAR\{([^}]+)\}\}/g, (match, key) => {
-      if (data.hasOwnProperty(key)) {
-        return replaceNewlines(data[key]);
-      } else {
-        console.warn(`Key ${key} not found in data.`);
-        return "";
-      }
-    });
+  // const validateWithSchema = (resumeJson) => {
+  //   if (!schema) {
+  //     toast.error("Validation schema is not loaded. Try again later.", {
+  //       position: "top-right",
+  //     });
+  //     return false;
+  //   }
+  
+  //   const validate = ajv.compile(schema);
+  //   const isValid = validate(resumeJson);
+  
+  //   if (!isValid) {
+  //     console.error("Validation Errors:", validate.errors);
+  //     toast.error(
+  //       `Invalid input data. Errors: ${validate.errors
+  //         .map((err) => `${err.instancePath} ${err.message}`)
+  //         .join(", ")}`,
+  //       {
+  //         position: "top-right",
+  //       }
+  //     );
+  //     return false;
+  //   }
+  //   return true;
+  // };
+  
+  
+  const generateResumeJson = () => ({
+    basics: {
+      name: userData.basics?.name || "",
+      label: userData.basics?.label || "",
+      image: userData.basics?.image || "",
+      email: userData.basics?.email || "",
+      phone: userData.basics?.phone || "",
+      url: userData.basics?.url || "",
+      summary: userData.basics?.summary || "",
+      location: {
+        address: userData.basics?.location?.address || "",
+        postalCode: userData.basics?.location?.postalCode || "",
+        city: userData.basics?.location?.city || "",
+        countryCode: userData.basics?.location?.countryCode || "",
+        region: userData.basics?.location?.region || "",
+      },
+      profiles: (userData.basics?.profiles || []).map((profile) => ({
+        network: profile.network || "",
+        username: profile.username || "",
+        url: profile.url || "",
+      })),
+    },
+    work: (userData.work || []).map((job) => ({
+      name: job.name || "",
+      position: job.position || "",
+      url: job.url || "",
+      startDate: job.startDate || "",
+      endDate: job.endDate || "",
+      highlights: job.highlights || [],
+      location: job.location || "",
+    })),
+    education: (userData.education || []).map((edu) => ({
+      institution: edu.institution || "",
+      url: edu.url || "",
+      area: edu.area || "",
+      studyType: edu.studyType || "",
+      startDate: edu.startDate || "",
+      endDate: edu.endDate || "",
+      score: edu.score || "",
+      courses: edu.courses || [],
+    })),
+    languages: (userData.languages || []).map((lang) => ({
+      language: lang.language || "",
+      fluency: lang.fluency || "",
+    })),
+    publications: (userData.publications || []).map((pub) => ({
+      name: pub.name || "",
+      authors: pub.authors || [],
+      releaseDate: pub.releaseDate || "",
+      url: pub.url || "",
+      doi: pub.doi || "",
+    })),
+    projects: (userData.projects || []).map((proj) => ({
+      name: proj.name || "",
+      startDate: proj.startDate || "",
+      highlights: proj.highlights || [],
+      url: proj.url || "",
+    })),
+    skills: (userData.skills || []).map((skillCategory) => ({
+      name: skillCategory.name || "",
+      keywords: skillCategory.keywords || [],
+    })),
+  });
+  
+  
 
-    // Replace {key} placeholders
-    for (let key in data) {
-      if (typeof data[key] === "object" && !Array.isArray(data[key])) {
-        for (let subKey in data[key]) {
-          let re = new RegExp(`\\{${key}\\.${subKey}\\}`, "g");
-          template = template.replace(re, replaceNewlines(data[key][subKey]));
-        }
-      } else if (Array.isArray(data[key])) {
-        let re = new RegExp(`\\{${key}\\}`, "g");
-        let arrayContent = "";
-        data[key].forEach((item) => {
-          if (typeof item === "object") {
-            let itemContent = "";
-            if (key === "experience") {
-              itemContent = `
-  \\resumeSubheading
-    {${item.companyName || "N/A"}}{${item.startDate || "N/A"} -- ${
-                item.endDate || "N/A"
-              }}
-    {${item.jobRole || "N/A"}}{}
-    \\resumeItemListStart
-      \\resumeItem{${replaceNewlines(item.summary || "N/A")}}
-    \\resumeItemListEnd`;
-            } else if (key === "education") {
-              itemContent = `
-  \\resumeSubheading
-    {${item.institution || "N/A"}}{${item.startDate || "N/A"} -- ${
-                item.endDate || "N/A"
-              }}
-    {${item.degree || "N/A"}}{}
-    \\resumeItemListStart
-      \\resumeItem{${replaceNewlines(item.description || "N/A")}}
-    \\resumeItemListEnd`;
-            } else if (key === "projects") {
-              itemContent = `
-  \\resumeProjectHeading
-    {${item.name || "N/A"}}{${replaceNewlines(item.summary || "N/A")}}{${
-                item.date || "N/A"
-              }}`;
-            }
-            arrayContent += itemContent + "\n    ";
-          } else {
-            arrayContent += `\\resumeItem{${replaceNewlines(
-              item || "N/A"
-            )}}\n    `;
-          }
-        });
-        template = template.replace(re, arrayContent.trim());
-      } else {
-        let re = new RegExp(`\\{${key}\\}`, "g");
-        template = template.replace(re, replaceNewlines(data[key] || "N/A"));
-      }
-    }
-
-    return template;
-  };
-
-  const populateTemplate3 = (template, data) => {
-    const replaceNewlines = (text) => {
-      if (typeof text !== "string") {
-        console.error(
-          "Expected a string for newline replacement, but got:",
-          text
-        );
-        return "";
-      }
-      return sanitizeLatex(text).replace(/\n/g, "\\\\");
-    };
-
-    // Replacing general placeholders like {name}, {email}, etc.
-    for (let key in data) {
-      if (typeof data[key] !== "object") {
-        template = template.replace(
-          new RegExp(`\\{${key}\\}`, "g"),
-          replaceNewlines(data[key])
-        );
-      }
-    }
-
-    // Handling the experience, education, and project details
-    const generateSectionContent = (items, type) => {
-      return items
-        .map((item) => {
-          switch (type) {
-            case "experience":
-              return `\\subsection{${item.jobRole || ""}, ${
-                item.companyName || ""
-              } \\hfill ${item.startDate || ""} -- ${
-                item.endDate || ""
-              }}\n${replaceNewlines(item.summary || "")}`;
-            case "education":
-              return `\\subsection{${item.degree || ""}, ${
-                item.institution || ""
-              } \\hfill ${item.startDate || ""} -- ${
-                item.endDate || ""
-              }}\n${replaceNewlines(item.description || "")}`;
-            case "projects":
-              return `\\subsection{${item.name || ""} \\hfill ${
-                item.date || ""
-              }}\n${replaceNewlines(item.summary || "")}`;
-            default:
-              return "";
-          }
-        })
-        .join("\n\\vspace{10pt}\n");
-    };
-
-    template = template.replace(
-      "{experienceDetails}",
-      generateSectionContent(data.experience, "experience")
-    );
-    template = template.replace(
-      "{educationDetails}",
-      generateSectionContent(data.education, "education")
-    );
-    template = template.replace(
-      "{projectDetails}",
-      generateSectionContent(data.projects, "projects")
-    );
-
-    return template;
-  };
-
-  const [selectedResumeType, setSelectedResumeType] = useState(1);
-
-  // Function to handle resume type change
-  const handleResumeTypeChange = (type) => {
-    if (typeof type === "number" && [1, 2, 3, 4].includes(type)) {
-      setSelectedResumeType(type);
-      console.log(`Resume type set to: ${type}`);
-    } else {
-      console.error(`Invalid resume type: ${type}`);
-    }
-  };
-
-  // Function to handle the POST request and download the PDF
-  const sendPostRequest = async (populatedResume) => {
+  const sendPostRequest = async (resumeJson) => {
     try {
       setLoading(true);
+
+      const validThemes = ["classic", "moderncv", "sb2nov", "engineeringresumes"];
+      if (!validThemes.includes(selectedResumeType)) {
+        throw new Error(`Invalid resume type: ${selectedResumeType}`);
+      }
+
+      console.log("Resume JSON being sent:", JSON.stringify(resumeJson, null, 2));
+      
+//     const data = {"basics": {
+//     "name": "test",
+//     "label": "Senior Software Engineer",
+//     "image": "https://example.com/johndoe.jpg",
+//     "email": "john.doe@email.com",
+//     "phone": "tel:+90-541-999-99-99",
+//     "url": "https://johndoe.com",
+//     "summary": "Experienced software engineer with 8+ years of experience in full-stack development. Specialized in building scalable web applications and microservices architecture. Strong focus on clean code and best practices.",
+//     "location": {
+//       "address": "123 Main Street",
+//       "postalCode": "94122",
+//       "city": "San Francisco",
+//       "countryCode": "US",
+//       "region": "California"
+//     },
+//     "profiles": [
+//       {
+//         "network": "LinkedIn",
+//         "username": "johndoe",
+//         "url": "https://linkedin.com/in/johndoe"
+//       },
+//       {
+//         "network": "GitHub",
+//         "username": "johndoe",
+//         "url": "https://github.com/johndoe"
+//       }
+//     ]
+//   },
+//   "work": [
+//     {
+//       "name": "Tech Solutions Inc",
+//       "position": "Senior Software Engineer",
+//       "url": "https://techsolutions.com",
+//       "startDate": "2020-01",
+//       "endDate": "2023-12",
+//       "highlights": [
+//         "Architected and implemented microservices-based platform reducing deployment time by 60%",
+//         "Led a team of 5 developers in successful delivery of a major client project",
+//         "Implemented CI/CD pipeline reducing deployment errors by 45%"
+//       ]
+//     },
+//     {
+//       "name": "Apple",
+//       "position": "Software Engineer",
+//       "location": "Cupertino, CA",
+//       "startDate": "2005-06",
+//       "endDate": "2007-08",
+//       "highlights": [
+//         "Reduced time to render user buddy lists by 75% by implementing a prediction algorithm",
+//         "Integrated iChat with Spotlight Search",
+//         "Redesigned chat file format and implemented backward compatibility"
+//       ]
+//     }
+//   ],
+//   "education": [
+//     {
+//       "institution": "University of California, Berkeley",
+//       "url": "https://berkeley.edu",
+//       "area": "Computer Science",
+//       "studyType": "Bachelor",
+//       "startDate": "2012-09",
+//       "endDate": "2016-06",
+//       "score": "3.8/4.0",
+//       "courses": [
+//         "Advanced Algorithms",
+//         "Distributed Systems",
+//         "Machine Learning"
+//       ]
+//     }
+//   ],
+  
+//   "languages": [
+//     {
+//       "language": "English",
+//       "fluency": "Native speaker"
+//     },
+//     {
+//       "language": "Spanish",
+//       "fluency": "Professional working proficiency"
+//     }
+//   ],
+//     "publications": [
+//     {
+//       "name": "Machine Learning in Distributed Systems",
+//       "authors": [
+//         "**Jane Smith**",
+//         "John Doe",
+//         "Alice Johnson"
+//       ],
+//       "releaseDate": "2022-06",
+//       "url": "https://example.com/paper",
+//       "doi": "10.1234/example.2022"
+//     },   {
+//       "name": "Machine Learning in Distributed Systems",
+//       "authors": [
+//         "**Jane Smith**",
+//         "John Doe",
+//         "Alice Johnson"
+//       ],
+//       "releaseDate": "2022-06",
+//       "url": "https://example.com/paper",
+//       "doi": "10.1234/example.2022"
+//     }
+//   ],
+//   "projects": [
+//     {
+//   "name": "Project Name",
+//   "startDate": "2022-03",
+//   "highlights": ["Point 1", "Point 2"],
+//   "url": "github.com/link"
+// },
+//   {
+//   "name": "Project Name",
+//   "startDate": "2022-03",
+//   "highlights": ["Point 1", "Point 2"],
+//   "url": "github.com/link"
+// }
+//   ],
+  
+ 
+//   "skills": [
+//     {
+//       "name": "Languages",
+//       "keywords": ["C++", "C", "Java", "Objective-C", "C#", "SQL", "JavaScript"]
+//     },
+//     {
+//       "name": "Technologies",
+//       "keywords": [".NET", "Microsoft SQL Server", "XCode", "Interface Builder"]
+//     }
+//   ]
+// }
       const response = await fetch(
-        `${config.mlBaseUrl}/latex`,
+        `https://api.fintervue.com/render_resume?theme=${selectedResumeType}`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ latex_content: populatedResume }),
+          body: JSON.stringify(resumeJson),
         }
       );
 
       if (!response.ok) {
-        throw new Error(
-          `Network response was not ok, status: ${response.status}`
-        );
+        const errorDetails = await response.text();
+        console.error("Server Error Details:", errorDetails);
+        throw new Error(`Server Error: ${response.status}`);
       }
 
       const arrayBuffer = await response.arrayBuffer();
-      // Convert ArrayBuffer to Uint8Array
-      const uint8Array = new Uint8Array(arrayBuffer);
-
-      const blob = new Blob([uint8Array], { type: 'application/pdf' });
+      const blob = new Blob([arrayBuffer], { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
 
       const a = document.createElement("a");
@@ -841,498 +380,605 @@ GitHub: \\href{{github}}{\\texttt{{github}}}
       a.download = "generated_resume.pdf";
       document.body.appendChild(a);
       a.click();
-
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Error:", error.message);
+      toast.error(`Failed to generate resume: ${error.message}`, {
+        position: "top-right",
+      });
     } finally {
       setLoading(false);
     }
   };
 
-  // Function to handle form validation, template selection, and triggering the PDF download
-  const handlePrintJson = () => {
-    if (validateForm()) {
-      let populatedResume;
-      switch (selectedResumeType) {
-        case 1:
-          populatedResume = populateTemplate(resumeTemplate1, userData);
-          break;
-        case 2:
-          populatedResume = populateTemplate2(resumeTemplate2, userData);
-          break;
-        case 3:
-          populatedResume = populateTemplate3(resumeTemplate3, userData);
-          break;
-        case 4:
-          populatedResume = populateTemplate4(resumeTemplate4, userData);
-          break;
-        default:
-          populatedResume = populateTemplate4(resumeTemplate1, userData);
-      }
-
-      console.log(
-        "Populated Resume for Template",
-        selectedResumeType,
-        ":",
-        populatedResume
-      );
-
-      sendPostRequest(populatedResume);
+  const handleGenerateResume = () => {
+    // if (!schema) {
+    //   toast.error("Validation schema not loaded. Please try again later.", {
+    //     position: "top-right",
+    //   });
+    //   return;
+    // }
+  
+    if (1) {
+      const resumeJson = generateResumeJson();
+  
+      // if (!validateWithSchema(resumeJson)) {
+      //   toast.error("Resume JSON does not meet schema requirements.", {
+      //     position: "top-right",
+      //   });
+      //   return;
+      // }
+  
+      sendPostRequest(resumeJson);
     } else {
       toast.error("Please fill in all required fields.", {
         position: "top-right",
       });
     }
   };
+  
 
-  return (
-    <div className="flex flex-col gap-5">
-      {/* Name and Email */}
-      <ToastContainer />
+  const handleResumeTypeChange = (type) => {
+    const resumeTypeMap = {
+      1: "classic",
+      2: "moderncv",
+      3: "sb2nov",
+      4: "engineeringresumes",
+    };
+    setSelectedResumeType(resumeTypeMap[type]);
+  };
 
-      <div className="text-xl font-semibold text-gray-600">
-        Enter your information
+  // useEffect(() => {
+  //   fetchSchema();
+  // }, []);
+  
+return (
+  <div className="flex flex-col gap-5">
+    {/* Name and Email */}
+    <ToastContainer />
+    <div className="text-xl font-semibold text-gray-600">Enter your information</div>
+    <Tabs p={0}>
+      <TabList>
+        <Tab>Personal</Tab>
+        <Tab>Job</Tab>
+        <Tab>Projects</Tab>
+      </TabList>
+      <TabPanels>
+        {/* Personal Information */}
+        {/* Personal Information */}
+<TabPanel px={0}>
+  <div className="flex flex-row gap-5">
+    {/* Name */}
+    <div className="w-full">
+      <div className="text-xl font-semibold text-gray-600">Name <RequiredIndicator /></div>
+      <div className="mt-1">
+        <input
+          onChange={handleChange}
+          value={userData.basics?.name || ""}
+          name="name"
+          placeholder="Full Name"
+          className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+        />
       </div>
-      <Tabs p={0}>
-        <TabList>
-          <Tab>Personal</Tab>
-          <Tab>Job</Tab>
-          <Tab>Projects</Tab>
-        </TabList>
-        <TabPanels>
-          <TabPanel px={0}>
-            <div className="flex flex-row gap-5">
-              <div className="w-full">
-                <div className="text-xl font-semibold text-gray-600">
-                  Name
-                  <RequiredIndicator />
-                </div>
-                <div className="mt-1">
-                  <input
-                    onChange={handleChange}
-                    value={userData["name"] || ""}
-                    name="name"
-                    placeholder="Full Name"
-                    className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-                  />
-                </div>
-              </div>
+    </div>
+    {/* Label */}
+    <div className="w-full">
+      <div className="text-xl font-semibold text-gray-600">Position <RequiredIndicator /></div>
+      <div className="mt-1">
+        <input
+          onChange={handleChange}
+          value={userData.basics?.label || ""}
+          name="label"
+          placeholder="e.g., Senior Software Engineer"
+          className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+        />
+      </div>
+    </div>
+  </div>
 
-              <div className="w-full">
-                <div className="text-xl font-semibold text-gray-600">
-                  Email
-                  <RequiredIndicator />
-                </div>
-                <div className="mt-1">
-                  <input
-                    onChange={handleChange}
-                    value={userData["email"] || ""}
-                    name="email"
-                    type="email"
-                    placeholder="Email Address"
-                    className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-                  />
-                </div>
-              </div>
-            </div>
-            {/* Phone Number and LinkedIn URL */}
-            <div className="flex flex-row gap-5 mt-5">
-              <div className="w-full">
-                <div className="text-xl font-semibold text-gray-600">
-                  Phone Number*
-                </div>
-                <div className="mt-1">
-                  <input
-                    onChange={handleChange}
-                    value={userData["phone"] || ""}
-                    name="phone"
-                    type="tel"
-                    placeholder="Phone Number"
-                    className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-                  />
-                </div>
-              </div>
-
-              <div className="w-full">
-                <div className="text-xl font-semibold text-gray-600">
-                  LinkedIn URL
-                </div>
-                <div className="mt-1">
-                  <input
-                    onChange={handleChange}
-                    value={userData["linkedin"] || ""}
-                    name="linkedin"
-                    type="url"
-                    placeholder="LinkedIn Profile URL"
-                    className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-                  />
-                </div>
-              </div>
-            </div>
-          </TabPanel>
-          <TabPanel px={0}>
-            {/* Job Role */}
-            <div className="w-full">
-              <div className="text-xl font-semibold text-gray-600">
-                Job Role
-                <RequiredIndicator />
-              </div>
-              <div className="mt-1">
-                <select
-                  onChange={handleChange}
-                  value={userData["jobRole"] || ""}
-                  name="jobRole"
-                  className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-                >
-                  <option value="" disabled>
-                    Select Job Role
-                  </option>
-                  <option value="Developer">Developer</option>
-                  <option value="Designer">Designer</option>
-                  <option value="Manager">Manager</option>
-                  <option value="Other">Other</option>
-                </select>
-              </div>
-            </div>
-            {/* Professional Summary */}
-            <div className="w-full">
-              <div className="text-xl font-semibold text-gray-600">
-                Professional Summary
-              </div>
-              <div className="mt-1">
-                <textarea
-                  onChange={handleChange}
-                  value={userData["summary"] || ""}
-                  name="summary"
-                  placeholder="Brief summary of your experience"
-                  className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-                  rows="4"
-                />
-              </div>
-            </div>
-
-            {/* Experience and Education */}
-            <div className="flex flex-col md:flex-row gap-5">
-              {/* Experience */}
-              <div className="w-full mt-4">
-                <div className="text-xl font-semibold text-gray-600">
-                  Experience
-                  <RequiredIndicator />
-                </div>
-                {(userData.experience || []).map((exp, index) => (
-                  <div
-                    key={index}
-                    className="mt-3 p-4 border rounded-md bg-white border-gray-300"
-                  >
-                    <input
-                      onChange={(e) =>
-                        handleChange(e, index, "experience", "companyName")
-                      }
-                      value={exp.companyName || ""}
-                      placeholder="Company Name"
-                      className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-                    />
-                    <input
-                      onChange={(e) =>
-                        handleChange(e, index, "experience", "jobRole")
-                      }
-                      value={exp.jobRole || ""}
-                      placeholder="Job Role"
-                      className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-                    />
-                    <div className="flex flex-col md:flex-row md:gap-3">
-                      <input
-                        onChange={(e) =>
-                          handleChange(e, index, "experience", "startDate")
-                        }
-                        value={exp.startDate || ""}
-                        type="date"
-                        placeholder="Start Date"
-                        className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-                      />
-                      <input
-                        onChange={(e) =>
-                          handleChange(e, index, "experience", "endDate")
-                        }
-                        value={exp.endDate || ""}
-                        type="date"
-                        placeholder="End Date"
-                        className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-                      />
-                    </div>
-                    <textarea
-                      onChange={(e) =>
-                        handleChange(e, index, "experience", "summary")
-                      }
-                      value={exp.summary || ""}
-                      placeholder="Experience Summary"
-                      className="w-full p-2 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-                      rows="3"
-                    />
-                  </div>
-                ))}
-                <div className="flex justify-center mt-3">
-                  <button
-                    onClick={addExperience}
-                    className="transition duration-300"
-                  >
-                    <ShimmerButton className="shadow-2xl">
-                      <span className="whitespace-pre-wrap text-center text-xl font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-sm">
-                        Add experience
-                      </span>
-                    </ShimmerButton>
-                  </button>
-                </div>
-              </div>
-
-              {/* Education */}
-              <div className="w-full mt-4">
-                <div className="text-xl font-semibold text-gray-600">
-                  Education
-                  <RequiredIndicator />
-                </div>
-                {(userData.education || []).map((edu, index) => (
-                  <div
-                    key={index}
-                    className="mt-3 p-4 border rounded-md bg-white border-gray-300"
-                  >
-                    <input
-                      onChange={(e) =>
-                        handleChange(e, index, "education", "institution")
-                      }
-                      value={edu.institution || ""}
-                      placeholder="Institution Name"
-                      className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-                    />
-                    <input
-                      onChange={(e) =>
-                        handleChange(e, index, "education", "degree")
-                      }
-                      value={edu.degree || ""}
-                      placeholder="Degree"
-                      className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-                    />
-                    <div className="flex flex-col md:flex-row md:gap-3">
-                      <input
-                        onChange={(e) =>
-                          handleChange(e, index, "education", "startDate")
-                        }
-                        value={edu.startDate || ""}
-                        type="date"
-                        placeholder="Start Date"
-                        className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-                      />
-                      <input
-                        onChange={(e) =>
-                          handleChange(e, index, "education", "endDate")
-                        }
-                        value={edu.endDate || ""}
-                        type="date"
-                        placeholder="End Date"
-                        className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-                      />
-                    </div>
-                    <textarea
-                      onChange={(e) =>
-                        handleChange(e, index, "education", "description")
-                      }
-                      value={edu.description || ""}
-                      placeholder="Description"
-                      className="w-full p-2 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-                      rows="3"
-                    />
-                  </div>
-                ))}
-
-                <div className="flex justify-center mt-3">
-                  <button
-                    onClick={addEducation}
-                    className="transition duration-300"
-                  >
-                    <ShimmerButton className="shadow-2xl">
-                      <span className="whitespace-pre-wrap text-center text-xl font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-sm">
-                        Add education
-                      </span>
-                    </ShimmerButton>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </TabPanel>
-          <TabPanel px={0}>
-            {/* Projects */}
-            <div className="flex flex-col md:flex-row gap-5">
-              <div className="w-full mt-4">
-                <div className="text-xl font-semibold text-gray-600">
-                  Projects
-                  <RequiredIndicator />
-                </div>
-                {(userData.projects || []).map((project, index) => (
-                  <div
-                    key={index}
-                    className="mt-3 p-4 border rounded-md bg-white border-gray-300"
-                  >
-                    <input
-                      onChange={(e) =>
-                        handleChange(e, index, "projects", "name")
-                      }
-                      value={project.name || ""}
-                      placeholder="Project Name"
-                      className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-                    />
-                    <textarea
-                      onChange={(e) =>
-                        handleChange(e, index, "projects", "summary")
-                      }
-                      value={project.summary || ""}
-                      placeholder="Project Summary"
-                      className="w-full p-2  border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-                      rows="3"
-                    />
-                    <input
-                      onChange={(e) =>
-                        handleChange(e, index, "projects", "date")
-                      }
-                      value={project.date || ""}
-                      type="date"
-                      placeholder="Date"
-                      className="w-full p-2 mb-3 mt-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-                    />
-                  </div>
-                ))}
-                <div className="flex justify-center mt-3">
-                  <button
-                    onClick={addProject}
-                    className="transition duration-300"
-                  >
-                    <ShimmerButton className="shadow-2xl">
-                      <span className="whitespace-pre-wrap text-center text-xl font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-sm">
-                        Add projects
-                      </span>
-                    </ShimmerButton>
-                  </button>
-                </div>
-              </div>
-
-              {/* Skills */}
-              <div className="w-full mt-4">
-                <div className="w-full">
-                  <div className="text-xl font-semibold text-gray-600">
-                    Skills
-                    <RequiredIndicator />
-                  </div>
-                  <div className="flex flex-row gap-5">
-                    {((userData.skills || "").split(",") || []).map(
-                      (skill, index) => (
-                        <div key={index} className="mt-2">
-                          <input
-                            onChange={(e) => handleSkillChange(e, index)}
-                            value={skill || ""}
-                            placeholder="Skill"
-                            className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-                          />
-                        </div>
-                      )
-                    )}
-
-                    <div className="flex justify-center ">
-                      <button
-                        onClick={addSkill}
-                        className="transition duration-300"
-                      >
-                        <ShimmerButton className="shadow-2xl ">
-                          <span className="whitespace-pre-wrap text-center text-xl font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-sm">
-                            Add Skills
-                          </span>
-                        </ShimmerButton>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Achievements */}
-                <div className="w-full mt-4">
-                  <div className="text-xl font-semibold text-gray-600">
-                    Achievements
-                  </div>
-                  <div className="mt-1">
-                    <textarea
-                      onChange={handleChange}
-                      value={userData["achievements"] || ""}
-                      name="achievements"
-                      placeholder="Achievements (comma-separated)"
-                      className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-                      rows="7"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </TabPanel>
-        </TabPanels>
-      </Tabs>
-
-      <div className="z-10 mb-4 flex flex-col md:flex-row gap-4 min-h-[5rem] md:items-center justify-center mt-5">
-        <div className="w-full">
-          <div className="text-xl font-semibold text-gray-600">
-            Choose Resume Type
-          </div>
-          <div className="mt-1 flex space-x-2">
-            <button
-              onClick={() => handleResumeTypeChange(1)}
-              className={`px-4 py-2 border rounded-md ${selectedResumeType === 1
-                ? "bg-blue-500 text-white"
-                : "bg-white text-gray-800"
-                } border-gray-300 focus:outline-none`}
-            >
-              1
-            </button>
-            <button
-              onClick={() => handleResumeTypeChange(2)}
-              className={`px-4 py-2 border rounded-md ${selectedResumeType === 2
-                ? "bg-blue-500 text-white"
-                : "bg-white text-gray-800"
-                } border-gray-300 focus:outline-none`}
-            >
-              2
-            </button>
-            <button
-              onClick={() => handleResumeTypeChange(3)}
-              className={`px-4 py-2 border rounded-md ${selectedResumeType === 3
-                ? "bg-blue-500 text-white"
-                : "bg-white text-gray-800"
-                } border-gray-300 focus:outline-none`}
-            >
-              3
-            </button>
-            <button
-              onClick={() => handleResumeTypeChange(4)}
-              className={`px-4 py-2 border rounded-md ${selectedResumeType === 4
-                ? "bg-blue-500 text-white"
-                : "bg-white text-gray-800"
-                } border-gray-300 focus:outline-none`}
-            >
-              4
-            </button>
-          </div>
+  <div className="flex flex-row gap-5 mt-5">
+    {/* Email */}
+    <div className="w-full">
+      <div className="text-xl font-semibold text-gray-600">Email <RequiredIndicator /></div>
+      <div className="mt-1">
+        <input
+          onChange={handleChange}
+          value={userData.basics?.email || ""}
+          name="email"
+          type="email"
+          placeholder="e.g., john.doe@email.com"
+          className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+        />
+      </div>
+    </div>
+    {/* Phone */}
+    <div className="w-full">
+      <div className="text-xl font-semibold text-gray-600">Phone Number <RequiredIndicator /></div>
+      <div className="mt-1">
+        <input
+          onChange={handleChange}
+          value={userData.basics?.phone || ""}
+          name="phone"
+          type="tel"
+          placeholder="+90-541-999-99-99"
+          className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+        />
+      </div>
+    </div>
+  </div>
+  <div className="flex flex-row gap-5 mt-5">
+    {/* LinkedIn */}
+    <div className="w-full">
+        <div className="text-xl font-semibold text-gray-600">LinkedIn URL</div>
+        <div className="mt-1">
+          <input
+            onChange={(e) => handleChange(e, 0, "basics.profiles", "url")}
+            value={
+              userData.basics?.profiles?.[0]?.url || "https://linkedin.com/in/"
+            }
+            name="linkedin"
+            type="url"
+            placeholder="LinkedIn Profile URL"
+            className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+          />
         </div>
-        <ShimmerButton className="shadow-2xl w-[220px]" onClick={handlePrintJson}>
-          <span className="whitespace-pre-wrap text-center text-xl font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-xl">
-            Get my resume
+      </div>
+
+      {/* GitHub */}
+      <div className="w-full">
+        <div className="text-xl font-semibold text-gray-600">GitHub URL</div>
+        <div className="mt-1">
+          <input
+            onChange={(e) => handleChange(e, 1, "basics.profiles", "url")}
+            value={
+              userData.basics?.profiles?.[1]?.url || "https://github.com/"
+            }
+            name="github"
+            type="url"
+            placeholder="GitHub Profile URL"
+            className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+          />
+        </div>
+      </div>
+    </div>
+
+  <div className="flex flex-row gap-5 mt-5">
+    {/* URL */}
+    <div className="w-full">
+      <div className="text-xl font-semibold text-gray-600">URL</div>
+      <div className="mt-1">
+        <input
+          onChange={handleChange}
+          value={userData.basics?.url || ""}
+          name="url"
+          type="url"
+          placeholder="e.g., https://johndoe.com"
+          className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+        />
+      </div>
+    </div>
+  </div>
+
+  
+
+  <div className="flex flex-col mt-5">
+    {/* Summary */}
+    <div className="text-xl font-semibold text-gray-600">Summary <RequiredIndicator /></div>
+    <div className="mt-1">
+      <textarea
+        onChange={handleChange}
+        value={userData.basics?.summary || ""}
+        name="summary"
+        placeholder="Brief professional summary"
+        className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+        rows="4"
+      />
+    </div>
+  </div>
+
+  <div className="mt-5">
+    {/* Location */}
+    <div className="text-xl font-semibold text-gray-600">Location <RequiredIndicator /></div>
+    <div className="flex flex-row gap-5 mt-1">
+      <div className="w-full">
+        <input
+          onChange={(e) => handleChange(e, null, "basics", "location.address")}
+          value={userData.basics?.location?.address || ""}
+          name="address"
+          placeholder="Address"
+          className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+        />
+      </div>
+      <div className="w-full">
+        <input
+          onChange={(e) => handleChange(e, null, "basics", "location.city")}
+          value={userData.basics?.location?.city || ""}
+          name="city"
+          placeholder="City"
+          className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+        />
+      </div>
+    </div>
+    <div className="flex flex-row gap-5 mt-2">
+      <div className="w-full">
+        <input
+          onChange={(e) => handleChange(e, null, "basics", "location.postalCode")}
+          value={userData.basics?.location?.postalCode || ""}
+          name="postalCode"
+          placeholder="Postal Code"
+          className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+        />
+      </div>
+      <div className="w-full">
+        <input
+          onChange={(e) => handleChange(e, null, "basics", "location.region")}
+          value={userData.basics?.location?.region || ""}
+          name="region"
+          placeholder="State/Region"
+          className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+        />
+      </div>
+    </div>
+    <div className="flex flex-row gap-5 mt-2">
+      <div className="w-full">
+        <input
+          onChange={(e) => handleChange(e, null, "basics", "location.countryCode")}
+          value={userData.basics?.location?.countryCode || ""}
+          name="countryCode"
+          placeholder="Country Code (e.g., US)"
+          className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+        />
+      </div>
+    </div>
+  </div>
+</TabPanel>
+
+
+        {/* Job Information */}
+        <TabPanel px={0}>
+  <div className="flex flex-col md:flex-row gap-5 mt-5">
+    {/* Work Experience */}
+    <div className="w-full">
+      <div className="text-xl font-semibold text-gray-600">Work Experience<RequiredIndicator /></div>
+      {(userData.work || []).map((job, index) => (
+        <div key={index} className="mt-3 p-4 border rounded-md bg-white border-gray-300">
+          <input
+            onChange={(e) => handleChange(e, index, "work", "name")}
+            value={job.name || ""}
+            placeholder="Company Name"
+            className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+          />
+          <input
+            onChange={(e) => handleChange(e, index, "work", "position")}
+            value={job.position || ""}
+            placeholder="Job Role"
+            className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+          />
+          <input
+            onChange={(e) => handleChange(e, index, "work", "url")}
+            value={job.url || ""}
+            placeholder="Company URL"
+            className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+          />
+          <input
+            onChange={(e) => handleChange(e, index, "work", "location")}
+            value={job.location || ""}
+            placeholder="Location"
+            className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+          />
+          <div className="flex flex-col md:flex-row md:gap-3">
+            <input
+              onChange={(e) => handleChange(e, index, "work", "startDate")}
+              value={job.startDate || ""}
+              type="date"
+              placeholder="Start Date"
+              className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+            />
+            <input
+              onChange={(e) => handleChange(e, index, "work", "endDate")}
+              value={job.endDate || ""}
+              type="date"
+              placeholder="End Date"
+              className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+            />
+          </div>
+          <textarea
+            onChange={(e) => handleChange(e, index, "work", "highlights")}
+            value={(job.highlights || []).join("\n")}
+            placeholder="Key Highlights (one per line)"
+            className="w-full p-2 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+            rows="3"
+          />
+        </div>
+      ))}
+      <div className="flex justify-center mt-3">
+        <button onClick={() => addSectionItem("work")} className="transition duration-300">
+          <ShimmerButton className="shadow-2xl">
+            <span className="whitespace-pre-wrap text-center text-xl font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-sm">
+              Add Job
+            </span>
+          </ShimmerButton>
+        </button>
+      </div>
+    </div>
+
+    {/* Education */}
+    <div className="w-full">
+      <div className="text-xl font-semibold text-gray-600">Education <RequiredIndicator /></div>
+      {(userData.education || []).map((edu, index) => (
+        <div key={index} className="mt-3 p-4 border rounded-md bg-white border-gray-300">
+          <input
+            onChange={(e) => handleChange(e, index, "education", "institution")}
+            value={edu.institution || ""}
+            placeholder="Institution Name"
+            className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+          />
+          <input
+            onChange={(e) => handleChange(e, index, "education", "url")}
+            value={edu.url || ""}
+            placeholder="Institution URL"
+            className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+          />
+          <input
+            onChange={(e) => handleChange(e, index, "education", "area")}
+            value={edu.area || ""}
+            placeholder="Field of Study"
+            className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+          />
+          <input
+            onChange={(e) => handleChange(e, index, "education", "studyType")}
+            value={edu.studyType || ""}
+            placeholder="Degree Type"
+            className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+          />
+          <div className="flex flex-col md:flex-row md:gap-3">
+            <input
+              onChange={(e) => handleChange(e, index, "education", "startDate")}
+              value={edu.startDate || ""}
+              type="date"
+              placeholder="Start Date"
+              className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+            />
+            <input
+              onChange={(e) => handleChange(e, index, "education", "endDate")}
+              value={edu.endDate || ""}
+              type="date"
+              placeholder="End Date"
+              className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+            />
+          </div>
+          <input
+            onChange={(e) => handleChange(e, index, "education", "score")}
+            value={edu.score || ""}
+            placeholder="Score"
+            className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+          />
+          <textarea
+            onChange={(e) => handleChange(e, index, "education", "courses")}
+            value={(edu.courses || []).join(", ")}
+            placeholder="Courses (comma-separated)"
+            className="w-full p-2 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+            rows="3"
+          />
+        </div>
+      ))}
+      <div className="flex justify-center mt-3">
+        <button onClick={() => addSectionItem("education")} className="transition duration-300">
+          <ShimmerButton className="shadow-2xl">
+            <span className="whitespace-pre-wrap text-center text-xl font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-sm">
+              Add Education
+            </span>
+          </ShimmerButton>
+        </button>
+      </div>
+    </div>
+  </div>
+</TabPanel>
+
+
+<TabPanel px={0}>
+  {/* Projects */}
+  <div className="w-full mt-4">
+    <div className="text-xl font-semibold text-gray-600">Projects <RequiredIndicator /></div>
+    {(userData.projects || []).map((project, index) => (
+      <div key={index} className="mt-3 p-4 border rounded-md bg-white border-gray-300">
+        <input
+          onChange={(e) => handleChange(e, index, "projects", "name")}
+          value={project.name || ""}
+          placeholder="Project Name"
+          className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+        />
+        <input
+          onChange={(e) => handleChange(e, index, "projects", "startDate")}
+          value={project.startDate || ""}
+          type="date"
+          placeholder="Start Date"
+          className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+        />
+        <textarea
+          onChange={(e) => handleChange(e, index, "projects", "highlights")}
+          value={(project.highlights || []).join("\n")}
+          placeholder="Highlights (one per line)"
+          className="w-full p-2 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+          rows="3"
+        />
+        <input
+          onChange={(e) => handleChange(e, index, "projects", "url")}
+          value={project.url || ""}
+          placeholder="Project URL"
+          className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+        />
+      </div>
+    ))}
+    <div className="flex justify-center mt-3">
+      <button onClick={() => addSectionItem("projects")} className="transition duration-300">
+        <ShimmerButton className="shadow-2xl">
+          <span className="whitespace-pre-wrap text-center text-xl font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-sm">
+            Add Project
           </span>
         </ShimmerButton>
-      </div>
-        {/* Conditionally render the spinner below the button */}
-        {loading && (
-        <div className="mt-4">
-          <Spinner size="lg" color="teal.500" />
-        </div>
-      )}
-
+      </button>
     </div>
-  );
+  </div>
+
+  {/* Skills */}
+  <div className="w-full mt-4">
+    <div className="text-xl font-semibold text-gray-600">Skills<RequiredIndicator /></div>
+    {(userData.skills || []).map((skillCategory, index) => (
+      <div key={index} className="mt-3 p-4 border rounded-md bg-white border-gray-300">
+        <input
+          onChange={(e) => handleChange(e, index, "skills", "name")}
+          value={skillCategory.name || ""}
+          placeholder="Skill Category (e.g., Languages, Technologies)"
+          className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+        />
+        <textarea
+          onChange={(e) => handleChange(e, index, "skills", "keywords")}
+          value={(skillCategory.keywords || []).join(", ")}
+          placeholder="Skills (comma-separated)"
+          className="w-full p-2 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+          rows="3"
+        />
+      </div>
+    ))}
+    <div className="flex justify-center mt-3">
+      <button onClick={() => addSectionItem("skills")} className="transition duration-300">
+        <ShimmerButton className="shadow-2xl">
+          <span className="whitespace-pre-wrap text-center text-xl font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-sm">
+            Add Skill Category
+          </span>
+        </ShimmerButton>
+      </button>
+    </div>
+  </div>
+
+  {/* Languages */}
+  <div className="w-full mt-4">
+    <div className="text-xl font-semibold text-gray-600">Languages<RequiredIndicator /></div>
+    {(userData.languages || []).map((language, index) => (
+      <div key={index} className="mt-3 p-4 border rounded-md bg-white border-gray-300">
+        <input
+          onChange={(e) => handleChange(e, index, "languages", "language")}
+          value={language.language || ""}
+          placeholder="Language"
+          className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+        />
+        <input
+          onChange={(e) => handleChange(e, index, "languages", "fluency")}
+          value={language.fluency || ""}
+          placeholder="Fluency (e.g., Native Speaker, Professional Proficiency)"
+          className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+        />
+      </div>
+    ))}
+    <div className="flex justify-center mt-3">
+      <button onClick={() => addSectionItem("languages")} className="transition duration-300">
+        <ShimmerButton className="shadow-2xl">
+          <span className="whitespace-pre-wrap text-center text-xl font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-sm">
+            Add Language
+          </span>
+        </ShimmerButton>
+      </button>
+    </div>
+  </div>
+
+  {/* Publications */}
+  <div className="w-full mt-4">
+    <div className="text-xl font-semibold text-gray-600">Publications</div>
+    {(userData.publications || []).map((publication, index) => (
+      <div key={index} className="mt-3 p-4 border rounded-md bg-white border-gray-300">
+        <input
+          onChange={(e) => handleChange(e, index, "publications", "name")}
+          value={publication.name || ""}
+          placeholder="Publication Title"
+          className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+        />
+        <textarea
+          onChange={(e) => handleChange(e, index, "publications", "authors")}
+          value={(publication.authors || []).join(", ")}
+          placeholder="Authors (comma-separated)"
+          className="w-full p-2 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+          rows="3"
+        />
+        <input
+          onChange={(e) => handleChange(e, index, "publications", "releaseDate")}
+          value={publication.releaseDate || ""}
+          type="date"
+          placeholder="Release Date"
+          className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+        />
+        <input
+          onChange={(e) => handleChange(e, index, "publications", "url")}
+          value={publication.url || ""}
+          placeholder="Publication URL"
+          className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+        />
+        <input
+          onChange={(e) => handleChange(e, index, "publications", "doi")}
+          value={publication.doi || ""}
+          placeholder="DOI"
+          className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+        />
+      </div>
+    ))}
+    <div className="flex justify-center mt-3">
+      <button onClick={() => addSectionItem("publications")} className="transition duration-300">
+        <ShimmerButton className="shadow-2xl">
+          <span className="whitespace-pre-wrap text-center text-xl font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-sm">
+            Add Publication
+          </span>
+        </ShimmerButton>
+      </button>
+    </div>
+  </div>
+</TabPanel>
+
+      </TabPanels>
+    </Tabs>
+
+    <div className="z-10 mb-4 flex flex-col md:flex-row gap-4 min-h-[5rem] md:items-center justify-center mt-5">
+  <div className="w-full">
+    <div className="text-xl font-semibold text-gray-600">Choose Resume Type <RequiredIndicator /></div>
+    <div className="mt-1 flex space-x-2">
+      {[1, 2, 3, 4].map((type) => (
+        <button
+          key={type}
+          onClick={() => handleResumeTypeChange(type)}
+          className={`px-4 py-2 border rounded-md ${
+            selectedResumeType === ["classic", "moderncv", "sb2nov", "engineeringresumes"][type - 1]
+              ? "bg-blue-500 text-white"
+              : "bg-white text-gray-800"
+          } border-gray-300 focus:outline-none`}
+        >
+          {type}
+        </button>
+      ))}
+    </div>
+  </div>
+  <ShimmerButton
+  className="shadow-2xl w-[220px]"
+  onClick={handleGenerateResume}
+  disabled={loading}
+>
+  {loading ? (
+    <Spinner size="sm" color="white" />
+  ) : (
+    <span className="whitespace-pre-wrap text-center text-xl font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-xl">
+      Get my resume
+    </span>
+  )}
+</ShimmerButton>
+
+</div>
+
+    {loading && (
+      <div className="mt-4">
+        <Spinner size="lg" color="teal.500" />
+      </div>
+    )}
+  </div>
+);
 };
 
 export default Personalinfo;
