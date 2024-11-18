@@ -18,6 +18,9 @@ import AIAnalysisPage from './pages/AiAnalysis.jsx';
 import ProtectedRoute from './ProtectedRoute';
 import ForgotPassword from './pages/ForgotPassword';
 
+import ResumeBuilderPage from './products/resumeBuilder';
+
+
 
 const router = createBrowserRouter([
   {
@@ -95,9 +98,12 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
+
   {
     path: "/product/resumeBuilder",
-    element: <Lazy.ResumeBuilderPage />,
+    element: (
+        <ResumeBuilderPage />
+    ),
   },
   {
     path: "/product/resumeAnalysis",

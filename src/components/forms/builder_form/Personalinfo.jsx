@@ -4,8 +4,17 @@ import ShimmerButton from "../../ui/shimmer-button";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import RequiredIndicator from "../../ui/RequiredIndicator";
-import { Tab, TabList, TabPanel, TabPanels, Tabs, Spinner } from "@chakra-ui/react";
+import { Tab, TabList, TabPanel, TabPanels, Tabs, Spinner, Input, Tooltip } from "@chakra-ui/react";
 import Ajv from "ajv";
+import { motion, AnimatePresence } from "framer-motion";
+import { FiPlus, FiTrash2 } from "react-icons/fi";
+
+const RESUME_TYPES = [
+  { id: 1, name: "Classic", value: "classic", description: "Traditional resume layout" },
+  { id: 2, name: "Modern CV", value: "moderncv", description: "Contemporary design with modern elements" },
+  { id: 3, name: "SB2nov", value: "sb2nov", description: "Clean and minimal style" },
+  { id: 4, name: "Engineering", value: "engineeringresumes", description: "Optimized for technical roles" }
+];
 
 const Personalinfo = () => {
   const { userData, setUserData } = useContext(StepperContext);
@@ -31,34 +40,108 @@ const Personalinfo = () => {
   
  
   const handleChange = (e, index, section, field) => {
-    const { value } = e.target;
-
-    if (section) {
-      const updatedSection = [...(userData[section] || [])];
-      if (index !== undefined) {
-        if (field === "startDate" || field === "endDate") {
-          const item = updatedSection[index];
-          const startDate = field === "startDate" ? value : item.startDate;
-          const endDate = field === "endDate" ? value : item.endDate;
-
-          if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
-            toast.error("Start date cannot be after end date", {
-              position: "top-right",
-            });
-            return;
-          }
+    const { name, value } = e.target;
+    
+    setUserData(prev => {
+      const newData = { ...prev };
+      
+      // Handle nested fields with dot notation
+      if (name && !section) {
+        const keys = name.split('.');
+        let current = newData;
+        for (let i = 0; i < keys.length - 1; i++) {
+          if (!current[keys[i]]) current[keys[i]] = {};
+          current = current[keys[i]];
         }
-        updatedSection[index] = { ...updatedSection[index], [field]: value };
+        current[keys[keys.length - 1]] = value;
       }
-      setUserData({ ...userData, [section]: updatedSection });
-    } else {
-      setUserData({ ...userData, [e.target.name]: value });
-    }
+      
+      // Handle array fields
+      if (section) {
+        if (!newData[section]) newData[section] = [];
+        if (!newData[section][index]) newData[section][index] = {};
+        
+        // Handle different array types based on schema
+        switch(field) {
+          case 'authors':
+          case 'keywords':
+          case 'courses':
+            newData[section][index][field] = value.split(',')
+              .map(item => item.trim())
+              .filter(Boolean);
+            break;
+          case 'highlights':
+            newData[section][index][field] = value.split('\n')
+              .map(item => item.trim())
+              .filter(Boolean);
+            break;
+          default:
+            newData[section][index][field] = value;
+        }
+      }
+      
+      return newData;
+    });
+  };
+
+  const handleProfileChange = (index, field, value) => {
+    setUserData(prev => {
+      const newData = { ...prev };
+      if (!newData.basics) newData.basics = {};
+      if (!newData.basics.profiles) newData.basics.profiles = [];
+      newData.basics.profiles[index] = {
+        ...newData.basics.profiles[index],
+        [field]: value
+      };
+      return newData;
+    });
+  };
+
+  const addProfile = () => {
+    setUserData(prev => ({
+      ...prev,
+      basics: {
+        ...prev.basics,
+        profiles: [...(prev.basics?.profiles || []), { network: '', username: '', url: '' }]
+      }
+    }));
+  };
+
+  const removeProfile = (index) => {
+    setUserData(prev => ({
+      ...prev,
+      basics: {
+        ...prev.basics,
+        profiles: prev.basics.profiles.filter((_, i) => i !== index)
+      }
+    }));
   };
 
   const addSectionItem = (section) => {
-    const updatedSection = [...(userData[section] || []), {}];
-    setUserData({ ...userData, [section]: updatedSection });
+    setUserData(prev => {
+      const newData = { ...prev };
+      if (!newData[section]) newData[section] = [];
+      
+      const newItem = {
+        work: { name: "", position: "", startDate: "", endDate: "", highlights: [] },
+        education: { institution: "", area: "", studyType: "", startDate: "", endDate: "", score: "", courses: [] },
+        projects: { name: "", startDate: "", highlights: [], url: "" },
+        skills: { name: "", keywords: [] },
+        languages: { language: "", fluency: "" },
+        publications: { name: "", authors: [], releaseDate: "", url: "", doi: "" }
+      }[section];
+
+      newData[section].push(newItem);
+      return newData;
+    });
+  };
+
+  const removeSection = (section, index) => {
+    setUserData(prev => {
+      const newData = { ...prev };
+      newData[section] = newData[section].filter((_, i) => i !== index);
+      return newData;
+    });
   };
 
   const addSkill = () => {
@@ -146,71 +229,123 @@ const Personalinfo = () => {
   // };
   
   
-  const generateResumeJson = () => ({
-    basics: {
-      name: userData.basics?.name || "",
-      label: userData.basics?.label || "",
-      image: userData.basics?.image || "",
-      email: userData.basics?.email || "",
-      phone: userData.basics?.phone || "",
-      url: userData.basics?.url || "",
-      summary: userData.basics?.summary || "",
-      location: {
-        address: userData.basics?.location?.address || "",
-        postalCode: userData.basics?.location?.postalCode || "",
-        city: userData.basics?.location?.city || "",
-        countryCode: userData.basics?.location?.countryCode || "",
-        region: userData.basics?.location?.region || "",
+  const generateResumeJson = () => {
+    // Helper to ensure arrays are properly formatted
+    const formatArray = (arr, separator = ',') => {
+      if (!arr) return [];
+      if (Array.isArray(arr)) return arr;
+      return arr.split(separator).map(item => item.trim()).filter(Boolean);
+    };
+
+    // Helper to ensure dates are in YYYY-MM format
+    const formatDate = (date) => {
+      if (!date) return '';
+      return date.substring(0, 7); // Takes YYYY-MM from YYYY-MM-DD
+    };
+
+    return {
+      basics: {
+        name: userData.basics?.name || "",
+        label: userData.basics?.label || "",
+        image: userData.basics?.image || "",
+        email: userData.basics?.email || "",
+        phone: userData.basics?.phone?.replace(/[^\d+]/g, '') || "", // Clean phone number
+        url: userData.basics?.url || "",
+        summary: userData.basics?.summary || "",
+        location: {
+          address: userData.basics?.location?.address || "",
+          postalCode: userData.basics?.location?.postalCode || "",
+          city: userData.basics?.location?.city || "",
+          countryCode: userData.basics?.location?.countryCode?.toUpperCase() || "", // Ensure uppercase
+          region: userData.basics?.location?.region || "",
+        },
+        profiles: (userData.basics?.profiles || []).map((profile) => ({
+          network: profile.network || "",
+          username: profile.username || "",
+          url: profile.url || "",
+        })).filter(profile => profile.network || profile.username || profile.url),
       },
-      profiles: (userData.basics?.profiles || []).map((profile) => ({
-        network: profile.network || "",
-        username: profile.username || "",
-        url: profile.url || "",
-      })),
-    },
-    work: (userData.work || []).map((job) => ({
-      name: job.name || "",
-      position: job.position || "",
-      url: job.url || "",
-      startDate: job.startDate || "",
-      endDate: job.endDate || "",
-      highlights: job.highlights || [],
-      location: job.location || "",
-    })),
-    education: (userData.education || []).map((edu) => ({
-      institution: edu.institution || "",
-      url: edu.url || "",
-      area: edu.area || "",
-      studyType: edu.studyType || "",
-      startDate: edu.startDate || "",
-      endDate: edu.endDate || "",
-      score: edu.score || "",
-      courses: edu.courses || [],
-    })),
-    languages: (userData.languages || []).map((lang) => ({
-      language: lang.language || "",
-      fluency: lang.fluency || "",
-    })),
-    publications: (userData.publications || []).map((pub) => ({
-      name: pub.name || "",
-      authors: pub.authors || [],
-      releaseDate: pub.releaseDate || "",
-      url: pub.url || "",
-      doi: pub.doi || "",
-    })),
-    projects: (userData.projects || []).map((proj) => ({
-      name: proj.name || "",
-      startDate: proj.startDate || "",
-      highlights: proj.highlights || [],
-      url: proj.url || "",
-    })),
-    skills: (userData.skills || []).map((skillCategory) => ({
-      name: skillCategory.name || "",
-      keywords: skillCategory.keywords || [],
-    })),
-  });
+      work: (userData.work || []).map((job) => ({
+        name: job.name || "",
+        position: job.position || "",
+        url: job.url || "",
+        startDate: formatDate(job.startDate),
+        endDate: formatDate(job.endDate),
+        highlights: formatArray(job.highlights, '\n'),
+        location: job.location || "",
+      })).filter(job => job.name || job.position),
+      education: (userData.education || []).map((edu) => ({
+        institution: edu.institution || "",
+        url: edu.url || "",
+        area: edu.area || "",
+        studyType: edu.studyType || "",
+        startDate: formatDate(edu.startDate),
+        endDate: formatDate(edu.endDate),
+        score: edu.score || "",
+        courses: formatArray(edu.courses),
+      })).filter(edu => edu.institution || edu.area),
+      languages: (userData.languages || []).map((lang) => ({
+        language: lang.language || "",
+        fluency: lang.fluency || "",
+      })).filter(lang => lang.language),
+      publications: (userData.publications || []).map((pub) => ({
+        name: pub.name || "",
+        authors: formatArray(pub.authors),
+        releaseDate: formatDate(pub.releaseDate),
+        url: pub.url || "",
+        doi: pub.doi || "",
+      })).filter(pub => pub.name),
+      projects: (userData.projects || []).map((proj) => ({
+        name: proj.name || "",
+        startDate: formatDate(proj.startDate),
+        highlights: formatArray(proj.highlights, '\n'),
+        url: proj.url || "",
+      })).filter(proj => proj.name),
+      skills: (userData.skills || []).map((skillCategory) => ({
+        name: skillCategory.name || "",
+        keywords: formatArray(skillCategory.keywords),
+      })).filter(skill => skill.name && skill.keywords.length > 0),
+    };
+  };
   
   
+// Format phone number to match schema
+const formatPhoneNumber = (phone) => {
+  if (!phone) return "";
+  
+  // Remove any non-digit characters except + 
+  const cleaned = phone.replace(/[^\d+]/g, '');
+  
+  // Add tel: prefix if not present
+  if (cleaned.startsWith('tel:')) {
+    return cleaned;
+  }
+  
+  // Format number with hyphens for readability
+  let formatted = cleaned;
+  if (cleaned.startsWith('+')) {
+    // International format: tel:+XX-XXX-XXX-XXXX
+    const groups = cleaned.match(/^\+(\d{2})(\d{3})(\d{3})(\d{4})$/);
+    if (groups) {
+      formatted = `+${groups[1]}-${groups[2]}-${groups[3]}-${groups[4]}`;
+    }
+  }
+  
+  return `tel:${formatted}`;
+};
+// Format date to YYYY-MM format
+const formatDate = (date) => {
+  if (!date) return "";
+  // If already in correct format, return as is
+  if (/^\d{4}-\d{2}$/.test(date)) return date;
+  
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return "";
+  
+  // Format as YYYY-MM
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  return `${d.getFullYear()}-${month}`;
+};
 
   const sendPostRequest = async (resumeJson) => {
     try {
@@ -393,29 +528,40 @@ const Personalinfo = () => {
   };
 
   const handleGenerateResume = () => {
-    // if (!schema) {
-    //   toast.error("Validation schema not loaded. Please try again later.", {
-    //     position: "top-right",
-    //   });
-    //   return;
-    // }
-  
-    if (1) {
-      const resumeJson = generateResumeJson();
-  
-      // if (!validateWithSchema(resumeJson)) {
-      //   toast.error("Resume JSON does not meet schema requirements.", {
-      //     position: "top-right",
-      //   });
-      //   return;
-      // }
-  
-      sendPostRequest(resumeJson);
-    } else {
-      toast.error("Please fill in all required fields.", {
-        position: "top-right",
-      });
+    // Basic validation
+    if (!userData.basics?.name) {
+      toast.error("Please enter your full name", { position: "top-right" });
+      return;
     }
+    if (!userData.basics?.label) {
+      toast.error("Please enter your professional title", { position: "top-right" });
+      return;
+    }
+    if (!userData.basics?.email) {
+      toast.error("Please enter your email", { position: "top-right" });
+      return;
+    }
+
+    // Format the data
+    const formattedData = formatDataForSubmission(userData);
+    console.log(formattedData)
+    
+    // Additional validation
+    if (!formattedData.work?.length) {
+      toast.error("Please add at least one work experience", { position: "top-right" });
+      return;
+    }
+    if (!formattedData.education?.length) {
+      toast.error("Please add at least one education entry", { position: "top-right" });
+      return;
+    }
+    if (!formattedData.skills?.length) {
+      toast.error("Please add at least one skill category", { position: "top-right" });
+      return;
+    }
+
+    // Send the formatted data
+    sendPostRequest(formattedData);
   };
   
 
@@ -428,15 +574,141 @@ const Personalinfo = () => {
     };
     setSelectedResumeType(resumeTypeMap[type]);
   };
+  
 
-  // useEffect(() => {
-  //   fetchSchema();
-  // }, []);
+  const validateData = (data) => {
+    const errors = {};
+    
+    // Required fields validation
+    if (!data.basics?.name) {
+      errors.name = "Name is required";
+    }
+    
+    // Email format validation
+    if (data.basics?.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.basics.email)) {
+      errors.email = "Invalid email format";
+    }
+    
+    // Phone format validation (E.164)
+    if (data.basics?.phone && !/^\+?[1-9]\d{1,14}$/.test(data.basics.phone)) {
+      errors.phone = "Invalid phone format. Use E.164 format (e.g., +1234567890)";
+    }
+    
+    // URL format validation
+    if (data.basics?.url && !/^https?:\/\/.+/.test(data.basics.url)) {
+      errors.url = "Invalid URL format";
+    }
+    
+    // Publications DOI format
+    data.publications?.forEach((pub, index) => {
+      if (pub.doi && !/^10\..+/.test(pub.doi)) {
+        if (!errors.publications) errors.publications = {};
+        errors.publications[index] = "Invalid DOI format";
+      }
+    });
+    
+    return errors;
+  };
+  
+
+  const formatDataForSubmission = (userData) => {
+    // Helper function to format dates according to schema pattern
+    const formatDate = (date) => {
+      if (!date) return "2024-01"; // Default to current year-month
+      if (/^\d{4}-\d{2}$/.test(date)) return date;
+      try {
+        const d = new Date(date);
+        return isNaN(d.getTime()) ? "2024-01" : 
+          `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      } catch {
+        return "2024-01";
+      }
+    };
+
+    // Helper function to format URL
+    const formatUrl = (url) => {
+      if (!url) return "https://example.com"; // Default URL if empty
+      try {
+        new URL(url);
+        return url;
+      } catch {
+        return url.startsWith('http') ? url : `https://${url}`;
+      }
+    };
+
+    // Helper function to ensure array format
+    const ensureArray = (value) => {
+      if (!value) return [];
+      if (Array.isArray(value)) return value;
+      return value.split(/[,\n]/).map(item => item.trim()).filter(Boolean);
+    };
+
+    return {
+      basics: {
+        name: userData.basics?.name || "Anonymous",
+        label: userData.basics?.label || "Professional",
+        image: userData.basics?.image || "https://example.com/photo.jpg",
+        email: userData.basics?.email || "",
+        phone: userData.basics?.phone || "",
+        url: formatUrl(userData.basics?.url),
+        summary: userData.basics?.summary || "",
+        location: {
+          address: userData.basics?.location?.address || "",
+          postalCode: userData.basics?.location?.postalCode || "",
+          city: userData.basics?.location?.city || "",
+          countryCode: userData.basics?.location?.countryCode === "INDIA" ? "IN" : 
+            (userData.basics?.location?.countryCode || "US"),
+          region: userData.basics?.location?.region || ""
+        },
+        profiles: (userData.basics?.profiles || []).map(profile => ({
+          network: profile.network || "",
+          username: profile.username || "",
+          url: formatUrl(profile.url)
+        }))
+      },
+      work: (userData.work || []).map(job => ({
+        name: job.name || "Company",
+        position: job.position || "Position",
+        url: formatUrl(job.url),
+        startDate: formatDate(job.startDate),
+        endDate: formatDate(job.endDate),
+        highlights: ensureArray(job.highlights),
+        location: job.location || ""
+      })),
+      education: (userData.education || []).map(edu => ({
+        institution: edu.institution || "Institution",
+        url: formatUrl(edu.url),
+        area: edu.area || "Study Area",
+        studyType: edu.studyType || "Degree",
+        startDate: formatDate(edu.startDate),
+        endDate: formatDate(edu.endDate),
+        score: edu.score || "4.0",
+        courses: ensureArray(edu.courses)
+      })),
+      publications: (userData.publications || []).map(pub => ({
+        name: pub.name || "Publication Title",
+        authors: ensureArray(pub.authors),
+        releaseDate: formatDate(pub.releaseDate),
+        url: formatUrl(pub.url),
+        doi: pub.doi || ""
+      })),
+      projects: (userData.projects || []).map(proj => ({
+        name: proj.name || "Project Name",
+        startDate: formatDate(proj.startDate),
+        highlights: ensureArray(proj.highlights),
+        url: formatUrl(proj.url)
+      })),
+      skills: (userData.skills || []).map(skill => ({
+        name: skill.name || "Skill Category",
+        keywords: ensureArray(skill.keywords)
+      }))
+    };
+  };
   
 return (
   <div className="flex flex-col gap-5">
     {/* Name and Email */}
-    <ToastContainer />
+    <ToastContainer limit={1} />
     <div className="text-xl font-semibold text-gray-600">Enter your information</div>
     <Tabs p={0}>
       <TabList>
@@ -448,188 +720,166 @@ return (
         {/* Personal Information */}
         {/* Personal Information */}
 <TabPanel px={0}>
-  <div className="flex flex-row gap-5">
-    {/* Name */}
-    <div className="w-full">
-      <div className="text-xl font-semibold text-gray-600">Name <RequiredIndicator /></div>
-      <div className="mt-1">
+  {/* Personal Information Section */}
+  <div className="space-y-6">
+    {/* Basic Info */}
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          Full Name <RequiredIndicator />
+        </label>
         <input
-          onChange={handleChange}
+          type="text"
+          name="basics.name"
           value={userData.basics?.name || ""}
-          name="name"
-          placeholder="Full Name"
-          className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+          onChange={(e) => handleChange(e)}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          placeholder="John Doe"
         />
       </div>
-    </div>
-    {/* Label */}
-    <div className="w-full">
-      <div className="text-xl font-semibold text-gray-600">Position <RequiredIndicator /></div>
-      <div className="mt-1">
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          Professional Title <RequiredIndicator />
+        </label>
         <input
-          onChange={handleChange}
+          type="text"
+          name="basics.label"
           value={userData.basics?.label || ""}
-          name="label"
-          placeholder="e.g., Senior Software Engineer"
-          className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+          onChange={(e) => handleChange(e)}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          placeholder="Senior Software Engineer"
         />
       </div>
-    </div>
-  </div>
 
-  <div className="flex flex-row gap-5 mt-5">
-    {/* Email */}
-    <div className="w-full">
-      <div className="text-xl font-semibold text-gray-600">Email <RequiredIndicator /></div>
-      <div className="mt-1">
+      {/* Contact Information */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          Email <RequiredIndicator />
+        </label>
         <input
-          onChange={handleChange}
-          value={userData.basics?.email || ""}
-          name="email"
           type="email"
-          placeholder="e.g., john.doe@email.com"
-          className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+          name="basics.email"
+          value={userData.basics?.email || ""}
+          onChange={(e) => handleChange(e)}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          placeholder="john@example.com"
         />
       </div>
-    </div>
-    {/* Phone */}
-    <div className="w-full">
-      <div className="text-xl font-semibold text-gray-600">Phone Number <RequiredIndicator /></div>
-      <div className="mt-1">
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          Phone <RequiredIndicator />
+        </label>
         <input
-          onChange={handleChange}
-          value={userData.basics?.phone || ""}
-          name="phone"
           type="tel"
-          placeholder="+90-541-999-99-99"
-          className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+          name="basics.phone"
+          value={userData.basics?.phone || ""}
+          onChange={(e) => handleChange(e)}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          placeholder="+1-234-567-8900"
         />
       </div>
     </div>
-  </div>
-  <div className="flex flex-row gap-5 mt-5">
-    {/* LinkedIn */}
-    <div className="w-full">
-        <div className="text-xl font-semibold text-gray-600">LinkedIn URL</div>
-        <div className="mt-1">
-          <input
-            onChange={(e) => handleChange(e, 0, "basics.profiles", "url")}
-            value={
-              userData.basics?.profiles?.[0]?.url || "https://linkedin.com/in/"
-            }
-            name="linkedin"
-            type="url"
-            placeholder="LinkedIn Profile URL"
-            className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-          />
-        </div>
-      </div>
 
-      {/* GitHub */}
-      <div className="w-full">
-        <div className="text-xl font-semibold text-gray-600">GitHub URL</div>
-        <div className="mt-1">
-          <input
-            onChange={(e) => handleChange(e, 1, "basics.profiles", "url")}
-            value={
-              userData.basics?.profiles?.[1]?.url || "https://github.com/"
-            }
-            name="github"
-            type="url"
-            placeholder="GitHub Profile URL"
-            className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-          />
-        </div>
-      </div>
-    </div>
-
-  <div className="flex flex-row gap-5 mt-5">
-    {/* URL */}
-    <div className="w-full">
-      <div className="text-xl font-semibold text-gray-600">URL</div>
-      <div className="mt-1">
+    {/* Location Information */}
+    <div className="border-t pt-4">
+      <h3 className="text-lg font-semibold mb-3">Location</h3>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <input
-          onChange={handleChange}
-          value={userData.basics?.url || ""}
-          name="url"
-          type="url"
-          placeholder="e.g., https://johndoe.com"
-          className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+          type="text"
+          name="basics.location.address"
+          value={userData.basics?.location?.address || ""}
+          onChange={(e) => handleChange(e)}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          placeholder="123 Main Street"
+        />
+        <input
+          type="text"
+          name="basics.location.city"
+          value={userData.basics?.location?.city || ""}
+          onChange={(e) => handleChange(e)}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          placeholder="San Francisco"
+        />
+        <input
+          type="text"
+          name="basics.location.region"
+          value={userData.basics?.location?.region || ""}
+          onChange={(e) => handleChange(e)}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          placeholder="California"
+        />
+        <input
+          type="text"
+          name="basics.location.postalCode"
+          value={userData.basics?.location?.postalCode || ""}
+          onChange={(e) => handleChange(e)}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          placeholder="94122"
+        />
+        <input
+          type="text"
+          name="basics.location.countryCode"
+          value={userData.basics?.location?.countryCode || ""}
+          onChange={(e) => handleChange(e)}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          placeholder="US"
         />
       </div>
     </div>
-  </div>
 
-  
-
-  <div className="flex flex-col mt-5">
-    {/* Summary */}
-    <div className="text-xl font-semibold text-gray-600">Summary <RequiredIndicator /></div>
-    <div className="mt-1">
+    {/* Professional Summary */}
+    <div className="border-t pt-4">
+      <h3 className="text-lg font-semibold mb-3">Professional Summary</h3>
       <textarea
-        onChange={handleChange}
+        name="basics.summary"
         value={userData.basics?.summary || ""}
-        name="summary"
-        placeholder="Brief professional summary"
-        className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-        rows="4"
+        onChange={handleChange}
+        className="w-full p-3 border rounded-md min-h-[100px]"
+        placeholder="Brief professional summary highlighting your key experiences and skills..."
       />
     </div>
-  </div>
 
-  <div className="mt-5">
-    {/* Location */}
-    <div className="text-xl font-semibold text-gray-600">Location <RequiredIndicator /></div>
-    <div className="flex flex-row gap-5 mt-1">
-      <div className="w-full">
-        <input
-          onChange={(e) => handleChange(e, null, "basics", "location.address")}
-          value={userData.basics?.location?.address || ""}
-          name="address"
-          placeholder="Address"
-          className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-        />
-      </div>
-      <div className="w-full">
-        <input
-          onChange={(e) => handleChange(e, null, "basics", "location.city")}
-          value={userData.basics?.location?.city || ""}
-          name="city"
-          placeholder="City"
-          className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-        />
-      </div>
-    </div>
-    <div className="flex flex-row gap-5 mt-2">
-      <div className="w-full">
-        <input
-          onChange={(e) => handleChange(e, null, "basics", "location.postalCode")}
-          value={userData.basics?.location?.postalCode || ""}
-          name="postalCode"
-          placeholder="Postal Code"
-          className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-        />
-      </div>
-      <div className="w-full">
-        <input
-          onChange={(e) => handleChange(e, null, "basics", "location.region")}
-          value={userData.basics?.location?.region || ""}
-          name="region"
-          placeholder="State/Region"
-          className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-        />
-      </div>
-    </div>
-    <div className="flex flex-row gap-5 mt-2">
-      <div className="w-full">
-        <input
-          onChange={(e) => handleChange(e, null, "basics", "location.countryCode")}
-          value={userData.basics?.location?.countryCode || ""}
-          name="countryCode"
-          placeholder="Country Code (e.g., US)"
-          className="w-full p-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-        />
-      </div>
+    {/* Social Profiles */}
+    <div className="border-t pt-4">
+      <h3 className="text-lg font-semibold mb-3">Social Profiles</h3>
+      {(userData.basics?.profiles || []).map((profile, index) => (
+        <div key={index} className="flex gap-4 mb-3">
+          <select
+            value={profile.network || ""}
+            onChange={(e) => handleProfileChange(index, "network", e.target.value)}
+            className="p-2 border rounded-md"
+          >
+            <option value="">Select Network</option>
+            <option value="LinkedIn">LinkedIn</option>
+            <option value="GitHub">GitHub</option>
+            <option value="Twitter">Twitter</option>
+          </select>
+          <Input
+            placeholder="Username"
+            value={profile.username || ""}
+            onChange={(e) => handleProfileChange(index, "username", e.target.value)}
+          />
+          <Input
+            placeholder="Profile URL"
+            value={profile.url || ""}
+            onChange={(e) => handleProfileChange(index, "url", e.target.value)}
+          />
+          <button 
+            onClick={() => removeProfile(index)}
+            className="text-red-500 hover:text-red-700"
+          >
+            Remove
+          </button>
+        </div>
+      ))}
+      <button 
+        onClick={addProfile}
+        className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+      >
+        Add Profile
+      </button>
     </div>
   </div>
 </TabPanel>
@@ -640,67 +890,77 @@ return (
   <div className="flex flex-col md:flex-row gap-5 mt-5">
     {/* Work Experience */}
     <div className="w-full">
-      <div className="text-xl font-semibold text-gray-600">Work Experience<RequiredIndicator /></div>
-      {(userData.work || []).map((job, index) => (
-        <div key={index} className="mt-3 p-4 border rounded-md bg-white border-gray-300">
-          <input
-            onChange={(e) => handleChange(e, index, "work", "name")}
-            value={job.name || ""}
-            placeholder="Company Name"
-            className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-          />
-          <input
-            onChange={(e) => handleChange(e, index, "work", "position")}
-            value={job.position || ""}
-            placeholder="Job Role"
-            className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-          />
-          <input
-            onChange={(e) => handleChange(e, index, "work", "url")}
-            value={job.url || ""}
-            placeholder="Company URL"
-            className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-          />
-          <input
-            onChange={(e) => handleChange(e, index, "work", "location")}
-            value={job.location || ""}
-            placeholder="Location"
-            className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-          />
-          <div className="flex flex-col md:flex-row md:gap-3">
-            <input
-              onChange={(e) => handleChange(e, index, "work", "startDate")}
-              value={job.startDate || ""}
-              type="date"
-              placeholder="Start Date"
-              className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-            />
-            <input
-              onChange={(e) => handleChange(e, index, "work", "endDate")}
-              value={job.endDate || ""}
-              type="date"
-              placeholder="End Date"
-              className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-            />
-          </div>
-          <textarea
-            onChange={(e) => handleChange(e, index, "work", "highlights")}
-            value={(job.highlights || []).join("\n")}
-            placeholder="Key Highlights (one per line)"
-            className="w-full p-2 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-            rows="3"
-          />
-        </div>
-      ))}
-      <div className="flex justify-center mt-3">
-        <button onClick={() => addSectionItem("work")} className="transition duration-300">
-          <ShimmerButton className="shadow-2xl">
-            <span className="whitespace-pre-wrap text-center text-xl font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-sm">
-              Add Job
-            </span>
-          </ShimmerButton>
-        </button>
+      <div className="text-xl font-semibold text-gray-600 mb-4">
+        Work Experience <RequiredIndicator />
       </div>
+      
+      <AnimatePresence initial={false}>
+        {(userData.work || []).map((job, index) => (
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.2 }}
+            className="mb-6 p-6 border rounded-lg bg-white shadow-sm"
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <input
+                type="text"
+                onChange={(e) => handleChange(e, index, "work", "name")}
+                value={job.name || ""}
+                placeholder="Company Name"
+                className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500"
+              />
+              
+              <input
+                type="text"
+                onChange={(e) => handleChange(e, index, "work", "position")}
+                value={job.position || ""}
+                placeholder="Job Title"
+                className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+              <input
+                type="month"
+                onChange={(e) => handleChange(e, index, "work", "startDate")}
+                value={job.startDate || ""}
+                className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500"
+              />
+              
+              <input
+                type="month"
+                onChange={(e) => handleChange(e, index, "work", "endDate")}
+                value={job.endDate || ""}
+                className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <textarea
+              onChange={(e) => handleChange(e, index, "work", "highlights")}
+              value={(job.highlights || []).join("\n")}
+              placeholder="Key achievements and responsibilities (one per line)"
+              className="w-full p-3 mt-4 border rounded-md focus:ring-2 focus:ring-blue-500 min-h-[120px]"
+            />
+
+            <button
+              onClick={() => removeSection("work", index)}
+              className="mt-4 text-red-500 hover:text-red-700 flex items-center gap-2"
+            >
+              <FiTrash2 /> Remove Entry
+            </button>
+          </motion.div>
+        ))}
+      </AnimatePresence>
+
+      <button
+        onClick={() => addSectionItem("work")}
+        className="w-full mt-4 p-3 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-md flex items-center justify-center gap-2"
+      >
+        <FiPlus /> Add Work Experience
+      </button>
     </div>
 
     {/* Education */}
@@ -756,7 +1016,7 @@ return (
           />
           <textarea
             onChange={(e) => handleChange(e, index, "education", "courses")}
-            value={(edu.courses || []).join(", ")}
+            value={Array.isArray(edu.courses) ? edu.courses.join(", ") : ""}
             placeholder="Courses (comma-separated)"
             className="w-full p-2 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
             rows="3"
@@ -835,7 +1095,7 @@ return (
         />
         <textarea
           onChange={(e) => handleChange(e, index, "skills", "keywords")}
-          value={(skillCategory.keywords || []).join(", ")}
+          value={Array.isArray(skillCategory.keywords) ? skillCategory.keywords.join(", ") : ""}
           placeholder="Skills (comma-separated)"
           className="w-full p-2 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
           rows="3"
@@ -896,29 +1156,30 @@ return (
         />
         <textarea
           onChange={(e) => handleChange(e, index, "publications", "authors")}
-          value={(publication.authors || []).join(", ")}
+          value={Array.isArray(publication.authors) ? publication.authors.join(", ") : ""}
           placeholder="Authors (comma-separated)"
-          className="w-full p-2 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-          rows="3"
-        />
-        <input
-          onChange={(e) => handleChange(e, index, "publications", "releaseDate")}
-          value={publication.releaseDate || ""}
-          type="date"
-          placeholder="Release Date"
           className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+          rows="2"
         />
-        <input
-          onChange={(e) => handleChange(e, index, "publications", "url")}
-          value={publication.url || ""}
-          placeholder="Publication URL"
-          className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
-        />
+        <div className="grid grid-cols-2 gap-3">
+          <input
+            type="date"
+            onChange={(e) => handleChange(e, index, "publications", "releaseDate")}
+            value={publication.releaseDate || ""}
+            className="w-full p-2 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+          />
+          <input
+            onChange={(e) => handleChange(e, index, "publications", "url")}
+            value={publication.url || ""}
+            placeholder="URL"
+            className="w-full p-2 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+          />
+        </div>
         <input
           onChange={(e) => handleChange(e, index, "publications", "doi")}
           value={publication.doi || ""}
           placeholder="DOI"
-          className="w-full p-2 mb-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
+          className="w-full p-2 mt-3 border rounded-md bg-white border-gray-300 text-gray-800 focus:outline-none"
         />
       </div>
     ))}
@@ -939,20 +1200,25 @@ return (
 
     <div className="z-10 mb-4 flex flex-col md:flex-row gap-4 min-h-[5rem] md:items-center justify-center mt-5">
   <div className="w-full">
-    <div className="text-xl font-semibold text-gray-600">Choose Resume Type <RequiredIndicator /></div>
-    <div className="mt-1 flex space-x-2">
-      {[1, 2, 3, 4].map((type) => (
-        <button
-          key={type}
-          onClick={() => handleResumeTypeChange(type)}
-          className={`px-4 py-2 border rounded-md ${
-            selectedResumeType === ["classic", "moderncv", "sb2nov", "engineeringresumes"][type - 1]
-              ? "bg-blue-500 text-white"
-              : "bg-white text-gray-800"
-          } border-gray-300 focus:outline-none`}
-        >
-          {type}
-        </button>
+    <div className="text-xl font-semibold text-gray-600 mb-3">
+      Choose Template <RequiredIndicator />
+    </div>
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      {RESUME_TYPES.map((type) => (
+        <Tooltip key={type.id} label={type.description}>
+          <button
+            onClick={() => handleResumeTypeChange(type.id)}
+            className={`
+              p-4 border rounded-lg transition-all duration-200
+              ${selectedResumeType === type.value 
+                ? "border-blue-500 bg-blue-50 text-blue-700" 
+                : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+              }
+            `}
+          >
+            <div className="text-sm font-medium">{type.name}</div>
+          </button>
+        </Tooltip>
       ))}
     </div>
   </div>
