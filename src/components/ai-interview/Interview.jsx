@@ -11,6 +11,7 @@ import {
   Spinner,
   Badge,
 } from "@chakra-ui/react";
+import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton} from "@chakra-ui/react";
 import { ChevronRight } from "lucide-react";
 import { useEffect, useRef, useState, useMemo } from "react";
 import axios from "axios";
@@ -175,6 +176,12 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
     if (videoTrack) tracks.push(videoTrack);
     if (audioTrack) tracks.push(audioTrack);
     return new MediaStream(tracks);
+  };
+
+  const [isModalOpen, setIsModalOpen] = useState(true);
+
+  const onCloseModal = () => {
+    setIsModalOpen(false);
   };
 
   // Update initializeMediaStream function
@@ -672,6 +679,26 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
   }
 
   return (
+    <>
+    {isModalOpen && (
+      <Modal isOpen={isModalOpen} onClose={onCloseModal}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Interview Guidelines</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <p>1. Look into the screen throughout the interview, casual looking away is ok but doing so continuously will be flagged.</p>
+            <p>2. Please refrain from using unfair advantage during the interview, opening another tab or window will be flagged and may result in rejection.</p>
+            <p>3. The question once prompted by the AI will also appear on the screen, refrain from engaging in a dialogue with the AI.</p>
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="blue" mr={3} onClick={onCloseModal}>
+              I Understand
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    )}
     <MotionBox
       className="w-full min-h-[calc(100vh-60px)] mt-10"
       initial={{ opacity: 0 }}
@@ -868,6 +895,7 @@ const Interview = ({ audioOn, questions: initialQuestions, selectedDomain }) => 
         </MotionBox>
       )}
     </MotionBox>
+  </>
   );
 };
 
