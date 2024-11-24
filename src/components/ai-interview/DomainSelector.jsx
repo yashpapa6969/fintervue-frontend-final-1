@@ -17,13 +17,23 @@ const MotionBox = motion(Box);
 const DomainSelector = ({ onDomainSelect, loading }) => {
   const [searchDomainValue, setSearchDomainValue] = useState("");
   const [allDomains] = useState([
-    { name: "finance", description: "Finance Engineer" },
-    { name: "SAP", description: "SAP Developer" },
-    { name: "Financial Risk Management", description: "Financial Risk Management" },
-    { name: "Financial Analyst", description: "Financial Analyst" },
-    { name: "Business Analyst", description: "Business Analyst" }
+    { name: "Business_Analyst", description: "Business Analyst" },
+    { name: "Business_Analyst_Investment_Banking", description: "Business Analyst - Investment Banking" },
+    { name: "Business_Analyst_Wealth_Management", description: "Business Analyst - Wealth Management" },
+    { name: "Business_Analyst_Financial_Risk_Management", description: "Business Analyst - Financial Risk Management" },
+    { name: "Business_Analyst_Regulatory_Compliance", description: "Business Analyst - Regulatory Compliance" },
+    { name: "Business_Analyst_Payments", description: "Business Analyst - Payments" },
+    { name: "Business_Analyst_Insurance", description: "Business Analyst - Insurance" },
+    { name: "Business_Analyst_FinTech", description: "Business Analyst - FinTech" },
+    { name: "Asset_Liability_Capital_Markets", description: "Asset Liability Capital Markets" },
+    { name: "Asset_Liability_Capital_Management", description: "Asset Liability Capital Management (ALCM)" },
+    { name: "Data_Analyst", description: "Data Analyst" },
+    { name: "Financial_Risk_Management", description: "Financial Risk Management" },
+    { name: "Financial_Analyst", description: "Financial Analyst" },
+    { name: "Finance_Engineer", description: "Finance Engineer" },
+    { name: "SAP_Developer", description: "SAP Developer" }
   ]);
-
+  
   const filteredDomains = useMemo(() => {
     return allDomains.filter((domain) =>
       domain.name.toLowerCase().includes(searchDomainValue.toLowerCase())
@@ -118,15 +128,9 @@ const DomainSelector = ({ onDomainSelect, loading }) => {
                         fontWeight="bold"
                         color="gray.800"
                       >
-                        {domain.name}
-                      </Text>
-                      <Text 
-                        color="gray.600"
-                        fontSize={{ base: "sm", md: "md" }}
-                        lineHeight="tall"
-                      >
                         {domain.description}
                       </Text>
+                 
                     </Flex>
                   </CardBody>
                 </Card>
