@@ -31,7 +31,10 @@ const DomainSelector = ({ onDomainSelect, loading }) => {
     { name: "Financial_Risk_Management", description: "Financial Risk Management" },
     { name: "Financial_Analyst", description: "Financial Analyst" },
     { name: "Finance_Engineer", description: "Finance Engineer" },
-    { name: "SAP_Developer", description: "SAP Developer" }
+    { name: "SAP_Developer", description: "SAP Developer" },
+    { name: "Administration_HR_Compliance", description: "Administration HR Compliance" },
+    { name: "test", description: "Testing" }
+
   ]);
   
   const filteredDomains = useMemo(() => {
