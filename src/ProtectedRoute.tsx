@@ -1,4 +1,52 @@
-import { Navigate } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { Navigate, useLocation } from "react-router-dom";
+import Session from "supertokens-web-js/recipe/session";
+import { useUser } from "./context/UserProvider";
+
+async function doesSessionExist() {
+    if (await Session.doesSessionExist()) return true;
+    else return false;
+}
+
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+    const { user } = useUser();
+    const location = useLocation();
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+
+    const isInterViewerRotute = location.pathname.includes("/interviewer");
+
+    useEffect(() => {
+        setIsLoading(true);
+
+        const funcToSetIsLoggedIn = async () => {
+            setIsLoggedIn(await doesSessionExist());
+
+            setIsLoading(false);
+        };
+
+        funcToSetIsLoggedIn();
+    }, []);
+
+    if (isLoading)
+        return <p className="w-full my-5 text-center text-md">Loading...</p>;
+
+    if (isLoggedIn) {
+        if (isInterViewerRotute && user?.type === "interviewer") {
+            return children;
+        } else if (isInterViewerRotute && user?.type === "interviewee") {
+            return <Navigate to="/display" />;
+        } else {
+            return children;
+        }
+    } else {
+        return <Navigate to="/signup" />;
+    }
+};
+
+export default ProtectedRoute;
+
+/* 
 
 const ProtectedRoute = ({ children, requiresNoAuth = false }) => {
   const interviewee = JSON.parse(localStorage.getItem('interviewee'));
@@ -65,3 +113,4 @@ const ProtectedRoute = ({ children, requiresNoAuth = false }) => {
 };
 
 export default ProtectedRoute;
+ */
