@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import logo from "../assests/logo/logo4.jpeg";
 import Navbar from "../components/navbar";
-import { loginFlow } from "../lib/services/interviewee.auth";
+import { loginFlow } from "../lib/services/candidate.auth";
 import { useUser } from "../context/UserProvider";
 
 const LoginInterviewee = () => {

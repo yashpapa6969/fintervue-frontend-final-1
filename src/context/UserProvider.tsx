@@ -22,7 +22,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
         if (user) {
             const parsedUser = JSON.parse(user);
-            if (parsedUser.interviewee_id) {
+            if (parsedUser.interviewee_id || parsedUser.interviewer_id) {
                 setUser({
                     type: "interviewee",
                     user: parsedUser,

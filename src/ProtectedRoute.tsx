@@ -9,7 +9,7 @@ async function doesSessionExist() {
 }
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-    const { user } = useUser();
+    const { user, setUser } = useUser();
     const location = useLocation();
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
@@ -20,7 +20,11 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
         setIsLoading(true);
 
         const funcToSetIsLoggedIn = async () => {
-            setIsLoggedIn(await doesSessionExist());
+            const sessionExists = await doesSessionExist();
+            setIsLoggedIn(sessionExists);
+            if (!sessionExists) {
+                setUser(null);
+            }
 
             setIsLoading(false);
         };

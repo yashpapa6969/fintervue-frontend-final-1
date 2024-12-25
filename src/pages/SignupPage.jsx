@@ -21,9 +21,7 @@ import {
     FrontendIcon15,
 } from "../assests/Domain_images";
 import { useToast } from "@chakra-ui/react";
-import {
-    signUpFlow,
-} from "../lib/services/interviewee.auth";
+import { signUpFlow } from "../lib/services/candidate.auth";
 import { useUser } from "../context/UserProvider";
 
 const SignupPage = () => {
@@ -286,6 +284,7 @@ const SignupPage = () => {
             );
 
             if (interviewee) {
+                console.log(interviewee);
                 setUser({
                     type: "interviewee",
                     user: interviewee,

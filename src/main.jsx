@@ -16,6 +16,8 @@ import FinalInterviewPage from "./pages/finalInterview.jsx";
 import AIAnalysisPage from "./pages/AiAnalysis.jsx";
 import ProtectedRoute from "./ProtectedRoute";
 import ForgotPassword from "./pages/ForgotPassword";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
+import GoogleOauthCallbackPage from "./pages/GoogleOauthCallbackPage";
 
 import ResumeBuilderPage from "./products/resumeBuilder";
 
@@ -35,98 +37,176 @@ SuperTokens.init({
 });
 
 const router = createBrowserRouter([
+    // Not Found Page
     {
         path: "*",
         element: <NotFoundPage />,
     },
+    // Home Page
     {
         path: "/",
         element: <App />,
     },
-    {
-        path: "/meeting",
-        element: <Lazy.MeetingPage />,
-    },
-    {
-        path: "/analysis",
-        element: (
-            <UserProvider>
-                <ProtectedRoute>
-                    <AIAnalysisPage />
-                </ProtectedRoute>
-            </UserProvider>
-        ),
-    },
+    // Auth routes
     {
         path: "/signup",
-        element: <Lazy.SignUpPage />,
+        children: [
+            { path: "", element: <Lazy.AllSignUpPage /> },
+            { path: "candidate", element: <Lazy.CandidateSignupPage /> },
+            { path: "organisation", element: <Lazy.OrganizationSignupPage /> },
+            { path: "interviewer", element: <Lazy.InterviewerSignupPage /> },
+        ],
     },
     {
-        path: "/signup/candidate",
-        element: (
-            <UserProvider>
-                <Lazy.CandidateSignupPage />
-            </UserProvider>
-        ),
+        path: "/login",
+        children: [
+            { path: "interviewer", element: <Lazy.InterviewerLogin /> },
+            { path: "candidate", element: <Lazy.CandidateLogin /> },
+        ],
     },
     {
-        path: "/signup/organisation",
-        element: <Lazy.SignupOrgPage />,
+        path: "/api/auth/callback/google",
+        element: <GoogleOauthCallbackPage />,
     },
     {
         path: "/forgotpw",
         element: <ForgotPassword />,
     },
     {
-        path: "/signup/interviewer",
-        element: (
-            <UserProvider>
-                <Lazy.SignupInterviewerPage />
-            </UserProvider>
-        ),
+        path: "/reset-password",
+        element: <ResetPasswordPage />,
     },
-
-    {
-        path: "/login/interviewer",
-        element: (
-            <UserProvider>
-                <Lazy.LoginInterviewer />
-            </UserProvider>
-        ),
-    },
-    {
-        path: "/login/candidate",
-        element: (
-            <UserProvider>
-                <Lazy.LoginInterviewe />,
-            </UserProvider>
-        ),
-    },
+    // Other routes
     {
         path: "/product",
+        children: [
+            { path: "", element: <ProductPage /> },
+            {
+                path: "ai_intervue",
+                element: (
+                    <ProtectedRoute>
+                        <Lazy.AiIntervuePage />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "resumeBuilder",
+                element: (
+                    <ProtectedRoute>
+                        <ResumeBuilderPage />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "resumeAnalysis",
+                element: (
+                    <ProtectedRoute>
+                        <Lazy.ResumeAnalysisPage />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "resumeSelect",
+                element: (
+                    <ProtectedRoute>
+                        <Lazy.ResumeSelect />
+                    </ProtectedRoute>
+                ),
+            },
+        ],
+    },
+    {
+        path: "/display",
+        children: [
+            {
+                path: "",
+                element: (
+                    <ProtectedRoute>
+                        <Lazy.DisplayPage />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: "job",
+                element: (
+                    <ProtectedRoute>
+                        <Lazy.JobDetailPage />
+                    </ProtectedRoute>
+                ),
+            },
+        ],
+    },
+    {
+        path: "/analysis",
         element: (
             <ProtectedRoute>
-                <ProductPage />
+                <AIAnalysisPage />
             </ProtectedRoute>
         ),
     },
-
     {
-        path: "/product/ai_intervue",
+        path: "/meeting",
         element: (
             <ProtectedRoute>
-                <Lazy.AiIntervuePage />
+                <Lazy.MeetingPage />
             </ProtectedRoute>
         ),
     },
-
     {
-        path: "/product/resumeBuilder",
-        element: <ResumeBuilderPage />,
+        path: "/employee-profile",
+        element: (
+            <ProtectedRoute>
+                <Lazy.EmployeeProfilePage />
+            </ProtectedRoute>
+        ),
     },
     {
-        path: "/product/resumeAnalysis",
-        element: <Lazy.ResumeAnalysisPage />,
+        path: "/thank-you",
+        element: (
+            <ProtectedRoute>
+                <Lazy.ThankYou />
+            </ProtectedRoute>
+        ),
+    },
+    {
+        path: "/scheduleInterview",
+        element: (
+            <ProtectedRoute>
+                <Lazy.ScheduleInterviewForm />
+            </ProtectedRoute>
+        ),
+    },
+    {
+        path: "/pendingInterviews",
+        element: (
+            <ProtectedRoute>
+                <Lazy.PendingInterviews />
+            </ProtectedRoute>
+        ),
+    },
+    {
+        path: "/jobAssign",
+        element: (
+            <ProtectedRoute>
+                <Lazy.JobSchedule />
+            </ProtectedRoute>
+        ),
+    },
+    {
+        path: "/upcomingInterviews",
+        element: (
+            <ProtectedRoute>
+                <Lazy.UpcomingInterviews />
+            </ProtectedRoute>
+        ),
+    },
+    {
+        path: "/finalInterviewPage",
+        element: (
+            <ProtectedRoute>
+                <FinalInterviewPage />
+            </ProtectedRoute>
+        ),
     },
     {
         path: "/TOC",
@@ -152,61 +232,16 @@ const router = createBrowserRouter([
         path: "/RefundsAndCancellation",
         element: <Lazy.RefundsAndCancellationPage />,
     },
-    {
-        path: "/display",
-        element: <Lazy.DisplayPage />,
-    },
-    {
-        path: "/display/job",
-        element: <Lazy.JobDetailPage />,
-    },
-    {
-        path: "/home",
-        element: <Lazy.HomePage />,
-    },
-    {
-        path: "/employee-profile",
-        element: <Lazy.EmployeeProfilePage />,
-    },
-    {
-        path: "/thank-you",
-        element: <Lazy.ThankYou />,
-    },
-    {
-        path: "/scheduleInterview",
-        element: <Lazy.ScheduleInterviewForm />,
-    },
-    {
-        path: "/pendingInterviews",
-        element: <Lazy.PendingInterviews />,
-    },
-
-    {
-        path: "product/resumeSelect",
-        element: <Lazy.ResumeSelect />,
-    },
-    {
-        path: "/jobAssign",
-        element: <Lazy.JobSchedule />,
-    },
-    {
-        path: "/upcomingInterviews",
-        element: <Lazy.UpcomingInterviews />,
-    },
-
-    {
-        // In the route definition
-        path: "/finalInterviewPage",
-        element: <FinalInterviewPage />,
-    },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
     <ChakraProvider>
         <HMSRoomProvider>
-            <Suspense fallback={<Loader />}>
-                <RouterProvider router={router} />
-            </Suspense>
+            <UserProvider>
+                <Suspense fallback={<Loader />}>
+                    <RouterProvider router={router} />
+                </Suspense>
+            </UserProvider>
         </HMSRoomProvider>
     </ChakraProvider>
 );
