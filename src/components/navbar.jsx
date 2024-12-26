@@ -80,6 +80,7 @@ function Navbar() {
                                     className="w-full px-4 py-2 mr-2 text-sm font-medium text-center text-white bg-gray-800 rounded-md"
                                     onClick={async () => {
                                         await logout();
+                                        setUser(null);
                                         localStorage.removeItem("user");
                                         navigate("/signup");
                                     }}
@@ -136,12 +137,33 @@ function Navbar() {
                     </div>
                     <div className="pt-4 pb-3 space-y-3 border-t border-gray-200">
                         <div className="flex items-center px-5">
-                            <Link
-                                to="/signup"
-                                className="w-full px-4 py-2 mr-2 text-sm font-medium text-center text-white bg-gray-800 rounded-md"
-                            >
-                                Get started
-                            </Link>
+                            {!user ? (
+                                <Link
+                                    to="/signup"
+                                    className="w-full px-4 py-2 mr-2 text-sm font-medium text-center text-white bg-gray-800 rounded-md"
+                                >
+                                    Get started
+                                </Link>
+                            ) : (
+                                <div className="flex flex-col items-center justify-center gap-2">
+                                    <p className="w-full text-center">
+                                        Hey{" "}
+                                        <span className="font-bold">
+                                            {user.user.user?.firstName}!
+                                        </span>
+                                    </p>
+                                    <button
+                                        className="px-4 py-2 mr-2 text-sm font-medium text-center text-white bg-gray-800 rounded-md"
+                                        onClick={async () => {
+                                            await logout();
+                                            localStorage.removeItem("user");
+                                            navigate("/signup");
+                                        }}
+                                    >
+                                        Logout
+                                    </button>
+                                </div>
+                            )}
                         </div>
                         <div className="flex items-center px-5"></div>
                     </div>

@@ -30,8 +30,8 @@ const GoogleOauthCallbackPage = () => {
                         window.location.assign(url);
 
                         try {
-                            await handleGoogleCallback();
-                            navigate(`/signup/${type}`);
+                            const { email } = await handleGoogleCallback();
+                            navigate(`/signup/${type}?email=${email}`);
                         } catch (error) {
                             toast({
                                 variant: "destructive",

@@ -28,12 +28,11 @@ export async function handleGoogleCallback() {
         const response = await signInAndUp();
 
         if (response.status === "OK") {
-            console.log(response.user);
             if (
                 response.createdNewRecipeUser &&
                 response.user.loginMethods.length === 1
             ) {
-                return true;
+                return { id: response.user.id, email: response.user.emails };
             } else {
                 throw new Error("Error trying to log you in! try again soon.");
             }

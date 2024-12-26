@@ -40,11 +40,11 @@ const Navbar = () => (
   <Box bg="white" py={4} borderBottom="1px" borderColor="gray.100" position="fixed" top={0} width="100%" zIndex={10}>
     <Container maxW="container.xl">
       <Flex justify="space-between" align="center">
-      <a href="/home">
-        <img src={Logo} alt="Logo" className="cursor-pointer w-40 h-auto md:w-60" />
+      <a href="/">
+        <img src={Logo} alt="Logo" className="w-40 h-auto cursor-pointer md:w-60" />
       </a>
         <Button color={BLUE_700} variant="ghost">
-          <a href="/home">Home</a>
+          <a href="/">Home</a>
         </Button>
       </Flex>
     </Container>

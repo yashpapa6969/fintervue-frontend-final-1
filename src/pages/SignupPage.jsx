@@ -1,7 +1,7 @@
 import SignupForm from "../components/forms/SignupForm";
 import { useState } from "react";
 import LoadingBar from "react-top-loading-bar";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import {
     FrontendIcon1,
@@ -28,6 +28,9 @@ const SignupPage = () => {
     const toast = useToast();
     const navigate = useNavigate();
     const { setUser } = useUser();
+    const [searchParams] = useSearchParams();
+
+    const email = searchParams.get("email");
 
     const [loading, setLoading] = useState(false);
     const [currentStep, setCurrentStep] = useState(1);
@@ -481,6 +484,7 @@ const SignupPage = () => {
                             <SignupForm
                                 formData={candidateData}
                                 handleChange={handleChange}
+                                email={email}
                             />
                         </div>
                     </div>

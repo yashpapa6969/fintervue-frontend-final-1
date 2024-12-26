@@ -3,24 +3,18 @@ import { Navigate, useLocation } from "react-router-dom";
 import Session from "supertokens-web-js/recipe/session";
 import { useUser } from "./context/UserProvider";
 
-async function doesSessionExist() {
-    if (await Session.doesSessionExist()) return true;
-    else return false;
-}
-
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     const { user, setUser } = useUser();
     const location = useLocation();
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
     const isInterViewerRotute = location.pathname.includes("/interviewer");
 
     useEffect(() => {
-        setIsLoading(true);
-
         const funcToSetIsLoggedIn = async () => {
-            const sessionExists = await doesSessionExist();
+            const sessionExists = await Session.doesSessionExist();
+            console.log(sessionExists);
             setIsLoggedIn(sessionExists);
             if (!sessionExists) {
                 setUser(null);

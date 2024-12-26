@@ -15,7 +15,6 @@ const checkEmail = async (email: string) => {
             return true;
         }
 
-        console.log("here check email");
         return false;
     } catch (err: any) {
         if (err.isSuperTokensGeneralError === true) {
@@ -52,20 +51,17 @@ const handleSignup = async (email: string, password: string) => {
 
                 // Password validation failed.
                 // Maybe it didn't match the password strength
-                console.log("this err 1");
-
                 throw new Error(formField.error);
             });
         } else if (response.status === "SIGN_UP_NOT_ALLOWED") {
             // the reason string is a user friendly message
             // about what went wrong. It can also contain a support code which users
             // can tell you so you know why their sign up was not allowed.
-            console.log("this err 2");
             throw new Error(response.reason);
         } else {
             // sign up successful. The session tokens are automatically handled by
             // the frontend SDK.
-            console.log("here sign up");
+            return;
         }
     } catch (err: any) {
         if (err.isSuperTokensGeneralError === true) {
@@ -109,7 +105,6 @@ const handleLogin = async (email: string, password: string) => {
         } else {
             // sign in successful. The session tokens are automatically handled by
             // the frontend SDK.
-            console.log("here log in");
             return true;
         }
     } catch (err: any) {
@@ -136,7 +131,6 @@ const addInterviewee = async (formData: FormData) => {
             }
         );
 
-        console.log("here add");
         return response.data as Interviewee;
     } catch (error) {
         throw new Error();
@@ -153,9 +147,9 @@ const getIntervieweeData = async (email: string, password: string) => {
                     "Content-Type": "application/json",
                 },
             }
-        );
-
-        return response.data as Interviewee;
+            );
+            
+            return response.data as Interviewee;
     } catch (error) {
         throw new Error();
     }
@@ -183,7 +177,7 @@ export const signUpFlow = async (
 
 export const loginFlow = async (email: string, password: string) => {
     const loginSuccess = await handleLogin(email, password);
-
+    
     if (loginSuccess) {
         const interviewee = await getIntervieweeData(email, password);
         return interviewee;

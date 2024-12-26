@@ -4,10 +4,12 @@ import logo from "../assests/logo/logo4.jpeg";
 import Navbar from "../components/navbar";
 import { loginFlow } from "../lib/services/candidate.auth";
 import { useUser } from "../context/UserProvider";
+import { useToast } from "@chakra-ui/react";
 
 const LoginInterviewee = () => {
     const { setUser } = useUser();
     const navigate = useNavigate();
+    const toast = useToast();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -29,7 +31,7 @@ const LoginInterviewee = () => {
             if (interviewee) {
                 setUser({
                     type: "interviewee",
-                    user: interviewee,
+                    user: interviewee.user,
                 });
 
                 toast({

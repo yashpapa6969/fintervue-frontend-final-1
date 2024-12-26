@@ -22,7 +22,7 @@ import {
 } from "../assests/Domain_images";
 
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import config from "../config";
 import { signUpFlow } from "../lib/services/interviewer.auth";
 import { useUser } from "../context/UserProvider";
@@ -31,6 +31,9 @@ const InterviewerSignupPage = () => {
     const toast = useToast();
     const navigate = useNavigate();
     const { setUser } = useUser();
+
+    const [searchParams] = useSearchParams();
+    const email = searchParams.get("email")
 
     const [loading, setLoading] = useState(false);
     const [currentStep, setCurrentStep] = useState(1);
@@ -564,6 +567,7 @@ const InterviewerSignupPage = () => {
                                 handleChange={handleChange}
                                 handleFileChange={handleFileChange}
                                 errors={errors}
+                                email={email}
                             />
                         </div>
                     </div>
