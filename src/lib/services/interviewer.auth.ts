@@ -121,7 +121,7 @@ const handleLogin = async (email: string, password: string) => {
 const addInterviewer = async (formData: FormData) => {
     try {
         const response = await axios.post(
-            `http://localhost:2000/api/interviewer/AddInterviewer`,
+            `http://api.fintervue.com/api/interviewer/AddInterviewer`,
             formData,
             {
                 headers: {
@@ -139,7 +139,7 @@ const addInterviewer = async (formData: FormData) => {
 const getInterviewerData = async (email: string, password: string) => {
     try {
         const response = await axios.post(
-            `http://localhost:2000/api/interviewer/interviewerlogin`,
+            `http://api.fintervue.com/api/interviewer/interviewerlogin`,
             { email, password },
             {
                 headers: {
