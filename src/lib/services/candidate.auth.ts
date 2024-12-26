@@ -4,6 +4,8 @@ import { doesEmailExist } from "supertokens-web-js/recipe/emailpassword";
 import axios from "axios";
 import { Interviewee } from "../types/auth.types";
 import Session from "supertokens-web-js/recipe/session";
+// @ts-expect-error
+import config from "../../config"
 
 const checkEmail = async (email: string) => {
     try {
@@ -122,7 +124,7 @@ const handleLogin = async (email: string, password: string) => {
 const addInterviewee = async (formData: FormData) => {
     try {
         const response = await axios.post(
-            `http://api.fintervue.com/api/interviewee/AddInterviewee`,
+            `${config.uploadBaseUrl}/api/interviewee/AddInterviewee`,
             formData,
             {
                 headers: {
@@ -140,7 +142,7 @@ const addInterviewee = async (formData: FormData) => {
 const getIntervieweeData = async (email: string, password: string) => {
     try {
         const response = await axios.post(
-            `http://api.fintervue.com/api/interviewee/intervieweelogin`,
+            `${config.uploadBaseUrl}/api/interviewee/intervieweelogin`,
             { email, password },
             {
                 headers: {
