@@ -33,7 +33,8 @@ const DomainSelector = ({ onDomainSelect, loading }) => {
     { name: "Finance_Engineer", description: "Finance Engineer" },
     { name: "SAP_Developer", description: "SAP Developer" },
     { name: "Administration_HR_Compliance", description: "Administration HR Compliance" },
-    { name: "test", description: "Testing" }
+    { name: "test", description: "Testing" },
+    { name: "client_relationship_manager", description: "Client Relations Management (CRM)" }
 
   ]);
   
