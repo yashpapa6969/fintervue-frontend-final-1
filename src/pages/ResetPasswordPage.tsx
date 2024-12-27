@@ -60,7 +60,7 @@ const ResetPasswordPage = () => {
                             type="radio"
                             name="notice_period"
                             value="candidate"
-                            onChange={(e) => setType("candidate")}
+                            onChange={(e) => setType("interviewee")}
                             className="cursor-pointer"
                         />
                         <span className="ml-2">Candidate</span>
