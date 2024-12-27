@@ -1,5 +1,8 @@
+import axios from "axios";
 import { sendPasswordResetEmail } from "supertokens-web-js/recipe/emailpassword";
 import { submitNewPassword } from "supertokens-web-js/recipe/emailpassword";
+//@ts-expect-error
+import config from "../../config";
 
 export async function sendEmailClicked(email: string) {
     try {
@@ -38,7 +41,11 @@ export async function sendEmailClicked(email: string) {
     return false;
 }
 
-export async function newPasswordEntered(newPassword: string) {
+export async function newPasswordEntered(
+    email: string,
+    newPassword: string,
+    type: string
+) {
     try {
         let response = await submitNewPassword({
             formFields: [
@@ -61,8 +68,14 @@ export async function newPasswordEntered(newPassword: string) {
             window.alert("Password reset failed. Please try again");
             window.location.assign("/auth"); // back to the login scree.
         } else {
-            window.alert("Password reset successful!");
-            return true;
+            const isUpdated = await resetPassword(email, newPassword, type);
+            if (isUpdated) {
+                window.alert("Password reset successful!");
+                return true;
+            } else {
+                window.alert("Password reset failed at our end!");
+                return false;
+            }
         }
     } catch (err: any) {
         if (err.isSuperTokensGeneralError === true) {
@@ -74,3 +87,22 @@ export async function newPasswordEntered(newPassword: string) {
     }
     return false;
 }
+
+export const resetPassword = async (
+    email: string,
+    newPassword: string,
+    type: string
+) => {
+    try {
+        const response = await axios.post(
+            `${config.uploadBaseUrl}/api/${type}/forgotPassword`,
+            {
+                email,
+                newPassword,
+            }
+        );
+        return true;
+    } catch (error) {
+        return false;
+    }
+};

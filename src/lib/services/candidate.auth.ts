@@ -6,6 +6,7 @@ import { Interviewee } from "../types/auth.types";
 import Session from "supertokens-web-js/recipe/session";
 // @ts-expect-error
 import config from "../../config";
+import { OAUTH_PASSWORD } from "../constants";
 
 const checkEmail = async (email: string) => {
     try {
@@ -178,6 +179,7 @@ export const signUpFlow = async (
             throw new Error("Email already exists. Please sign in instead");
         }
     } else {
+        formData.set("password", OAUTH_PASSWORD);
         const interviewee = await addInterviewee(formData);
         return interviewee;
     }

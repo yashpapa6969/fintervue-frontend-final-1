@@ -18,6 +18,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import GoogleOauthCallbackPage from "./pages/GoogleOauthCallbackPage";
+import ChoseSignUpPage from "./pages/ChoseSignUpPage"
 
 import ResumeBuilderPage from "./products/resumeBuilder";
 
@@ -55,6 +56,7 @@ const router = createBrowserRouter([
             { path: "candidate", element: <Lazy.CandidateSignupPage /> },
             { path: "organisation", element: <Lazy.OrganizationSignupPage /> },
             { path: "interviewer", element: <Lazy.InterviewerSignupPage /> },
+            { path: "choose", element: <ChoseSignUpPage /> },
         ],
     },
     {

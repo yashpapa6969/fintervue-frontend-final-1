@@ -44,7 +44,7 @@ export async function handleGoogleCallback(type: string) {
             ) {
                 return {
                     id: response.user.id,
-                    email: response.user.emails,
+                    email: response.user.emails[0],
                     newUser: response.createdNewRecipeUser,
                     type,
                 };

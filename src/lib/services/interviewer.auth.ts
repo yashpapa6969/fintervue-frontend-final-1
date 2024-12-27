@@ -5,7 +5,8 @@ import axios from "axios";
 import { Interviewer } from "../types/auth.types";
 import Session from "supertokens-web-js/recipe/session";
 // @ts-expect-error
-import config from "../../config"
+import config from "../../config";
+import { OAUTH_PASSWORD } from "../constants";
 
 const checkEmail = async (email: string) => {
     try {
@@ -42,15 +43,15 @@ const handleSignup = async (email: string, password: string) => {
                 },
             ],
         });
-        
+
         if (response.status === "FIELD_ERROR") {
             // one of the input formFields failed validation
             response.formFields.forEach((formField) => {
                 // Email validation failed (for example incorrect email syntax),
                 // or the email is not unique.
-                
+
                 // OR
-                
+
                 // Password validation failed.
                 // Maybe it didn't match the password strength
                 throw new Error(formField.error);
@@ -88,7 +89,7 @@ const handleLogin = async (email: string, password: string) => {
                 },
             ],
         });
-        
+
         if (response.status === "FIELD_ERROR") {
             response.formFields.forEach((formField) => {
                 if (formField.id === "email") {
@@ -159,30 +160,45 @@ const getInterviewerData = async (email: string, password: string) => {
 export const signUpFlow = async (
     email: string,
     password: string,
-    formData: FormData
+    formData: FormData,
+    isOauth: boolean = false
 ) => {
-    const doesEmailExist = await checkEmail(email);
+    if (!isOauth) {
+        const doesEmailExist = await checkEmail(email);
 
-    if (!doesEmailExist) {
-        await handleSignup(email, password);
-        const interviewer = await addInterviewer(formData);
-        const loginSuccess = await handleLogin(email, password);
+        if (!doesEmailExist) {
+            await handleSignup(email, password);
+            const interviewer = await addInterviewer(formData);
+            const loginSuccess = await handleLogin(email, password);
 
-        if (loginSuccess) {
-            return interviewer;
-        } else return null;
+            if (loginSuccess) {
+                return interviewer;
+            } else return null;
+        } else {
+            throw new Error("Email already exists. Please sign in instead");
+        }
     } else {
-        throw new Error("Email already exists. Please sign in instead");
+        formData.set("password", OAUTH_PASSWORD);
+        const interviewer = await addInterviewer(formData);
+        return interviewer;
     }
 };
 
-export const loginFlow = async (email: string, password: string) => {
+export const loginFlow = async (
+    email: string,
+    password: string,
+    isOauth: boolean = false
+) => {
     const loginSuccess = await handleLogin(email, password);
-
-    if (loginSuccess) {
+    if (!isOauth) {
+        if (loginSuccess) {
+            const interviewer = await getInterviewerData(email, password);
+            return interviewer;
+        } else return null;
+    } else {
         const interviewer = await getInterviewerData(email, password);
         return interviewer;
-    } else return null;
+    }
 };
 
 export const logout = async () => {

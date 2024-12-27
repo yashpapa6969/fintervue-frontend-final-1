@@ -33,7 +33,7 @@ const InterviewerSignupPage = () => {
     const { setUser } = useUser();
 
     const [searchParams] = useSearchParams();
-    const email = searchParams.get("email")
+    const email = searchParams.get("email");
 
     const [loading, setLoading] = useState(false);
     const [currentStep, setCurrentStep] = useState(1);
@@ -47,7 +47,7 @@ const InterviewerSignupPage = () => {
         phoneNumber: "",
         resume: "",
         email: "",
-        password: "",
+        password: email ? "Disabled due to google login" : "",
         linkedInProfile: "",
         industryExpertise: [],
         availability: {
@@ -410,7 +410,8 @@ const InterviewerSignupPage = () => {
             const interviewer = await signUpFlow(
                 interviewerData.email,
                 interviewerData.password,
-                formData
+                formData,
+                email ? true : false
             );
 
             if (interviewer) {
@@ -427,7 +428,7 @@ const InterviewerSignupPage = () => {
                     isClosable: true,
                 });
 
-                navigate("/display")
+                navigate("/display");
             }
         } catch (error) {
             setLoading(false);

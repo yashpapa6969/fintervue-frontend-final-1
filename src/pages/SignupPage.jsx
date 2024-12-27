@@ -45,7 +45,7 @@ const SignupPage = () => {
         profilePic: null,
         resume: null,
         email: email ? email : "",
-        password: "",
+        password: email ? "Disabled due to google login" : "",
         linkedInProfile: "",
         city: "",
         preferredCity: "",
