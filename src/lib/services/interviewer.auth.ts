@@ -124,7 +124,7 @@ const handleLogin = async (email: string, password: string) => {
 const addInterviewer = async (formData: FormData) => {
     try {
         const response = await axios.post(
-            `${config.uploadBaseUrl}/api/interviewer/AddInterviewer`,
+            `${config.apiBaseUrl}/api/interviewer/AddInterviewer`,
             formData,
             {
                 headers: {
@@ -142,7 +142,7 @@ const addInterviewer = async (formData: FormData) => {
 const getInterviewerData = async (email: string, password: string) => {
     try {
         const response = await axios.post(
-            `${config.uploadBaseUrl}/api/interviewer/Interviewerlogin`,
+            `${config.apiBaseUrl}/api/interviewer/Interviewerlogin`,
             { email, password },
             {
                 headers: {

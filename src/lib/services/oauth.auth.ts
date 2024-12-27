@@ -8,7 +8,7 @@ export async function googleSignInClicked() {
 
             // This is where Google should redirect the user back after login or error.
             // This URL goes on the Google's dashboard as well.
-            frontendRedirectURI: `http://localhost:5173/api/auth/callback/google`,
+            frontendRedirectURI: `https://fintervue.com/api/auth/callback/google`,
         });
 
         // we redirect the user to google for auth.

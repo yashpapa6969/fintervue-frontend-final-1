@@ -30,7 +30,7 @@ import config from "./config";
 
 SuperTokens.init({
     appInfo: {
-        apiDomain: `${config.uploadBaseUrl}`,
+        apiDomain: `${config.apiBaseUrl}`,
         apiBasePath: "/api",
         appName: "...",
     },
