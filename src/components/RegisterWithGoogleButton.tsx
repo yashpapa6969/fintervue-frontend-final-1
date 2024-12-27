@@ -1,3 +1,4 @@
+import { googleSignInClicked } from "@/lib/services/oauth.auth";
 import { useNavigate } from "react-router-dom";
 
 const RegisterWithGoogleButon = ({
@@ -10,8 +11,8 @@ const RegisterWithGoogleButon = ({
     return (
         <button
             className="w-full py-2 mt-2 text-center text-white bg-blue-500 rounded-md"
-            onClick={() => {
-                navigte(`/api/auth/callback/google?type=${type}`);
+            onClick={async () => {
+                window.location.assign(await googleSignInClicked());
             }}
         >
             Sign up with Google

@@ -106,7 +106,7 @@ const SignupForm = ({ formData, handleChange, email }) => {
               value={email ? email : formData?.email}
               onChange={(e) => handleChange("email", e.target.value)}
               className="px-3 py-2 transition-all border border-gray-300 rounded-md outline-none focus:border-blue-700"
-            />
+              />
           </InputGroup>
         </FormControl>
         <FormControl isRequired>
@@ -115,7 +115,6 @@ const SignupForm = ({ formData, handleChange, email }) => {
             <Input
               type="password"
               placeholder="Enter your password"
-              disabled={email ? true : false}
               value={formData?.password}
               onChange={(e) => handleChange("password", e.target.value)}
               className="px-3 py-2 transition-all border border-gray-300 rounded-md outline-none focus:border-blue-700"

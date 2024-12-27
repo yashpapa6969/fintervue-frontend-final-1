@@ -44,7 +44,7 @@ const SignupPage = () => {
         lastName: "",
         profilePic: null,
         resume: null,
-        email: "",
+        email: email ? email : "",
         password: "",
         linkedInProfile: "",
         city: "",
@@ -243,6 +243,7 @@ const SignupPage = () => {
 
     const handleSubmit = async () => {
         if (!canRegister) {
+            console.log(candidateData);
             toast({
                 title: "Error",
                 description: "Please fill in all the required fields.",
@@ -283,11 +284,11 @@ const SignupPage = () => {
             const interviewee = await signUpFlow(
                 candidateData.email,
                 candidateData.password,
-                formData
+                formData,
+                email ? true : false
             );
 
             if (interviewee) {
-                console.log(interviewee);
                 setUser({
                     type: "interviewee",
                     user: interviewee,

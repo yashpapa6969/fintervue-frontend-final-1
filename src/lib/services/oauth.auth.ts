@@ -8,7 +8,7 @@ export async function googleSignInClicked() {
 
             // This is where Google should redirect the user back after login or error.
             // This URL goes on the Google's dashboard as well.
-            frontendRedirectURI: `https://fintervue.com/api/auth/callback/google`,
+            frontendRedirectURI: `http://localhost:5173/api/auth/callback/google`,
         });
 
         // we redirect the user to google for auth.
@@ -23,16 +23,31 @@ export async function googleSignInClicked() {
     }
 }
 
-export async function handleGoogleCallback() {
+export async function handleGoogleCallback(type: string) {
     try {
         const response = await signInAndUp();
-
+        
         if (response.status === "OK") {
             if (
                 response.createdNewRecipeUser &&
                 response.user.loginMethods.length === 1
+                ) {
+                return {
+                    id: response.user.id,
+                    email: response.user.emails[0],
+                    newUser: response.createdNewRecipeUser,
+                    type,
+                };
+            } else if (
+                !response.createdNewRecipeUser &&
+                response.user.loginMethods.length === 1
             ) {
-                return { id: response.user.id, email: response.user.emails };
+                return {
+                    id: response.user.id,
+                    email: response.user.emails,
+                    newUser: response.createdNewRecipeUser,
+                    type,
+                };
             } else {
                 throw new Error("Error trying to log you in! try again soon.");
             }
@@ -57,6 +72,7 @@ export async function handleGoogleCallback() {
             // this may be a custom error message sent from the API by you.
             throw new Error(err.message);
         } else {
+            console.log(err);
             throw new Error("Oops! Something went wrong.");
         }
     }

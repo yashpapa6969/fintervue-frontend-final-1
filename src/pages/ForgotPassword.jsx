@@ -12,7 +12,7 @@ const ForgotPassword = () => {
                 onSubmit={async (e) => {
                     e.preventDefault();
 
-                    const isSent = await sendEmailClicked();
+                    const isSent = await sendEmailClicked(email);
                     if (isSent) {
                         useToast({
                             title: "Email sent",

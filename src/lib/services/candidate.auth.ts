@@ -5,7 +5,7 @@ import axios from "axios";
 import { Interviewee } from "../types/auth.types";
 import Session from "supertokens-web-js/recipe/session";
 // @ts-expect-error
-import config from "../../config"
+import config from "../../config";
 
 const checkEmail = async (email: string) => {
     try {
@@ -150,8 +150,8 @@ const getIntervieweeData = async (email: string, password: string) => {
                 },
             }
         );
-            
-            return response.data as Interviewee;
+
+        return response.data as Interviewee;
     } catch (error) {
         throw new Error();
     }
@@ -160,30 +160,45 @@ const getIntervieweeData = async (email: string, password: string) => {
 export const signUpFlow = async (
     email: string,
     password: string,
-    formData: FormData
+    formData: FormData,
+    isOauth: boolean = false
 ) => {
-    const doesEmailExist = await checkEmail(email);
+    if (!isOauth) {
+        const doesEmailExist = await checkEmail(email);
 
-    if (!doesEmailExist) {
-        await handleSignup(email, password);
-        const interviewee = await addInterviewee(formData);
-        const loginSuccess = await handleLogin(email, password);
+        if (!doesEmailExist) {
+            await handleSignup(email, password);
+            const interviewee = await addInterviewee(formData);
+            const loginSuccess = await handleLogin(email, password);
 
-        if (loginSuccess) {
-            return interviewee;
-        } else return null;
+            if (loginSuccess) {
+                return interviewee;
+            } else return null;
+        } else {
+            throw new Error("Email already exists. Please sign in instead");
+        }
     } else {
-        throw new Error("Email already exists. Please sign in instead");
+        const interviewee = await addInterviewee(formData);
+        return interviewee;
     }
 };
 
-export const loginFlow = async (email: string, password: string) => {
-    const loginSuccess = await handleLogin(email, password);
-    
-    if (loginSuccess) {
+export const loginFlow = async (
+    email: string,
+    password: string,
+    isOauth: boolean = false
+) => {
+    if (!isOauth) {
+        const loginSuccess = await handleLogin(email, password);
+
+        if (loginSuccess) {
+            const interviewee = await getIntervieweeData(email, password);
+            return interviewee;
+        } else return null;
+    } else {
         const interviewee = await getIntervieweeData(email, password);
         return interviewee;
-    } else return null;
+    }
 };
 
 export const logout = async () => {

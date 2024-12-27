@@ -14,7 +14,6 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     useEffect(() => {
         const funcToSetIsLoggedIn = async () => {
             const sessionExists = await Session.doesSessionExist();
-            console.log(sessionExists);
             setIsLoggedIn(sessionExists);
             if (!sessionExists) {
                 setUser(null);
