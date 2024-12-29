@@ -4,7 +4,7 @@ import { Menu, X } from "lucide-react";
 import Logo from "../assests/logo/logo.png";
 import { useUser } from "../context/UserProvider";
 import { logout } from "../lib/services/candidate.auth";
-import UserProfile from "./UserProfile"
+import UserProfile from "./UserProfile";
 
 function Navbar() {
     const { user, setUser } = useUser();
@@ -74,7 +74,7 @@ function Navbar() {
                                 <p className="text-center">
                                     Hey{" "}
                                     <span className="font-bold">
-                                        {user.user.user?.firstName}!
+                                        {user.user.firstName}!
                                     </span>
                                 </p>
                                 <UserProfile />

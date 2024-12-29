@@ -442,13 +442,6 @@ const InterviewerSignupPage = () => {
             return;
         }
         setLoading(false);
-        toast({
-            title: "Error",
-            description: "Something went wrong. Please try again.",
-            variant: "top-accent",
-            status: "error",
-            isClosable: true,
-        });
     };
 
     // Update the handleFileChange function to properly handle file objects

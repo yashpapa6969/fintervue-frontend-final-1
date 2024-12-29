@@ -21,6 +21,7 @@ import GoogleOauthCallbackPage from "./pages/GoogleOauthCallbackPage";
 import ChoseSignUpPage from "./pages/ChoseSignUpPage";
 import ResumeBuilderPage from "./products/resumeBuilder";
 import VerifySessionComponent from "./components/VerifySessionComponent";
+import UserProfilePage from "./pages/UserProfilePage";
 
 import SuperTokens from "supertokens-web-js";
 import Session from "supertokens-web-js/recipe/session";
@@ -137,6 +138,14 @@ const router = createBrowserRouter([
                 ),
             },
         ],
+    },
+    {
+        path: "/user-profile",
+        element: (
+            <ProtectedRoute>
+                <UserProfilePage />
+            </ProtectedRoute>
+        ),
     },
     {
         path: "/analysis",

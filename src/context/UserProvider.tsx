@@ -1,4 +1,4 @@
-import { User } from "@/lib/types/auth.types";
+import { Interviewee, Interviewer, User } from "@/lib/types/auth.types";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 const UserContext = createContext<{
@@ -12,9 +12,9 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         user: null,
     });
 
-    const setUserWithLocalStorage = (user: User) => {
-        localStorage.setItem("user", JSON.stringify(user));
-        setUser(user);
+    const setUserWithLocalStorage = (newUser: User) => {
+        localStorage.setItem("user", JSON.stringify(newUser.user));
+        setUser(newUser);
     };
 
     useEffect(() => {
@@ -22,15 +22,15 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
         if (user) {
             const parsedUser = JSON.parse(user);
-            if (parsedUser.interviewee_id || parsedUser.interviewer_id) {
+            if (parsedUser.interviewee_id) {
                 setUser({
                     type: "interviewee",
-                    user: parsedUser,
+                    user: parsedUser as Interviewee,
                 });
             } else {
                 setUser({
                     type: "interviewer",
-                    user: parsedUser,
+                    user: parsedUser as Interviewer,
                 });
             }
         }

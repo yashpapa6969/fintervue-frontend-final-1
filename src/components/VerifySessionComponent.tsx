@@ -8,13 +8,16 @@ const VerifySessionComponent = ({
 }: {
     children: React.ReactNode;
 }) => {
-    const { user, setUser } = useUser();;
+    const { user, setUser } = useUser();
 
     useEffect(() => {
         const intervalId = setInterval(() => {
             if (!Session.doesSessionExist()) {
                 if (user !== null) {
-                    setUser(null);
+                    setUser({
+                        type: "null",
+                        user: null,
+                    });
                 }
             }
         }, VERIFY_SESSION_INTERVAL);

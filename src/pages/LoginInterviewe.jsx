@@ -43,6 +43,8 @@ const LoginInterviewee = () => {
                 });
 
                 navigate(from, { replace: true });
+            } else {
+                throw new Error();
             }
         } catch (error) {
             console.error("Login error:", error);

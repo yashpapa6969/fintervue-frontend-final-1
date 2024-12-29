@@ -151,7 +151,7 @@ const getInterviewerData = async (email: string, password: string) => {
             }
         );
 
-        return response.data as Interviewer;
+        return response.data;
     } catch (error) {
         throw new Error();
     }
@@ -193,11 +193,11 @@ export const loginFlow = async (
     if (!isOauth) {
         if (loginSuccess) {
             const interviewer = await getInterviewerData(email, password);
-            return interviewer;
+            return interviewer.user as Interviewer;
         } else return null;
     } else {
         const interviewer = await getInterviewerData(email, password);
-        return interviewer;
+        return interviewer.user as Interviewer;
     }
 };
 

@@ -39,6 +39,8 @@ const LoginInterviewer = () => {
                 });
 
                 navigate("/display");
+            } else {
+                throw new Error();
             }
         } catch (error) {
             // Handle login error

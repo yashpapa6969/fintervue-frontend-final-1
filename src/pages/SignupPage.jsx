@@ -243,7 +243,6 @@ const SignupPage = () => {
 
     const handleSubmit = async () => {
         if (!canRegister) {
-            console.log(candidateData);
             toast({
                 title: "Error",
                 description: "Please fill in all the required fields.",
@@ -304,14 +303,6 @@ const SignupPage = () => {
 
                 navigate("/display");
             }
-
-            toast({
-                title: "Welcome",
-                description: "Successfully registered interviewee.",
-                variant: "top-accent",
-                status: "success",
-                isClosable: true,
-            });
         } catch (error) {
             toast({
                 title: "Error",
@@ -321,7 +312,6 @@ const SignupPage = () => {
                 isClosable: true,
             });
             setLoading(false);
-            return;
         }
         setLoading(false);
     };

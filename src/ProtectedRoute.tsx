@@ -16,7 +16,10 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
             const sessionExists = await Session.doesSessionExist();
             setIsLoggedIn(sessionExists);
             if (!sessionExists) {
-                setUser(null);
+                setUser({
+                    type: "null",
+                    user: null,
+                });
             }
 
             setIsLoading(false);

@@ -1,47 +1,60 @@
 import React, { useState } from "react";
 import { sendEmailClicked } from "../lib/services/forgotpw.auth";
 import { useToast } from "@chakra-ui/react";
+import Navbar from "../components/navbar";
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    const toast = useToast();
 
     return (
-        <div className="w-full h-[100vh] grid place-content-center">
-            <form
-                className="w-[300px] flex flex-col gap-3 border-black border-2 p-5"
-                onSubmit={async (e) => {
-                    e.preventDefault();
+        <>
+            <Navbar />
 
-                    const isSent = await sendEmailClicked(email);
-                    if (isSent) {
-                        useToast({
-                            title: "Email sent",
-                            description: "Check your inbox for the email.",
-                            variant: "top-accent",
-                            status: "success",
-                            isClosable: true,
-                        });
-                    }
-                }}
-            >
-                <h1 className="text-2xl font-bold">Enter your email:</h1>
-                <input
-                    className="w-full p-2 border-2 border-black rounded-md"
-                    type="text"
-                    name="pass"
-                    placeholder="New Password"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                />
-                <button
-                    type="submit"
-                    className="w-full py-2 text-white bg-blue-500 rounded-full"
-                    disabled={email.length === 0}
+            <div className="w-full h-[80vh] grid place-content-center">
+                <form
+                    className="w-[300px] flex flex-col gap-3 border-black border-2 p-5"
+                    onSubmit={async (e) => {
+                        e.preventDefault();
+
+                        setLoading(true);
+
+                        const isSent = await sendEmailClicked(email);
+                        
+                        if (isSent) {
+                            toast({
+                                title: "Email sent",
+                                description: "Check your inbox for the email.",
+                                variant: "top-accent",
+                                status: "success",
+                                isClosable: true,
+                            });
+                        }
+
+                        setLoading(false);
+                    }}
                 >
-                    Change Password
-                </button>
-            </form>
-        </div>
+                    <h1 className="text-2xl font-bold">Enter your email:</h1>
+                    <input
+                        className="w-full p-2 border-2 border-black rounded-md"
+                        type="email"
+                        name="pass"
+                        placeholder="New Password"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
+                    <button
+                        type="submit"
+                        className="w-full py-2 text-white bg-blue-500 rounded-full disabled:opacity-50"
+                        disabled={loading}
+                    >
+                        Change Password
+                    </button>
+                </form>
+            </div>
+        </>
     );
 };
 

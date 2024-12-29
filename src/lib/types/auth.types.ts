@@ -1,7 +1,7 @@
 export type User = {
     type: "interviewee" | "interviewer" | "null";
     user: Interviewee | Interviewer | null;
-} | null;
+};
 
 export type Interviewee = {
     firstName?: string;
