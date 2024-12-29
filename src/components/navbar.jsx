@@ -4,6 +4,7 @@ import { Menu, X } from "lucide-react";
 import Logo from "../assests/logo/logo.png";
 import { useUser } from "../context/UserProvider";
 import { logout } from "../lib/services/candidate.auth";
+import UserProfile from "./UserProfile"
 
 function Navbar() {
     const { user, setUser } = useUser();
@@ -76,17 +77,7 @@ function Navbar() {
                                         {user.user.user?.firstName}!
                                     </span>
                                 </p>
-                                <button
-                                    className="w-full px-4 py-2 mr-2 text-sm font-medium text-center text-white bg-gray-800 rounded-md"
-                                    onClick={async () => {
-                                        await logout();
-                                        setUser(null);
-                                        localStorage.removeItem("user");
-                                        navigate("/signup");
-                                    }}
-                                >
-                                    Logout
-                                </button>
+                                <UserProfile />
                             </div>
                         )}
                     </div>

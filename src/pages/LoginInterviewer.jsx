@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../assests/logo/logo4.jpeg";
-import config from "../config";
 
 import Navbar from "../components/navbar";
-import axios from "axios";
+import { useToast } from "@chakra-ui/react";
 import { loginFlow } from "../lib/services/interviewer.auth";
 import { useUser } from "../context/UserProvider";
 //import useSignIn from "react-auth-kit";

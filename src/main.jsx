@@ -18,9 +18,9 @@ import ProtectedRoute from "./ProtectedRoute";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import GoogleOauthCallbackPage from "./pages/GoogleOauthCallbackPage";
-import ChoseSignUpPage from "./pages/ChoseSignUpPage"
-
+import ChoseSignUpPage from "./pages/ChoseSignUpPage";
 import ResumeBuilderPage from "./products/resumeBuilder";
+import VerifySessionComponent from "./components/VerifySessionComponent";
 
 import SuperTokens from "supertokens-web-js";
 import Session from "supertokens-web-js/recipe/session";
@@ -240,9 +240,11 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <ChakraProvider>
         <HMSRoomProvider>
             <UserProvider>
-                <Suspense fallback={<Loader />}>
-                    <RouterProvider router={router} />
-                </Suspense>
+                <VerifySessionComponent>
+                    <Suspense fallback={<Loader />}>
+                        <RouterProvider router={router} />
+                    </Suspense>
+                </VerifySessionComponent>
             </UserProvider>
         </HMSRoomProvider>
     </ChakraProvider>
