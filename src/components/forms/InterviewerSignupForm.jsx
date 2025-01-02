@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { FormControl, FormErrorMessage, FormLabel, Input, InputGroup } from "@chakra-ui/react";
 
-const InterviewerSignupForm = ({ formData, handleChange, errors }) => {
+const InterviewerSignupForm = ({ formData, handleChange, errors, email }) => {
   const [dragOver, setDragOver] = useState(false);
   const [fileError, setFileError] = useState("");
   const fileInputRef = useRef(null);
@@ -59,14 +59,14 @@ const InterviewerSignupForm = ({ formData, handleChange, errors }) => {
   };
 
   return (
-    <div className="flex flex-col gap-4 px-4 w-full mb-24"> {/* Added mb-24 to prevent overlap */}
+    <div className="flex flex-col w-full gap-4 px-4 mb-24"> {/* Added mb-24 to prevent overlap */}
       {/* First Name & Last Name */}
-      <div className="flex flex-col md:flex-row gap-5">
+      <div className="flex flex-col gap-5 md:flex-row">
         <FormControl isInvalid={!!errors?.firstName} isRequired className="w-full">
           <FormLabel className="font-medium text-gray-700">First Name</FormLabel>
           <InputGroup>
             <Input
-              className="outline-none border border-gray-300 rounded-md py-2 px-3 transition-all focus:border-blue-700"
+              className="px-3 py-2 transition-all border border-gray-300 rounded-md outline-none focus:border-blue-700"
               type="text"
               placeholder="Enter your first name"
               value={formData?.firstName}
@@ -79,7 +79,7 @@ const InterviewerSignupForm = ({ formData, handleChange, errors }) => {
           <FormLabel className="font-medium text-gray-700">Last Name</FormLabel>
           <InputGroup>
             <Input
-              className="outline-none border border-gray-300 rounded-md py-2 px-3 transition-all focus:border-blue-700"
+              className="px-3 py-2 transition-all border border-gray-300 rounded-md outline-none focus:border-blue-700"
               type="text"
               placeholder="Enter your last name"
               value={formData?.lastName}
@@ -91,12 +91,12 @@ const InterviewerSignupForm = ({ formData, handleChange, errors }) => {
       </div>
 
       {/* Phone Number & email */}
-      <div className="flex flex-col md:flex-row gap-5">
+      <div className="flex flex-col gap-5 md:flex-row">
         <FormControl isInvalid={!!errors?.phoneNumber} isRequired className="w-full">
           <FormLabel className="font-medium text-gray-700">Phone Number</FormLabel>
           <InputGroup>
             <Input
-              className="outline-none border border-gray-300 rounded-md py-2 px-3 transition-all focus:border-blue-700"
+              className="px-3 py-2 transition-all border border-gray-300 rounded-md outline-none focus:border-blue-700"
               type="tel"
               placeholder="Enter your phone number"
               value={formData?.phoneNumber}
@@ -109,12 +109,13 @@ const InterviewerSignupForm = ({ formData, handleChange, errors }) => {
           <FormLabel className="font-medium text-gray-700">Email</FormLabel>
           <InputGroup>
             <Input
-              className="outline-none border border-gray-300 rounded-md py-2 px-3 transition-all focus:border-blue-700"
+              className="px-3 py-2 transition-all border border-gray-300 rounded-md outline-none focus:border-blue-700"
               type="email"
               placeholder="Enter your email address"
-              value={formData?.email}
+              disabled={email ? true : false}
+              value={email ? email : formData?.email}
               onChange={(e) => handleChange("email", e.target.value)}
-            />
+              />
           </InputGroup>
           {errors?.email && <FormErrorMessage>{errors.email}</FormErrorMessage>}
         </FormControl>
@@ -125,12 +126,12 @@ const InterviewerSignupForm = ({ formData, handleChange, errors }) => {
         <FormLabel className="font-medium text-gray-700">LinkedIn URL</FormLabel>
         <InputGroup>
           <Input
-            className="outline-none border border-gray-300 rounded-md py-2 px-3 transition-all focus:border-blue-700"
+            className="px-3 py-2 transition-all border border-gray-300 rounded-md outline-none focus:border-blue-700"
             type="text"
             placeholder="Enter your LinkedIn profile"
             value={formData?.linkedInProfile}
             onChange={(e) => handleChange("linkedInProfile", e.target.value)}
-          />
+            />
         </InputGroup>
         {errors?.linkedInProfile && <FormErrorMessage>{errors.linkedInProfile}</FormErrorMessage>}
       </FormControl>
@@ -140,7 +141,8 @@ const InterviewerSignupForm = ({ formData, handleChange, errors }) => {
         <FormLabel className="font-medium text-gray-700">Password</FormLabel>
         <InputGroup>
           <Input
-            className="outline-none border border-gray-300 rounded-md py-2 px-3 transition-all focus:border-blue-700"
+            className="px-3 py-2 transition-all border border-gray-300 rounded-md outline-none focus:border-blue-700"
+            disabled={email ? true : false}
             type="password"
             placeholder="Create a password"
             value={formData?.password}
@@ -182,7 +184,7 @@ const InterviewerSignupForm = ({ formData, handleChange, errors }) => {
 
       {/* Updated Resume Preview */}
       {formData?.resume && (
-        <div className="mt-4 p-3 bg-gray-50 rounded-md">
+        <div className="p-3 mt-4 rounded-md bg-gray-50">
           <p className="font-medium">Resume Uploaded:</p>
           <p className="text-sm text-gray-600">{formData.resume.name}</p>
         </div>
@@ -191,7 +193,7 @@ const InterviewerSignupForm = ({ formData, handleChange, errors }) => {
       {/* WhatsApp Opt-in */}
       <div className="flex items-center gap-2 mb-4">
         <input type="checkbox" id="whatsapp_opt_in" className="cursor-pointer" />
-        <label htmlFor="whatsapp_opt_in" className="text-md font-semibold text-gray-600 cursor-pointer">
+        <label htmlFor="whatsapp_opt_in" className="font-semibold text-gray-600 cursor-pointer text-md">
           Send me important updates & promotions via SMS, email, and{" "}
           <span className="text-green-500">WhatsApp</span>
         </label>
