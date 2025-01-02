@@ -20,11 +20,11 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
                 ? (newUser.user as Interviewee).interviewee_id 
                 : (newUser.user as Interviewer).interviewer_id;
                 
-            localStorage.setItem("userId", userId);
+            localStorage.setItem("userId", userId as string);
             localStorage.setItem("userType", newUser.type);
         } else {
             localStorage.removeItem("userId");
-            localStorage.removeItem("userType");
+            localStorage.removeItem("userType"  );
         }
         
         setUser(newUser);
