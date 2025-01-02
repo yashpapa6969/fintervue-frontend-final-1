@@ -3,7 +3,7 @@ const config = {
     development: {
         enableLogging: true,
         uploadBaseUrl:
-            "hhttps://api.fintervue.com",
+            "https://api.fintervue.com",
         mlBaseUrl: "https://api.fintervue.com",
         apiBaseUrl: "http://localhost:2000",
     },
