@@ -14,6 +14,19 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
     const setUserWithLocalStorage = (newUser: User) => {
         localStorage.setItem("user", JSON.stringify(newUser));
+        
+        if (newUser.user) {
+            const userId = newUser.type === "interviewee" 
+                ? (newUser.user as Interviewee).interviewee_id 
+                : (newUser.user as Interviewer).interviewer_id;
+                
+            localStorage.setItem("userId", userId);
+            localStorage.setItem("userType", newUser.type);
+        } else {
+            localStorage.removeItem("userId");
+            localStorage.removeItem("userType");
+        }
+        
         setUser(newUser);
     };
 
