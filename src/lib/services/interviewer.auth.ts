@@ -193,11 +193,17 @@ export const loginFlow = async (
     if (!isOauth) {
         if (loginSuccess) {
             const interviewer = await getInterviewerData(email, password);
-            return interviewer.user as Interviewer;
+            return {
+                user: interviewer.user,
+                interviewer_id: interviewer.interviewer_id   
+            };
         } else return null;
     } else {
         const interviewer = await getInterviewerData(email, password);
-        return interviewer.user as Interviewer;
+        return {
+            user: interviewer.user,
+            interviewer_id: interviewer.interviewer_id
+        };
     }
 };
 

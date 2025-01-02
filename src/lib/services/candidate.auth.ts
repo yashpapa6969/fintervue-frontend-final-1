@@ -195,11 +195,17 @@ export const loginFlow = async (
 
         if (loginSuccess) {
             const interviewee = await getIntervieweeData(email, password);
-            return interviewee;
+            return {
+                user: interviewee,
+                interviewee_id: interviewee.interviewee_id
+            };
         } else return null;
     } else {
         const interviewee = await getIntervieweeData(email, password);
-        return interviewee;
+        return {
+            user: interviewee,
+            interviewee_id: interviewee.interviewee_id
+        };
     }
 };
 

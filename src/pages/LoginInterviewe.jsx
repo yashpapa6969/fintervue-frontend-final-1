@@ -34,9 +34,11 @@ const LoginInterviewee = () => {
                     user: interviewee.user,
                 });
 
+                localStorage.setItem('userId', interviewee.interviewee_id);
+
                 toast({
                     title: "Welcome",
-                    description: "Successfully loggen in interviewee.",
+                    description: "Successfully logged in interviewee.",
                     variant: "top-accent",
                     status: "success",
                     isClosable: true,
