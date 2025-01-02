@@ -195,6 +195,10 @@ export const loginFlow = async (
 
         if (loginSuccess) {
             const interviewee = await getIntervieweeData(email, password);
+            // Store necessary data in localStorage
+            localStorage.setItem('userType', 'interviewee');
+            localStorage.setItem('interviewee_id', interviewee.interviewee_id);
+            
             return {
                 user: interviewee,
                 interviewee_id: interviewee.interviewee_id
@@ -202,6 +206,10 @@ export const loginFlow = async (
         } else return null;
     } else {
         const interviewee = await getIntervieweeData(email, password);
+        // Store necessary data in localStorage
+        localStorage.setItem('userType', 'interviewee');
+        localStorage.setItem('interviewee_id', interviewee.interviewee_id);
+        
         return {
             user: interviewee,
             interviewee_id: interviewee.interviewee_id

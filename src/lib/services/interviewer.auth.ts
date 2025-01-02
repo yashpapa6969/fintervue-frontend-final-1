@@ -193,13 +193,21 @@ export const loginFlow = async (
     if (!isOauth) {
         if (loginSuccess) {
             const interviewer = await getInterviewerData(email, password);
+            // Store necessary data in localStorage
+            localStorage.setItem('userType', 'interviewer');
+            localStorage.setItem('interviewer_id', interviewer.interviewer_id);
+            
             return {
                 user: interviewer.user,
-                interviewer_id: interviewer.interviewer_id   
+                interviewer_id: interviewer.interviewer_id
             };
         } else return null;
     } else {
         const interviewer = await getInterviewerData(email, password);
+        // Store necessary data in localStorage
+        localStorage.setItem('userType', 'interviewer');
+        localStorage.setItem('interviewer_id', interviewer.interviewer_id);
+        
         return {
             user: interviewer.user,
             interviewer_id: interviewer.interviewer_id
