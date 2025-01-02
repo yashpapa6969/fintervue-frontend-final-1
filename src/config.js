@@ -9,7 +9,7 @@ const config = {
     },
     production: {
         enableLogging: false,
-        apiBaseUrl: "https://teg61ixhma.execute-api.ap-south-1.amazonaws.com",
+        apiBaseUrl: "https://qa2gxw6zd2.execute-api.ap-south-1.amazonaws.com",
         mlBaseUrl: "https://api.fintervue.com",
         uploadBaseUrl: "https://api.fintervue.com",
     },
