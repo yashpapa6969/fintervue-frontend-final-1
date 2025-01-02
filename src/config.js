@@ -3,7 +3,7 @@ const config = {
     development: {
         enableLogging: true,
         uploadBaseUrl:
-            "https://teg61ixhma.execute-api.ap-south-1.amazonaws.com",
+            "https://qa2gxw6zd2.execute-api.ap-south-1.amazonaws.com",
         mlBaseUrl: "https://api.fintervue.com",
         apiBaseUrl: "http://localhost:2000",
     },
