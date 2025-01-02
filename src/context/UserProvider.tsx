@@ -13,26 +13,33 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     });
 
     const setUserWithLocalStorage = (newUser: User) => {
-        localStorage.setItem("user", JSON.stringify(newUser.user));
+        localStorage.setItem("user", JSON.stringify(newUser));
         setUser(newUser);
     };
 
     useEffect(() => {
         const user = localStorage.getItem("user");
 
-        if (user) {
-            const parsedUser = JSON.parse(user);
+        console.log(user);
+
+        if (user && JSON.parse(user).user) {
+            const parsedUser = JSON.parse(user as string);
             if (parsedUser.interviewee_id) {
-                setUser({
+                setUserWithLocalStorage({
                     type: "interviewee",
-                    user: parsedUser as Interviewee,
+                    user: parsedUser.user as Interviewee,
                 });
             } else {
-                setUser({
+                setUserWithLocalStorage({
                     type: "interviewer",
-                    user: parsedUser as Interviewer,
+                    user: parsedUser.user as Interviewer,
                 });
             }
+        } else {
+            setUserWithLocalStorage({
+                type: "null",
+                user: null,
+            });
         }
     }, []);
 
