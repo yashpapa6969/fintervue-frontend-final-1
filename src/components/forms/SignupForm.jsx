@@ -8,7 +8,7 @@ import {
   Select,
 } from "@chakra-ui/react";
 
-const SignupForm = ({ formData, handleChange }) => {
+const SignupForm = ({ formData, handleChange, email }) => {
   const [dragOver, setDragOver] = useState(false);
   const [fileError, setFileError] = useState("");
   const fileInputRef = useRef(null);
@@ -66,10 +66,10 @@ const SignupForm = ({ formData, handleChange }) => {
   };
 
   return (
-    <div className="flex flex-col gap-4 px-4 w-full mb-24">
+    <div className="flex flex-col w-full gap-4 px-4 mb-24">
 
       {/* Name Fields */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full">
+      <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
         <FormControl isRequired>
           <FormLabel className="font-medium text-gray-700">First Name*</FormLabel>
           <InputGroup>
@@ -77,7 +77,7 @@ const SignupForm = ({ formData, handleChange }) => {
               placeholder="What is your first name?"
               value={formData?.firstName}
               onChange={(e) => handleChange("firstName", e.target.value)}
-              className="outline-none border border-gray-300 rounded-md py-2 px-3 transition-all focus:border-blue-700"
+              className="px-3 py-2 transition-all border border-gray-300 rounded-md outline-none focus:border-blue-700"
             />
           </InputGroup>
         </FormControl>
@@ -88,24 +88,25 @@ const SignupForm = ({ formData, handleChange }) => {
               placeholder="What is your last name?"
               value={formData?.lastName}
               onChange={(e) => handleChange("lastName", e.target.value)}
-              className="outline-none border border-gray-300 rounded-md py-2 px-3 transition-all focus:border-blue-700"
+              className="px-3 py-2 transition-all border border-gray-300 rounded-md outline-none focus:border-blue-700"
             />
           </InputGroup>
         </FormControl>
       </div>
 
       {/* Email and Password */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full">
+      <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
         <FormControl isRequired>
           <FormLabel className="font-medium text-gray-700">Email ID*</FormLabel>
           <InputGroup>
             <Input
               type="email"
               placeholder="Tell us your Email ID"
-              value={formData?.email}
+              disabled={email ? true : false}
+              value={email ? email : formData?.email}
               onChange={(e) => handleChange("email", e.target.value)}
-              className="outline-none border border-gray-300 rounded-md py-2 px-3 transition-all focus:border-blue-700"
-            />
+              className="px-3 py-2 transition-all border border-gray-300 rounded-md outline-none focus:border-blue-700"
+              />
           </InputGroup>
         </FormControl>
         <FormControl isRequired>
@@ -114,9 +115,10 @@ const SignupForm = ({ formData, handleChange }) => {
             <Input
               type="password"
               placeholder="Enter your password"
+              disabled={email ? true : false}
               value={formData?.password}
               onChange={(e) => handleChange("password", e.target.value)}
-              className="outline-none border border-gray-300 rounded-md py-2 px-3 transition-all focus:border-blue-700"
+              className="px-3 py-2 transition-all border border-gray-300 rounded-md outline-none focus:border-blue-700"
             />
           </InputGroup>
         </FormControl>
@@ -128,7 +130,7 @@ const SignupForm = ({ formData, handleChange }) => {
         <Select
           placeholder="Select your employment status"
           onChange={(e) => handleChange("currentEmploymentStatus", e.target.value)}
-          className="outline-none border border-gray-300 rounded-md py-2 px-3 transition-all focus:border-blue-700"
+          className="px-3 py-2 transition-all border border-gray-300 rounded-md outline-none focus:border-blue-700"
         >
           <option value="employed">Employed</option>
           <option value="unemployed">Unemployed</option>
@@ -146,7 +148,7 @@ const SignupForm = ({ formData, handleChange }) => {
             placeholder="https://linkedin.com/"
             value={formData?.linkedInProfile}
             onChange={(e) => handleChange("linkedInProfile", e.target.value)}
-            className="outline-none border border-gray-300 rounded-md py-2 px-3 transition-all focus:border-blue-700"
+            className="px-3 py-2 transition-all border border-gray-300 rounded-md outline-none focus:border-blue-700"
           />
         </InputGroup>
       </FormControl>
@@ -182,11 +184,11 @@ const SignupForm = ({ formData, handleChange }) => {
       </FormControl>
 
       {/* WhatsApp Opt-in */}
-      <div className="flex items-center gap-2 w-full">
+      <div className="flex items-center w-full gap-2">
         <input type="checkbox" id="whatsapp_opt_in" className="cursor-pointer" />
         <label
           htmlFor="whatsapp_opt_in"
-          className="text-md font-semibold text-gray-600 cursor-pointer"
+          className="font-semibold text-gray-600 cursor-pointer text-md"
         >
           Send me important updates & promotions via SMS, email, and{" "}
           <span className="text-green-500">WhatsApp</span>
@@ -196,7 +198,7 @@ const SignupForm = ({ formData, handleChange }) => {
       {/* Salary Range */}
       <FormControl>
         <FormLabel className="font-medium text-gray-700">Expected Salary Range (in Lakhs)*</FormLabel>
-        <div className="text-center mt-1 text-lg font-bold">
+        <div className="mt-1 text-lg font-bold text-center">
           ₹{formData?.expectedCompensation || 0} Lakhs
         </div>
         <input

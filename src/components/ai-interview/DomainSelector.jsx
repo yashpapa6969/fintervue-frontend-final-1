@@ -84,7 +84,7 @@ const DomainSelector = ({ onDomainSelect, loading }) => {
           <SearchBox
             value={searchDomainValue}
             setValue={setSearchDomainValue}
-            className="w-full mb-10 px-4 py-2"
+            className="w-full px-4 py-2 mb-10"
             borderRadius="md"
             borderColor="blue.700"
             placeholder="Search domains..."

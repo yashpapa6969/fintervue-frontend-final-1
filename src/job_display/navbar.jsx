@@ -5,17 +5,17 @@ import Logo from "../assests/logo/logo.png";
 const Navbar = () => {
   return (
     <motion.nav
-      className="bg-white shadow-lg p-6 flex justify-between items-center fixed w-full top-0 z-50"
+      className="fixed top-0 z-50 flex items-center justify-between w-full p-6 bg-white shadow-lg"
       initial={{ opacity: 0, y: -50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
       <div className="flex items-center space-x-4">
-        <a href="/home">
+        <a href="/">
           <motion.img
             src={Logo}
             alt="Logo"
-            className="h-12 w-auto"
+            className="w-auto h-12"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           />
@@ -32,7 +32,7 @@ const Navbar = () => {
           AI Interview History
         </motion.a>
 
-        <div className="relative group inline-block">
+        <div className="relative inline-block group">
           <motion.a
             href="/upcomingInterviews"
             className="bg-gradient-to-r from-blue-400 to-blue-500 text-white py-2.5 px-6 rounded-lg font-semibold shadow-md hover:shadow-lg transition-all duration-300"
@@ -42,11 +42,11 @@ const Navbar = () => {
             Upcoming Interviews
           </motion.a>
           
-          <div className="absolute right-0 mt-3 w-56 bg-white border border-gray-100 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform group-hover:translate-y-0 translate-y-2">
+          <div className="absolute right-0 invisible w-56 mt-3 transition-all duration-300 transform translate-y-2 bg-white border border-gray-100 shadow-xl opacity-0 rounded-xl group-hover:opacity-100 group-hover:visible group-hover:translate-y-0">
             <div className="p-2">
-              <a href="/profile" className="block px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors duration-200">Profile</a>
-              <a href="/settings" className="block px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors duration-200">Settings</a>
-              <a href="/logout" className="block px-4 py-3 text-red-500 hover:bg-red-50 rounded-lg transition-colors duration-200">Logout</a>
+              <a href="/profile" className="block px-4 py-3 text-gray-700 transition-colors duration-200 rounded-lg hover:bg-gray-50">Profile</a>
+              <a href="/settings" className="block px-4 py-3 text-gray-700 transition-colors duration-200 rounded-lg hover:bg-gray-50">Settings</a>
+              <a href="/logout" className="block px-4 py-3 text-red-500 transition-colors duration-200 rounded-lg hover:bg-red-50">Logout</a>
             </div>
           </div>
         </div>
