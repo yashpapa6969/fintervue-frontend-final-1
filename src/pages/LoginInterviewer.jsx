@@ -40,7 +40,7 @@ const LoginInterviewer = () => {
 
                 navigate("/display");
             } else {
-                throw new Error();
+                throw new Error("An error occured trying to log you in!");
             }
         } catch (error) {
             // Handle login error

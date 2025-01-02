@@ -35,7 +35,7 @@ const ResetPasswordPage = () => {
                             );
 
                             if (isUpdated) {
-                                navigate("/signup");
+                                navigate(`/login/${type}`);
                             }
                         } else {
                             window.alert("Passwords don't match!");
@@ -104,7 +104,7 @@ const ResetPasswordPage = () => {
                                 required
                                 name="notice_period"
                                 value="candidate"
-                                onChange={(e) => setType("interviewee")}
+                                onChange={(e) => setType("candidate")}
                                 className="cursor-pointer"
                             />
                             <span className="ml-2">Candidate</span>

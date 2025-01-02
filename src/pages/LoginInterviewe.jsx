@@ -44,7 +44,7 @@ const LoginInterviewee = () => {
 
                 navigate(from, { replace: true });
             } else {
-                throw new Error();
+                throw new Error("An error occured trying to log you in!");
             }
         } catch (error) {
             console.error("Login error:", error);

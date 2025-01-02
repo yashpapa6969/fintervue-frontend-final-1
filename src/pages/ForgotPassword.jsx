@@ -40,8 +40,8 @@ const ForgotPassword = () => {
                     <input
                         className="w-full p-2 border-2 border-black rounded-md"
                         type="email"
-                        name="pass"
-                        placeholder="New Password"
+                        name="email"
+                        placeholder="Your Email Address"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                     />

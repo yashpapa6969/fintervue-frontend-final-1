@@ -94,7 +94,7 @@ export const resetPassword = async (
 ) => {
     try {
         const response = await axios.post(
-            `${config.uploadBaseUrl}/api/${type}/forgotPassword`,
+            `${config.uploadBaseUrl}/api/${type === "candidate" ? "interviewee" : "interviewer"}/forgotPassword`,
             {
                 email,
                 newPassword,

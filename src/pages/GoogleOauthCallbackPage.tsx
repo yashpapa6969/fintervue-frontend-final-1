@@ -25,7 +25,7 @@ const GoogleOauthCallbackPage = () => {
                     email,
                     newUser,
                     type: userType,
-                } = await handleGoogleCallback(type || "candidate");
+                } = await handleGoogleCallback(type as string);
 
                 console.log(email, newUser, userType);
 
@@ -76,7 +76,7 @@ const GoogleOauthCallbackPage = () => {
             <div className="grid w-full h-full place-content-center">
                 <button
                     className="w-[200px] mx-auto py-2 mt-2 text-center text-white bg-blue-500 rounded-md disabled:bg-opacity-50"
-                    disabled={isLoading || true}
+                    disabled={isLoading}
                 >
                     Signing you in...
                 </button>
