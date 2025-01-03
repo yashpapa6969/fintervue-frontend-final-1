@@ -189,32 +189,16 @@ export const loginFlow = async (
     password: string,
     isOauth: boolean = false
 ) => {
-    try {
-        if (!isOauth) {
-            const loginSuccess = await handleLogin(email, password);
-            if (!loginSuccess) return null;
-        }
+    if (!isOauth) {
+        const loginSuccess = await handleLogin(email, password);
         
+        if (loginSuccess) {
+            const interviewer = await getInterviewerData(email, password);
+            return interviewer.user as Interviewer;
+        } else return null;
+    } else {
         const interviewer = await getInterviewerData(email, password);
-        
-        // Ensure we have valid data
-        if (!interviewer || !interviewer.user) {
-            throw new Error('Invalid interviewer data received');
-        }
-        console.log(interviewer,"interviewer")
-
-        // Store necessary data in localStorage
-        localStorage.setItem('userType', 'interviewer');
-        localStorage.setItem('interviewer_id', interviewer.interviewer_id); // Using _id from user object
-        localStorage.setItem('userId', interviewer.interviewer_id); // Add this for compatibility
-
-        return {
-            user: interviewer.user,
-            interviewer_id: interviewer.user._id
-        };
-    } catch (error) {
-        console.error('Login flow error:', error);
-        throw error;
+        return interviewer.user as Interviewer;
     }
 };
 

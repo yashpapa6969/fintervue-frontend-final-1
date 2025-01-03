@@ -31,10 +31,8 @@ const LoginInterviewee = () => {
             if (interviewee) {
                 setUser({
                     type: "interviewee",
-                    user: interviewee.user,
+                    user: interviewee,
                 });
-
-                localStorage.setItem('userId', interviewee.interviewee_id);
 
                 toast({
                     title: "Welcome",
