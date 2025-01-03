@@ -23,7 +23,7 @@ export async function googleSignInClicked() {
     }
 }
 
-export async function handleGoogleCallback(type: string) {
+export async function handleGoogleCallback() {
     try {
         const response = await signInAndUp();
         
@@ -36,7 +36,6 @@ export async function handleGoogleCallback(type: string) {
                     id: response.user.id,
                     email: response.user.emails[0],
                     newUser: response.createdNewRecipeUser,
-                    type,
                 };
             } else if (
                 !response.createdNewRecipeUser &&
@@ -46,7 +45,6 @@ export async function handleGoogleCallback(type: string) {
                     id: response.user.id,
                     email: response.user.emails[0],
                     newUser: response.createdNewRecipeUser,
-                    type,
                 };
             } else {
                 throw new Error("Error trying to log you in! try again soon.");
