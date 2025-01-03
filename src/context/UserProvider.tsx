@@ -34,8 +34,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     useEffect(() => {
         const user = localStorage.getItem("user");
 
-        console.log(user);
-
         if (user && JSON.parse(user).user) {
             const parsedUser = JSON.parse(user as string);
             if (parsedUser.interviewee_id) {

@@ -133,7 +133,7 @@ const addInterviewer = async (formData: FormData) => {
             }
         );
 
-        return response.data as Interviewer;
+        return response.data as Interviewer; // no user to destructure. api call returns the interviewer itself
     } catch (error) {
         throw new Error();
     }
@@ -151,7 +151,7 @@ const getInterviewerData = async (email: string, password: string) => {
             }
         );
 
-        return response.data;
+        return response.data.user as Interviewer;
     } catch (error) {
         throw new Error("Somethiing went wrong trying to get your data");
     }
@@ -194,11 +194,11 @@ export const loginFlow = async (
         
         if (loginSuccess) {
             const interviewer = await getInterviewerData(email, password);
-            return interviewer.user as Interviewer;
+            return interviewer;
         } else return null;
     } else {
         const interviewer = await getInterviewerData(email, password);
-        return interviewer.user as Interviewer;
+        return interviewer;
     }
 };
 
