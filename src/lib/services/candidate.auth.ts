@@ -134,7 +134,7 @@ const addInterviewee = async (formData: FormData) => {
             }
         );
 
-        return response.data as Interviewee;
+        return response.data as Interviewee; // no user to destructure. api call returns the interviewee itself
     } catch (error) {
         throw new Error();
     }
@@ -152,7 +152,7 @@ const getIntervieweeData = async (email: string, password: string) => {
             }
         );
 
-        return response.data as Interviewee;
+        return response.data.user as Interviewee;
     } catch (error) {
         throw new Error("Somethiing went wrong trying to get your data");
     }
