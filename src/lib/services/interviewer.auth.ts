@@ -153,7 +153,7 @@ const getInterviewerData = async (email: string, password: string) => {
 
         return response.data;
     } catch (error) {
-        throw new Error();
+        throw new Error("Somethiing went wrong trying to get your data");
     }
 };
 
