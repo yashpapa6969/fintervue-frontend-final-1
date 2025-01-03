@@ -38,7 +38,8 @@ const UserProfile = () => {
                                     type: "null",
                                     user: null,
                                 });
-                                localStorage.removeItem("user");
+
+                                localStorage.removeItem("userId");
 
                                 setLogoutLoading(false);
                                 navigate("/signup");

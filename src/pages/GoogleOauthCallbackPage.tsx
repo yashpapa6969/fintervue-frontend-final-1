@@ -27,8 +27,6 @@ const GoogleOauthCallbackPage = () => {
                     type: userType,
                 } = await handleGoogleCallback(type as string);
 
-                console.log(email, newUser, userType);
-
                 if (newUser) {
                     navigate(`/signup/choose?email=${email}`);
                 } else {
