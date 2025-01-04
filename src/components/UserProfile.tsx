@@ -22,7 +22,7 @@ const UserProfile = () => {
                 </Popover.Trigger>
                 <Popover.Anchor />
                 <Popover.Portal>
-                    <Popover.Content className="flex flex-col gap-2 p-2 bg-gray-200 rounded-md">
+                    <Popover.Content className="flex z-[100] flex-col gap-2 p-2 bg-gray-200 rounded-md">
                         <NavLink to="/user-profile">
                             <button className="flex flex-row items-center justify-center w-full gap-2 px-4 py-2 mr-2 text-sm font-medium text-center text-black bg-gray-300 rounded-md">
                                 Profile <User size={14} />
